@@ -1,0 +1,8 @@
+{
+  "name": "extensions",
+  "version": "0.0.1",
+  "author": "Fi+",
+  "controllers": {
+    "/user": "user.js"
+  }
+}
