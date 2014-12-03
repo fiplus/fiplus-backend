@@ -1,0 +1,75 @@
+db._drop('year');
+db._drop('month');
+db._drop('day');
+db._drop('time');
+db._drop('users');
+db._drop('interest');
+db._drop('time_period');
+db._drop('activity');
+db._drop('location');
+db._drop('comment');
+db._drop('suggested_location');
+db._drop('suggested_time');
+db._drop('icebreaker');
+
+db._create('year');
+db._create('month');
+db._create('day');
+db._create('time');
+db._create('users');
+db._create('interest');
+db._create('time_period');
+db._create('activity');
+db._create('location');
+db._create('comment');
+db._create('suggested_location');
+db._create('suggested_time');
+db._create('icebreaker');
+
+var graph = require('org/arangodb/general-graph');
+
+if (graph._exists('fiplus'))
+{
+    graph._drop('fiplus', true);
+}
+
+var in_year = graph._directedRelation('in_year', 'month', 'year');
+var in_month = graph._directedRelation('in_month', 'day', 'month');
+var in_day = graph._directedRelation('in_day', 'time', 'day');
+var start = graph._directedRelation('starts', 'time_period', 'time');
+var end = graph._directedRelation('ends', 'time_period', 'time');
+var confirmed = graph._directedRelation('confirmed', ['activity','users'], ['time_period','location','activity']);
+var in_location = graph._directedRelation('in_location', 'users', 'location');
+var is_available = graph._directedRelation('is_available', 'users', 'time_period');
+var interested_in = graph._directedRelation('interested_in', 'users', 'interest');
+var occurs = graph._directedRelation('occurs', ['suggested_time', 'suggested_location'], ['time_period','location']);
+var suggested = graph._directedRelation('suggested', 'activity', ['suggested_time','suggested_location']);
+var has = graph._directedRelation('has', 'activity', ['comment', 'icebreaker']);
+var joined = graph._directedRelation('joined', 'users', 'activity');
+var participated = graph._directedRelation('participated', 'users', 'activity');
+var created = graph._directedRelation('created', 'users', 'activity');
+var tagged = graph._directedRelation('tagged', 'activity', 'interest');
+var votes = graph._directedRelation('votes', 'users', ['suggested_time','suggested_location']);
+var favourites = graph._directedRelation('favourites', 'users', 'users');
+
+var edges = graph._edgeDefinitions(
+    in_year,
+    in_month,
+    in_day,
+    start,
+    end,
+    confirmed,
+    in_location,
+    is_available,
+    interested_in,
+    occurs,
+    suggested,
+    has,
+    joined,
+    participated,
+    created,
+    tagged,
+    votes,
+    favourites);
+
+graph._create('fiplus', edges);
