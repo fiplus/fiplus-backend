@@ -1,7 +1,4 @@
-db._drop('year');
-db._drop('month');
-db._drop('day');
-db._drop('time');
+db._drop('time_stamp');
 db._drop('users');
 db._drop('interest');
 db._drop('time_period');
@@ -12,10 +9,7 @@ db._drop('suggested_location');
 db._drop('suggested_time');
 db._drop('icebreaker');
 
-db._create('year');
-db._create('month');
-db._create('day');
-db._create('time');
+db._create('time_stamp');
 db._create('users');
 db._create('interest');
 db._create('time_period');
@@ -33,11 +27,8 @@ if (graph._exists('fiplus'))
     graph._drop('fiplus', true);
 }
 
-var in_year = graph._directedRelation('in_year', 'month', 'year');
-var in_month = graph._directedRelation('in_month', 'day', 'month');
-var in_day = graph._directedRelation('in_day', 'time', 'day');
-var start = graph._directedRelation('starts', 'time_period', 'time');
-var end = graph._directedRelation('ends', 'time_period', 'time');
+var start = graph._directedRelation('starts', 'time_period', 'time_stamp');
+var end = graph._directedRelation('ends', 'time_period', 'time_stamp');
 var confirmed = graph._directedRelation('confirmed', ['activity','users'], ['time_period','location','activity']);
 var in_location = graph._directedRelation('in_location', 'users', 'location');
 var is_available = graph._directedRelation('is_available', 'users', 'time_period');
@@ -53,9 +44,6 @@ var votes = graph._directedRelation('votes', 'users', ['suggested_time','suggest
 var favourites = graph._directedRelation('favourites', 'users', 'users');
 
 var edges = graph._edgeDefinitions(
-    in_year,
-    in_month,
-    in_day,
     start,
     end,
     confirmed,
