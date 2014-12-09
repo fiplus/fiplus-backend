@@ -5,6 +5,11 @@ var db = require("org/arangodb").db;
 (function() {
     "use strict";
 
+    var EmptyBody = foxx.Model.extend({
+        schema: {
+        }
+    });
+
     var controller = new foxx.Controller(applicationContext);
 
     var EventModel = foxx.Model.extend({
@@ -17,21 +22,21 @@ var db = require("org/arangodb").db;
 
     controller.post('/', function(req, res) {
 
-    }).bodyParam('event', {
+    }).bodyParam('Event', {
         type: EventModel
     });
 
     var IcebreakerAnswerModel = foxx.Model.extend({
         schema: {
             event_id: joi.string(),
-            user_id: joi.number(),
+            user_id: joi.string(),
             answer: joi.string()
         }
     });
 
     controller.post('/icebreaker/answer', function(req, res) {
 
-    }).bodyParam('answer', {
+    }).bodyParam('Answer', {
         type: IcebreakerAnswerModel
     });
 
@@ -45,7 +50,7 @@ var db = require("org/arangodb").db;
 
     controller.put('/icebreaker', function(req, res) {
 
-    }).bodyParam('icebreaker', {
+    }).bodyParam('Icebreaker', {
         type: IcebreakerModel
     });
 
@@ -57,6 +62,8 @@ var db = require("org/arangodb").db;
     }).pathParam('user', {
         type: joi.string(),
         description: 'User id to add to event'
+    }).bodyParam('Undocumented', {
+        type: EmptyBody
     });
 
     controller.delete('/:event_id/user/:user_id', function(req, res) {
@@ -71,18 +78,16 @@ var db = require("org/arangodb").db;
 
     var TimeModel = foxx.Model.extend({
        schema: {
-           event_id: joi.string(),
-           year: joi.number(),
-           month: joi.number(),
-           day: joi.number(),
-           start: joi.number(),
-           end: joi.number()
+           start: joi.number().integer(),
+           end: joi.number().integer()
        }
     });
 
-    controller.put('/time', function(req, res) {
+    controller.put('/:event_id/time', function(req, res) {
 
-    }).bodyParam('time', {
+    }).pathParam('event_id', {
+        type: joi.string()
+    }).bodyParam('Time', {
         type: TimeModel
     });
 
@@ -97,19 +102,21 @@ var db = require("org/arangodb").db;
     }).pathParam('user_id', {
         type: joi.string(),
         description: 'The user that is confirming'
+    }).bodyParam('Undocumented', {
+        type: EmptyBody
     });
 
     var LocationModel = foxx.Model.extend({
         schema: {
             event_id: joi.string(),
-            lat: joi.number(),
-            long: joi.number()
+            latitude: joi.number(),
+            longitude: joi.number()
         }
     });
 
     controller.put('/location', function(req, res) {
 
-    }).bodyParam('location', {
+    }).bodyParam('Location', {
         type: LocationModel
     });
 
@@ -121,6 +128,8 @@ var db = require("org/arangodb").db;
     }).pathParam('location_id', {
         type: joi.string(),
         description: 'The location to confirm for'
+    }).bodyParam('Undocumented', {
+        type: EmptyBody
     });
 
     var CommentModel = foxx.Model.extend({
@@ -133,7 +142,7 @@ var db = require("org/arangodb").db;
 
     controller.put('/comment', function(req, res) {
 
-    }).bodyParam('comment', {
+    }).bodyParam('Comment', {
         type: CommentModel
     });
 
@@ -146,7 +155,7 @@ var db = require("org/arangodb").db;
 
     controller.put('/report', function(req, res) {
 
-    }).bodyParam('report', {
+    }).bodyParam('Report', {
         type: ReportModel
     });
 
