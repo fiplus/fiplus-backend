@@ -34,13 +34,58 @@ var tag = require('db-interface/edge/tagged');
         schema: {
             name: joi.string(),
             description: joi.string(),
-            tagged_interests: joi.array()
+            max_attendees: joi.number().integer(),
+            creator: joi.string(),
+            tagged_interests: joi.array(),    // format string
+            suggested_times: joi.array(),     // format TimeModel
+            suggested_locations: joi.array() // format LocationModel
         }
     });
 
     controller.post('/', function(req, res) {
+        var activity = req.params('activity');
 
-    }).bodyParam('Activity', {
+        // disallow max_attendees less than 2
+        var max = activity.get('max_attendees');
+        if(max < 2) {
+            throw new error.NotAllowedError("Non-group activities are ");
+        }
+
+        var Creator = new cl.Created();
+        var created_edge = Creator.saveCreatedEdge('user/' + activity.get('creator'),activity.get('name'),
+            activity.get('description'), max);
+        var activity_id = created_edge._to;
+
+        var Tagger = new cl.Tagged();
+        var interests = activity.get('tagged_interests');
+        for (var i = 0; i < interests.length; i++) {
+            Tagger.tagActivityWithInterest(activity_id, interest);
+        }
+
+        var Suggester = new cl.Suggested();
+        var times = activity.get('suggested_times');
+        for (var i = 0; i < times.length; i++) {
+            var time = times[i];
+            // disallow end time before start time
+            if(time.end < time.start) {
+                throw new error.NotAllowedError("Activity ending before it starts is ");
+            }
+            // disallow date suggestions in the past
+            var now = Date();
+            if(time.end < now.value()) {
+                throw new error.NotAllowedError("A suggestion in the past is ");
+            }
+            Suggester.saveSuggestedTimeEdge(activity_id, time.start, time.end);
+        }
+
+        var locations = activity.get('suggested_locations');
+        for (var i = 0; i < locations.length; i++) {
+            var location = locations[i];
+            Suggester.saveSuggestedTimeEdge(activity_id, location.latitude, location.longitude);
+        }
+
+        res.body = "Success";
+    }).bodyParam('activity', {
         type: ActivityModel
     });
 
