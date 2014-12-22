@@ -61,3 +61,7 @@ var edges = graph._edgeDefinitions(
     favourites);
 
 graph._create('fiplus', edges);
+
+// Indexes
+db.interest.ensureFulltextIndex('name');
+db.interest.ensureUniqueConstraint('name');
