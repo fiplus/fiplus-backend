@@ -11,13 +11,13 @@ var db = require("org/arangodb").db;
 
     var UserModel = foxx.Model.extend({
         schema: {
-            email: joi.string().email()
+            email: joi.string()
         }
     });
 
     //Register user
     controller.post("/register", function (req, res) {
-        var user = req.params("user");
+        var user = req.params("User");
         var result = db.users.save({"email":user.get("email")});
 
         if(result.error == true) {
@@ -26,13 +26,13 @@ var db = require("org/arangodb").db;
         else {
             res.body = "Success";
         }
-    }).bodyParam("user", {
+    }).bodyParam("User", {
         type: UserModel
     });
 
     var HistoryRequestModel = foxx.Model.extend({
         schema: {
-            duration: joi.number(),
+            duration: joi.number().integer(),
             targetuser: joi.string()
         }
     });
@@ -40,7 +40,7 @@ var db = require("org/arangodb").db;
     //User can view recently attended events
     controller.get("/users/history", function (req, res) {
         //stub
-    }).bodyParam("historyrequest", {
+    }).bodyParam("HistoryRequest", {
         type: HistoryRequestModel
     });
 
@@ -55,35 +55,35 @@ var db = require("org/arangodb").db;
     var ConfigUserModel = foxx.Model.extend({
         schema: {
             username: joi.string(),
-            email: joi.string().email(),
+            email: joi.string(),
             password: joi.string()
         }
     });
 
     controller.put("/", function (req, res) {
         //stub
-    }).bodyParam("configuser", {
+    }).bodyParam("ConfigUser", {
         type: ConfigUserModel
     });
 
     //User configures profile/setting
     var UserProfileModel = foxx.Model.extend({
         schema: {
-            email: joi.string().email(),
-            profile_pic: joi.valid('jpg', 'png'),
-            age: joi.number(),
+            email: joi.string(),
+            profile_pic: joi.string(),
+            age: joi.number().integer(),
             gender: joi.string(),
             latitude: joi.number(),
             longitude: joi.number(),
             location_proximity_setting: joi.boolean(),
-            start_time_stamp: joi.number(),
-            end_time_stamp: joi.number(),
+            start_time_stamp: joi.number().integer(),
+            end_time_stamp: joi.number().integer(),
             tagged_interests: joi.array()
         }
     });
 
     controller.put("/profile", function (req, res) {
-        var userprofile = req.params("userprofile");
+        var userprofile = req.params("UserProfile");
         var config_success = true; //Assume success in the start. Will turn to false if one save or update fails.
         var result;
         //It is expected that this will return a valid value because the email used at this point is the email used to login
@@ -95,7 +95,7 @@ var db = require("org/arangodb").db;
             config_success = false;
         }
 
-        var input_location_object = {"Latitude":userprofile.get("lat"), "Longitude":userprofile.get("long")};
+        var input_location_object = {"Latitude":userprofile.get("latitude"), "Longitude":userprofile.get("longitude")};
         var location_object;
         if(db.location.byExample(input_location_object).count() > 0)
         {
@@ -198,17 +198,22 @@ var db = require("org/arangodb").db;
         else {
             res.body = "Success";
         }
-    }).bodyParam("userprofile", {
+    }).bodyParam("UserProfile", {
         type: UserProfileModel
     });
 
+
+    var EmptyBody = foxx.Model.extend({
+        schema: {
+        }
+    });
     //Add Favourite
     controller.post("/favourites/:user_name", function (req, res) {
         //stub
     }).pathParam('user_name', {
         type: joi.string(),
         description: 'The user to add to favourites'
-    });
+    }).bodyParam("Undocumented",{type: EmptyBody});
 
     //Delete Favourite
     controller.delete("/favourites/:user_name", function (req, res) {
