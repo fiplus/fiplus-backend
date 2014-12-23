@@ -27,29 +27,16 @@ var int2 = db.interest.save({"interest name":"hockey"});
 var int3 = db.interest.save({"interest name":"basketball"});
 
 // Date test data
-var year = db.year.save({"value":2014});
-var month = db.month.save({"value":12});
-var day = db.day.save({"value":12});
-var time = db.time.save({"value":11});
-db.in_year.save(month,year,{});
-db.in_month.save(day,month,{});
-db.in_day.save(time,day,{});
-var time1 = time;
+// Dec 1, 2014 10am
+var time1 = db.time_stamp.save({"value":1417453200000});
 
-var time2 = db.time.save({"value":1});
-db.in_year.save(month,year,{});
-db.in_month.save(day,month,{});
-db.in_day.save(time2,day,{});
+// Dec 1, 2014 12am
+var time2 = db.time_stamp.save({"value":1417460400000});
 
-var time3 = db.time.save({"value":10});
-db.in_year.save(month,year,{});
-db.in_month.save(day,month,{});
-db.in_day.save(time3,day,{});
-
-var time4 = db.time.save({"value":12});
-db.in_year.save(month,year,{});
-db.in_month.save(day,month,{});
-db.in_day.save(time4,day,{});
+// 11 am
+var time3 = db.time_stamp.save({"value":1417456800000});
+// 1 pm
+var time4 = db.time_stamp.save({"value":1417464000000});
 
 // Time period
 var tp1 = db.time_period.save({});
