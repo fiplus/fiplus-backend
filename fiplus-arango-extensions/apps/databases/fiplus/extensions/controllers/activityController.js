@@ -121,16 +121,41 @@ var tag = require('db-interface/edge/tagged');
     });
 
     controller.put('/:activity_id/user/:user_id', function(req, res) {
-
+        var activity_id = req.params('activity_id');
+        var user_id = req.params('user_id');
+        
+        if(!db.activity.exists(activity_id)) {
+            throw new errors.NotFoundError('Activity');
+        }
+    
+        if(!db.users.exists(user_id)) {
+            throw new errors.NotFoundError('Users');
+        }
+    
+        var joinedEdge = db.joined.firstExample({ _to : user_id, _from : user_id });
+        if(taggedEdge == null) {
+            var result = db.joined.save(user_id, event_id, {});
+            if(result.error == true) {
+                throw new GenericError('Failed to save joined edge.');
+            }
+        } else {
+            throw new errors.NotAllowedError('Duplicate tags');
+        }
     }).pathParam('activity_id', {
         type: joi.string(),
         description: 'The activity to join'
     }).pathParam('user_id', {
         type: joi.string(),
         description: 'User id to add to activity'
-    }).bodyParam('Undocumented', {
-        type: EmptyBody
-    });
+    }).errorResponse(errors.NotFoundError, 404, 'Not Found', function(e) {
+        return {
+            error: e.message
+        }
+    }).errorResponse(errors.NotAllowedError, 400, 'Not Allowed', function(e) {
+        return {
+            error: e.message
+        }
+    });;
 
     controller.delete('/:activity_id/user/:user_id', function(req, res) {
 
