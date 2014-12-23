@@ -37,14 +37,20 @@ var int3 = db.interest.save({name:"basketball"});
 // Date test data
 // Dec 1, 2014 10am
 var time1 = db.time_stamp.save({"value":1417453200000});
-
 // Dec 1, 2014 12am
 var time2 = db.time_stamp.save({"value":1417460400000});
-
-// 11 am
+// Dec 1, 2014 11 am
 var time3 = db.time_stamp.save({"value":1417456800000});
-// 1 pm
+// Dec 1, 2014 1 pm
 var time4 = db.time_stamp.save({"value":1417464000000});
+// Jan 10, 3012 2 pm
+var time5 = db.time_stamp.save({"value":32883069600000});
+// Jan 10, 3012 3 pm
+var time6 = db.time_stamp.save({"value":32883073200000});
+// Jan 11, 3012 8 pm
+var time7 = db.time_stamp.save({"value":32883177600000});
+// Jan 11, 3012 9 pm
+var time8 = db.time_stamp.save({"value":32883181200000});
 
 //1/1/2100 1200
 var time5 = db.time_stamp.save({"value":4102513200000});
@@ -55,12 +61,17 @@ var time6 = db.time_stamp.save({"value":4102516800000});
 var tp1 = db.time_period.save({});
 var tp2 = db.time_period.save({});
 var tp3 = db.time_period.save({});
+var tp4 = db.time_period.save({});
 
 // start test data
 db.start.save(tp1,time1,{});
 db.end.save(tp1,time2,{});
 db.start.save(tp2,time3,{});
 db.end.save(tp2,time4,{});
+db.start.save(tp3, time5,{});
+db.end.save(tp3, time6,{});
+db.start.save(tp4, time7,{});
+db.end.save(tp4, time8,{});
 
 db.start.save(tp3,time5,{});
 db.end.save(tp3,time6,{});
@@ -93,13 +104,44 @@ var act2 = db.activity.save({
     description:'activity 2',
     maximum_attendance:0
 });
+
 var activity1 = db.activity.save({name:'BasketballNW'});
 var activity2 = db.activity.save({name:'BasketballSW'});
 var activity3 = db.activity.save({name:'BasketballNE'});
 var activity4 = db.activity.save({name:'BasketballSE'});
 var activity5 = db.activity.save({name:'SoccerSE'});
 
-//tagged
+
+// Time Suggestions
+var timeSug1 = db.suggestion.save({});
+ db.suggested.save(act1, timeSug1, {});
+ db.is.save(timeSug1, tp3, {});
+ var timeSug2 = db.suggestion.save({});
+ db.suggested.save(act1, timeSug2, {});
+ db.is.save(timeSug2, tp4, {});
+ var timeSug3 = db.suggestion.save({});
+ db.suggested.save(act2, timeSug3, {});
+ db.is.save(timeSug3, tp3, {});
+
+// Location Suggestions
+var locSug4 = db.suggestion.save({});
+ db.suggested.save(act1, locSug4, {});
+ db.is.save(locSug4, loc3, {});
+ var locSug5 = db.suggestion.save({});
+ db.suggested.save(act2, locSug5, {});
+ db.is.save(locSug5, loc2, {});
+ var locSug6 = db.suggestion.save({});
+ db.suggested.save(act2, locSug6, {});
+ db.is.save(locSug6, loc4, {});
+
+// Creators
+db.created.save(user1, act1, {});
+db.created.save(user2, act2, {});
+
+// Tagged
+db.tagged.save(act1, int1, {});
+db.tagged.save(act2, int2, {});
+db.tagged.save(act2, int3, {});
 db.tagged.save(activity1,int3,{});
 db.tagged.save(activity2,int3,{});
 db.tagged.save(activity3,int3,{});

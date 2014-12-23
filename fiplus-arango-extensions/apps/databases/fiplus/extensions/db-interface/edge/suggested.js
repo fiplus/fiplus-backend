@@ -1,7 +1,10 @@
 var db = require('org/arangodb').db;
 var error = require('error');
-var period = require('db-interface/node/time_period');
-var sug = require('db-interface/node/suggestion');
+var period = require('db-interface/node/time_period').TimePeriod;
+var location = require('db-interface/node/location').Location;
+var stamp = require('db-interface/node/time_stamp').TimeStamp;
+var sug = require('db-interface/node/suggestion').Suggestion;
+var model = require('model');
 
 /**
 * Constructs a suggested db interface object
@@ -82,12 +85,47 @@ Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, 
         }
     });
 
-    var suggestion_node = (new sug.Suggestion()).saveLocationSuggestion(latitude, longitude);
+    var suggestion_node = (new sug()).saveLocationSuggestion(latitude, longitude);
     result = this.db.suggested.save(activity_id, suggestion_node, {});
     if(result.error == true) {
         throw new error.GenericError('Saving suggested location ' + latitude + ', ' + longitude + ' failed.');
     }
     return result;
+};
+
+Suggested.prototype.getSuggestedTimes = function(activity_id)
+{
+    var times = [];
+    db.suggested.outEdges(activity_id).forEach(function(edge) {
+        var timePeriod_id = db.is.outEdges(edge._to)[0]._to;
+        if (timePeriod_id.indexOf("time_period") > -1) {
+            var time = new model.TimeModel();
+            var start = db.start.outEdges(timePeriod_id)[0]._to;
+            var end = db.end.outEdges(timePeriod_id)[0]._to;
+            var Stamp = new stamp();
+            time.start = db.time_stamp.document(start)[Stamp.VALUE_FIELD];
+            time.end = db.time_stamp.document(end)[Stamp.VALUE_FIELD];
+            times.push(time);
+        }
+    });
+    return times;
+};
+
+Suggested.prototype.getSuggestedLocations = function(activity_id)
+{
+    var locations = [];
+    db.suggested.outEdges(activity_id).forEach(function(edge) {
+        var location_id = db.is.outEdges(edge._to)[0]._to;
+        if (location_id.indexOf("location") > -1) {
+            var loc_model = new model.LocationModel();
+            var Location = new location();
+            var loc_node = Location.get(location_id);
+            loc_model.longitude = loc_node[Location.LONGITUDE_FIELD];
+            loc_model.latitude = loc_node[Location.LATITUDE_FIELD];
+            locations.push(loc_model);
+        }
+    });
+    return locations;
 };
 
 exports.Suggested = Suggested;

@@ -36,4 +36,17 @@ Location.prototype.saveLocation = function(latitude, longitude)
     return result;
 };
 
+Location.prototype.exists = function(location_id) {
+    if(!this.db.location.exists(location_id)) {
+        throw new error.NotFoundError("Location " + location_id);
+    }
+    return true;
+};
+
+Location.prototype.get = function(location_id)
+{
+    this.exists(location_id);
+    return db.location.document(location_id);
+};
+
 exports.Location = Location;

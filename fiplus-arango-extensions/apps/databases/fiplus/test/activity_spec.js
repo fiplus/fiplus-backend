@@ -263,3 +263,58 @@ describe('Suggestion Vote', function() {
 
     });
 });
+describe('Get Activity', function() {
+   it('should return activity information.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/activity/2',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "attributes": {},
+                "isValid": true,
+                "errors": {},
+                "name": "A2",
+                "description": "activity 2",
+                "max_attendees": 0,
+                "creator": "user/2",
+                "tagged_interests": [
+                    "hockey",
+                    "basketball"
+                ],
+                "suggested_times": [
+                    {
+                        "attributes": {},
+                        "isValid": true,
+                        "errors": {},
+                        "start": 32883069600000,
+                        "end": 32883073200000
+                    }
+                ],
+                "suggested_locations": [
+                    {
+                        "attributes": {},
+                        "isValid": true,
+                        "errors": {},
+                        "longitude": 150,
+                        "latitude": 150
+                    },
+                    {
+                        "attributes": {},
+                        "isValid": true,
+                        "errors": {},
+                        "longitude": 100,
+                        "latitude": 50
+                    }
+                ]
+            })
+            .toss();
+    });
+    it('should fail to get non-existent activity.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/activity/0',
+            {})
+            .expectStatus(404)
+            .toss();
+    });
+});

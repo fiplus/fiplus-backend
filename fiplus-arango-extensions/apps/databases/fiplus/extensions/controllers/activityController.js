@@ -1,11 +1,13 @@
 var foxx = require("org/arangodb/foxx");
 var joi = require("joi");
+var qb = require('aqb');
 var db = require("org/arangodb").db;
 var creator = require('db-interface/edge/created').Created;
 var tagger = require('db-interface/edge/tagged').Tagged;
 var suggester = require('db-interface/edge/suggested').Suggested;
 var joiner = require('db-interface/edge/joined').Joined;
 var voted = require('db-interface/edge/voted').Voted;
+var actor = require('db-interface/node/activity').Activity;
 var error = require('error');
 var model = require('model');
 
@@ -73,6 +75,30 @@ var model = require('model');
         res.body = "Success";
     }).bodyParam('Activity', {
         type: model.ActivityModel
+    });
+
+   /*
+    * GetEvent
+    */
+    controller.get('/:activityid', function(req, res) {
+        var activity_id = 'activity/' + req.params('activityid');
+        var eventDetail = new model.ActivityModel();
+        var Actor = new actor();
+        var activity_node = Actor.get(activity_id);
+        eventDetail.name = activity_node[Actor.NAME_FIELD];
+        eventDetail.description = activity_node[Actor.DESCRIPTION_FIELD];
+        eventDetail.max_attendees = activity_node[Actor.MAXIMUM_ATTENDANCE_FIELD];
+        eventDetail.creator = (new creator()).getCreator(activity_id);
+        eventDetail.tagged_interests = (new tagger()).getTags(activity_id);
+        // TODO if there is a confirmed time/location, return an array of 1 with only the confirmed suggestion
+        var Suggester = new suggester();
+        eventDetail.suggested_times = Suggester.getSuggestedTimes(activity_id);
+        eventDetail.suggested_locations = Suggester.getSuggestedLocations(activity_id);
+
+        res.json(eventDetail);
+    }).pathParam('activityid', {
+        type: joi.string(),
+        description: 'The activity more information is requested for'
     });
 
     controller.post('/icebreaker/answer', function(req, res) {

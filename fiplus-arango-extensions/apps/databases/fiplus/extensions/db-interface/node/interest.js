@@ -25,6 +25,19 @@ Interest.prototype.getInterestWithText = function(interestText)
     return this.db.interest.firstExample(example);
 };
 
+Interest.prototype.exists = function(interest_id) {
+    if(!this.db.interest.exists(interest_id)) {
+        throw new error.NotFoundError("Interest " + interest_id);
+    }
+    return true;
+};
+
+Interest.prototype.getInterest = function(interest_id)
+{
+    this.exists(interest_id);
+    return this.db.interest.document(interest_id)[this.NAME_FIELD];
+};
+
 Interest.prototype.getAllInterests = function()
 {
     return this.db.interest.toArray();

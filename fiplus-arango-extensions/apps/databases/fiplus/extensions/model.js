@@ -20,7 +20,6 @@ var ActivityModel = foxx.Model.extend({
 });
 exports.ActivityModel = ActivityModel;
 
-
 var IcebreakerModel = foxx.Model.extend({
     schema: {
         activity_id: joi.string(),

@@ -14,7 +14,9 @@ var model = require("model");
         // Empty as this request is only here as a placeholder for response models
     }).bodyParam('InterestResponse', {
         type: model.InterestArrayModel
-    }).bodyParam('ActivityResponse', {
+    }).bodyParam('ActivitiesResponse', {
         type: model.ActivityArrayModel
+    }).bodyParam('ActivityResponse', {
+        type: model.ActivityModel
     });
 }());
