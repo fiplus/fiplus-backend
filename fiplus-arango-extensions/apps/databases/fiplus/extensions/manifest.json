@@ -5,7 +5,7 @@
 
   "controllers": {
     "/userfi/": "user.js",
-	"/event/": "event.js",
+	"/activity/": "activity.js",
 	"/match/": "match.js"
   }
 }

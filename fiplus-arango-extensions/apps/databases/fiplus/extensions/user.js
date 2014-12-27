@@ -37,7 +37,7 @@ var db = require("org/arangodb").db;
         }
     });
 
-    //User can view recently attended events
+    //User can view recently attended activities
     controller.get("/users/history", function (req, res) {
         //stub
     }).bodyParam("HistoryRequest", {

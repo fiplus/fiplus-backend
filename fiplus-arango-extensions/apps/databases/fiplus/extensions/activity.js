@@ -12,7 +12,7 @@ var db = require("org/arangodb").db;
 
     var controller = new foxx.Controller(applicationContext);
 
-    var EventModel = foxx.Model.extend({
+    var ActivityModel = foxx.Model.extend({
         schema: {
             name: joi.string(),
             description: joi.string(),
@@ -22,13 +22,13 @@ var db = require("org/arangodb").db;
 
     controller.post('/', function(req, res) {
 
-    }).bodyParam('Event', {
-        type: EventModel
+    }).bodyParam('Activity', {
+        type: ActivityModel
     });
 
     var IcebreakerAnswerModel = foxx.Model.extend({
         schema: {
-            event_id: joi.string(),
+            activity_id: joi.string(),
             user_id: joi.string(),
             answer: joi.string()
         }
@@ -42,7 +42,7 @@ var db = require("org/arangodb").db;
 
     var IcebreakerModel = foxx.Model.extend({
         schema: {
-            event_id: joi.string(),
+            activity_id: joi.string(),
             question: joi.string(),
             answer: joi.string()
         }
@@ -54,26 +54,26 @@ var db = require("org/arangodb").db;
         type: IcebreakerModel
     });
 
-    controller.put('/:event/user/:user', function(req, res) {
+    controller.put('/:activity_id/user/:user_id', function(req, res) {
 
-    }).pathParam('event', {
+    }).pathParam('activity_id', {
         type: joi.string(),
-        description: 'The event to join'
-    }).pathParam('user', {
+        description: 'The activity to join'
+    }).pathParam('user_id', {
         type: joi.string(),
-        description: 'User id to add to event'
+        description: 'User id to add to activity'
     }).bodyParam('Undocumented', {
         type: EmptyBody
     });
 
-    controller.delete('/:event_id/user/:user_id', function(req, res) {
+    controller.delete('/:activity_id/user/:user_id', function(req, res) {
 
-    }).pathParam('event_id', {
+    }).pathParam('activity_id', {
         type: joi.string(),
-        description: 'The event to remove user from'
+        description: 'The activity to remove user from'
     }).pathParam('user_id', {
         type: joi.string(),
-        description: 'The user to remove from event'
+        description: 'The user to remove from activity'
     });
 
     var TimeModel = foxx.Model.extend({
@@ -83,19 +83,19 @@ var db = require("org/arangodb").db;
        }
     });
 
-    controller.put('/:event_id/time', function(req, res) {
+    controller.put('/:activity_id/time', function(req, res) {
 
-    }).pathParam('event_id', {
+    }).pathParam('activity_id', {
         type: joi.string()
     }).bodyParam('Time', {
         type: TimeModel
     });
 
-    controller.post('/:event_id/time/:time_id/user/:user_id', function(req, res) {
+    controller.post('/:activity_id/time/:time_id/user/:user_id', function(req, res) {
 
-    }).pathParam('event_id', {
+    }).pathParam('activity_id', {
         type: joi.string(),
-        description: 'The event to confirm for'
+        description: 'The activity to confirm for'
     }).pathParam('time_id', {
         type: joi.string(),
         description: 'The time to confirm for'
@@ -108,7 +108,7 @@ var db = require("org/arangodb").db;
 
     var LocationModel = foxx.Model.extend({
         schema: {
-            event_id: joi.string(),
+            activity_id: joi.string(),
             latitude: joi.number(),
             longitude: joi.number()
         }
@@ -120,11 +120,11 @@ var db = require("org/arangodb").db;
         type: LocationModel
     });
 
-    controller.post('/:event_id/location/:location_id', function(req, res) {
+    controller.post('/:activity_id/location/:location_id', function(req, res) {
 
-    }).pathParam('event_id', {
+    }).pathParam('activity_id', {
         type: joi.string(),
-        description: 'The event to confirm location for'
+        description: 'The activity to confirm location for'
     }).pathParam('location_id', {
         type: joi.string(),
         description: 'The location to confirm for'
@@ -134,7 +134,7 @@ var db = require("org/arangodb").db;
 
     var CommentModel = foxx.Model.extend({
        schema: {
-           event_id: joi.string(),
+           activity_id: joi.string(),
            user_id: joi.string(),
            comment: joi.string()
        }
