@@ -1,6 +1,7 @@
 var foxx = require("org/arangodb/foxx");
 var joi = require("joi");
 var db = require("org/arangodb").db;
+var errors = require('errors');
 
 (function() {
     "use strict";
@@ -157,6 +158,50 @@ var db = require("org/arangodb").db;
 
     }).bodyParam('Report', {
         type: ReportModel
+    });
+
+    controller.put('/:eventid/interest/:interest', function(request, response){
+        var eventid = request.params('eventid');
+        var interest = request.params('interest');
+
+        if(!db.activity.exists('activity/'+eventid))
+        {
+            throw new errors.NotFoundError('Activity');
+        }
+
+        var interest_handle = db.interest.firstExample({'interest name':interest});
+
+        if(interest_handle == null)
+        {
+            interest_handle = db.interest.save({'interest name':interest});
+        }
+
+        var taggedEdge = db.tagged.firstExample({_from:'activity/'+eventid, _to:interest_handle._id});
+        if(taggedEdge == null)
+        {
+            db.tagged.save('activity/'+eventid, interest_handle, {});
+        }
+        else
+        {
+            throw new errors.NotAllowedError('Duplicate tags');
+        }
+
+    }).pathParam('eventid', {
+        type: joi.string(),
+        description: 'Event being tagged'
+    }).pathParam('interest', {
+        type: joi.string(),
+        description: 'The interest text'
+    }).bodyParam('Undocumented', {
+        type: EmptyBody
+    }).errorResponse(errors.NotFoundError, 404, 'Not Found', function(e) {
+        return {
+            error: e.message
+        }
+    }).errorResponse(errors.NotAllowedError, 400, 'Not Allowed', function(e) {
+        return  {
+            error: e.message
+        }
     });
 
 }());
