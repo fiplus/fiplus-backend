@@ -76,9 +76,8 @@ var db = require("org/arangodb").db;
             latitude: joi.number(),
             longitude: joi.number(),
             location_proximity_setting: joi.boolean(),
-            start_time_stamp: joi.number().integer(),
-            end_time_stamp: joi.number().integer(),
-            tagged_interests: joi.array()
+            availabilities: joi.array(), // item type TimeModel
+            tagged_interests: joi.array() // type String
         }
     });
 
@@ -89,13 +88,13 @@ var db = require("org/arangodb").db;
         //It is expected that this will return a valid value because the email used at this point is the email used to login
         //which is a prerequisite before a user can configure a profile. No error check needed.
         var target_user = db.users.firstExample("email", userprofile.get("email"));
-        result = db.users.update(target_user._id, {"Profile pic":userprofile.get("profile_pic"), "Age":userprofile.get("age"), "Gender":userprofile.get("gender"), "Location Proximity Setting":userprofile.get("location_proximity_setting")});
+        result = db.users.update(target_user._id, {"profile_pic":userprofile.get("profile_pic"), "age":userprofile.get("age"), "gender":userprofile.get("gender"), "location_proximity_setting":userprofile.get("location_proximity_setting")});
         if(result.error == true)
         {
             config_success = false;
         }
 
-        var input_location_object = {"Latitude":userprofile.get("latitude"), "Longitude":userprofile.get("longitude")};
+        var input_location_object = {"latitude":userprofile.get("latitude"), "longitude":userprofile.get("longitude")};
         var location_object;
         if(db.location.byExample(input_location_object).count() > 0)
         {
@@ -115,64 +114,45 @@ var db = require("org/arangodb").db;
             config_success = false;
         }
 
-        var input_start_time_stamp_object = {"start_time_stamp":userprofile.get("start_time_stamp")};
-        var start_time_stamp_object;
-        if(db.time_stamp.byExample(input_start_time_stamp_object).count() > 0)
+        var start_time;
+        var end_time;
+        var availabilities = userprofile.get('availabilities');
+        for(var i = 0; i < availabilities.length; i++)
         {
-            start_time_stamp_object = db.time_stamp.firstExample(input_start_time_stamp_object);
-        }
-        else
-        {
-            start_time_stamp_object = db.time_stamp.save(input_start_time_stamp_object);
-            if(start_time_stamp_object.error == true)
+            var start = availabilities[i].start;
+            start_time = db.time_stamp.firstExample({value:start});
+            if(start_time == null)
+            {
+                start_time = db.time_stamp.save({value:start});
+            }
+
+            var end = availabilities[i].end;
+             end_time = db.time_stamp.firstExample({value:end});
+            if(end_time == null)
+            {
+                end_time = db.time_stamp.save({value:end});
+            }
+
+            var time_period = db.time_period.save({});
+            db.starts.save(time_period._id, start_time._id, {});
+            db.ends.save(time_period._id, end_time._id, {});
+
+            if(time_period.error == true)
             {
                 config_success = false;
             }
-        }
 
-        var input_end_time_stamp_object = {"end_time_stamp":userprofile.get("end_time_stamp")};
-        var end_time_stamp_object;
-        if(db.time_stamp.byExample(input_end_time_stamp_object).count() > 0)
-        {
-            end_time_stamp_object = db.time_stamp.firstExample(input_end_time_stamp_object);
-        }
-        else
-        {
-            end_time_stamp_object = db.time_stamp.save(input_end_time_stamp_object);
-            if(end_time_stamp_object.error == true)
+            result = db.is_available.save(target_user._id, time_period._id, {});
+            if(result.error == true)
             {
                 config_success = false;
             }
-        }
-
-        var time_period_object = db.time_period.save({});
-        if(time_period_object.error == true)
-        {
-            config_success = false;
-        }
-
-        result = db.starts.save(time_period_object._id, start_time_stamp_object._id, {});
-        if(result.error == true)
-        {
-            config_success = false;
-        }
-
-        result = db.ends.save(time_period_object._id, end_time_stamp_object._id, {});
-        if(result.error == true)
-        {
-            config_success = false;
-        }
-
-        result = db.is_available.save(target_user._id, time_period_object._id, {});
-        if(result.error == true)
-        {
-            config_success = false;
         }
 
         var tagged_interests = userprofile.get("tagged_interests");
         for (var i = 0; i < tagged_interests.length; i++)
         {
-            var input_interest_object = tagged_interests[i];
+            var input_interest_object = {name: tagged_interests[i]};
             var interest_object;
             if(db.interest.byExample(input_interest_object).count() > 0)
             {

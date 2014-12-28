@@ -1,5 +1,6 @@
 // User test data
 var user1 = db.users.save({
+    "_key": "1",
     "email": "test@data.com",
     "profile_pic": "any",
     "age": 20,
@@ -8,11 +9,18 @@ var user1 = db.users.save({
 });
 
 var user2 = db.users.save({
+    "_key": "2",
     "email": "test2@data.com",
     "profile_pic": "any",
     "age": 20,
     "gender": "female",
     "location_proximity_setting": true
+});
+
+// A newly registered user used in user profile tests
+var user3 = db.users.save({
+    _key: "3",
+    email: "test3@data.com"
 });
 
 // Location test data
@@ -22,9 +30,9 @@ var loc3 = db.location.save({"latitude": 100,"longitude": 50});
 var loc4 = db.location.save({"latitude": 150,"longitude": 150});
 
 // Interest test data
-var int1 = db.interest.save({"interest name":"soccer"});
-var int2 = db.interest.save({"interest name":"hockey"});
-var int3 = db.interest.save({"interest name":"basketball"});
+var int1 = db.interest.save({name:"soccer"});
+var int2 = db.interest.save({name:"hockey"});
+var int3 = db.interest.save({name:"basketball"});
 
 // Date test data
 // Dec 1, 2014 10am
