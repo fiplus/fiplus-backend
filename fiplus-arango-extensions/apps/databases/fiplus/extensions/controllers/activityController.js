@@ -2,6 +2,7 @@ var foxx = require("org/arangodb/foxx");
 var joi = require("joi");
 var db = require("org/arangodb").db;
 var errors = require('errors');
+var util = require('util');
 
 (function() {
     "use strict";
@@ -161,31 +162,10 @@ var errors = require('errors');
     });
 
     controller.put('/:activityid/interest/:interest', function(request, response){
-        var activityid = request.params('activityid');
+        var activityHandle = 'activity/' + request.params('activityid');
         var interest = request.params('interest');
 
-        if(!db.activity.exists('activity/'+activityid))
-        {
-            throw new errors.NotFoundError('Activity');
-        }
-
-        var interest_handle = db.interest.firstExample({'name':interest});
-
-        if(interest_handle == null)
-        {
-            interest_handle = db.interest.save({'name':interest});
-        }
-
-        var taggedEdge = db.tagged.firstExample({_from:'activity/'+activityid, _to:interest_handle._id});
-        if(taggedEdge == null)
-        {
-            db.tagged.save('activity/'+activityid, interest_handle, {});
-        }
-        else
-        {
-            throw new errors.NotAllowedError('Duplicate tags');
-        }
-
+        util.linkActivityWithInterest(activityHandle, interest);
     }).pathParam('activityid', {
         type: joi.string(),
         description: 'Event being tagged'
