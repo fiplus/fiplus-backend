@@ -160,33 +160,33 @@ var errors = require('errors');
         type: ReportModel
     });
 
-    controller.put('/:eventid/interest/:interest', function(request, response){
-        var eventid = request.params('eventid');
+    controller.put('/:activityid/interest/:interest', function(request, response){
+        var activityid = request.params('activityid');
         var interest = request.params('interest');
 
-        if(!db.activity.exists('activity/'+eventid))
+        if(!db.activity.exists('activity/'+activityid))
         {
             throw new errors.NotFoundError('Activity');
         }
 
-        var interest_handle = db.interest.firstExample({'interest name':interest});
+        var interest_handle = db.interest.firstExample({'name':interest});
 
         if(interest_handle == null)
         {
-            interest_handle = db.interest.save({'interest name':interest});
+            interest_handle = db.interest.save({'name':interest});
         }
 
-        var taggedEdge = db.tagged.firstExample({_from:'activity/'+eventid, _to:interest_handle._id});
+        var taggedEdge = db.tagged.firstExample({_from:'activity/'+activityid, _to:interest_handle._id});
         if(taggedEdge == null)
         {
-            db.tagged.save('activity/'+eventid, interest_handle, {});
+            db.tagged.save('activity/'+activityid, interest_handle, {});
         }
         else
         {
             throw new errors.NotAllowedError('Duplicate tags');
         }
 
-    }).pathParam('eventid', {
+    }).pathParam('activityid', {
         type: joi.string(),
         description: 'Event being tagged'
     }).pathParam('interest', {
