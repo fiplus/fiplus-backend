@@ -1,2 +1,4 @@
 # Webstorm project files
 .idea/
+# Frisby link
+apps/databases/fiplus/test/node_modules/
