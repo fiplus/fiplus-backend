@@ -6,6 +6,8 @@
   "controllers": {
     "/userfi/": "user.js",
 	"/activity/": "activity.js",
-	"/match/": "match.js"
+	"/match/": "match.js",
+    "/interest/": "interest.js",
+    "/response/": "response.js"
   }
 }
