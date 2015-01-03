@@ -27,8 +27,9 @@ if (graph._exists('fiplus'))
     graph._drop('fiplus', true);
 }
 
-var start = graph._directedRelation('start', 'time_period', 'time_stamp');
-var end = graph._directedRelation('end', 'time_period', 'time_stamp');
+
+var start = graph._directedRelation('starts', 'time_period', 'time_stamp');
+var end = graph._directedRelation('ends', 'time_period', 'time_stamp');
 var confirmed = graph._directedRelation('confirmed', ['activity','user'], ['time_period','location','activity']);
 var in_location = graph._directedRelation('in_location', 'user', 'location');
 var is_available = graph._directedRelation('is_available', 'user', 'time_period');
@@ -42,6 +43,7 @@ var created = graph._directedRelation('created', 'user', 'activity');
 var tagged = graph._directedRelation('tagged', 'activity', 'interest');
 var voted = graph._directedRelation('voted', 'user', ['suggested_time','suggested_location']);
 var favourited = graph._directedRelation('favourited', 'user', 'user');
+
 
 var edges = graph._edgeDefinitions(
     start,

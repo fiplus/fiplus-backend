@@ -4,7 +4,7 @@
   "author": "Fi+",
 
   "controllers": {
-    "/userfi/": "user.js",
+    "/userfi/": "userController.js",
 	"/activity/": "activity.js",
 	"/match/": "match.js",
     "/interest/": "controllers/interestController.js",
