@@ -44,7 +44,6 @@ var tagged = graph._directedRelation('tagged', 'activity', 'interest');
 var voted = graph._directedRelation('voted', 'user', ['suggested_time','suggested_location']);
 var favourited = graph._directedRelation('favourited', 'user', 'user');
 
-
 var edges = graph._edgeDefinitions(
     start,
     end,
