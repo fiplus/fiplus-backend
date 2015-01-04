@@ -16,8 +16,7 @@ db._create('time_period');
 db._create('activity');
 db._create('location');
 db._create('comment');
-db._create('suggested_location');
-db._create('suggested_time');
+db._create('suggestion');
 db._create('icebreaker');
 
 var graph = require('org/arangodb/general-graph');
@@ -34,14 +33,14 @@ var confirmed = graph._directedRelation('confirmed', ['activity','user'], ['time
 var in_location = graph._directedRelation('in_location', 'user', 'location');
 var is_available = graph._directedRelation('is_available', 'user', 'time_period');
 var interested_in = graph._directedRelation('interested_in', 'user', 'interest');
-var occurs = graph._directedRelation('occurs', ['suggested_time', 'suggested_location'], ['time_period','location']);
-var suggested = graph._directedRelation('suggested', 'activity', ['suggested_time','suggested_location']);
+var is = graph._directedRelation('is', 'suggestion', ['time_period','location']);
+var suggested = graph._directedRelation('suggested', 'activity', 'suggestion');
 var has = graph._directedRelation('has', 'activity', ['comment', 'icebreaker']);
 var joined = graph._directedRelation('joined', 'user', 'activity');
 var participated = graph._directedRelation('participated', 'user', 'activity');
 var created = graph._directedRelation('created', 'user', 'activity');
 var tagged = graph._directedRelation('tagged', 'activity', 'interest');
-var voted = graph._directedRelation('voted', 'user', ['suggested_time','suggested_location']);
+var voted = graph._directedRelation('voted', 'user', 'suggestion');
 var favourited = graph._directedRelation('favourited', 'user', 'user');
 
 var edges = graph._edgeDefinitions(
@@ -51,7 +50,7 @@ var edges = graph._edgeDefinitions(
     in_location,
     is_available,
     interested_in,
-    occurs,
+    is,
     suggested,
     has,
     joined,
