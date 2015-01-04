@@ -69,3 +69,5 @@ db.interest.ensureUniqueConstraint('name');
 db.time_stamp.ensureUniqueConstraint('value');
 db.start.ensureUniqueConstraint('_to', '_from');
 db.end.ensureUniqueConstraint('_to', '_from');
+db.location.ensureUniqueConstraint('latitude', 'longitude');
+db.in_location.ensureUniqueConstraint('_to', '_from');
