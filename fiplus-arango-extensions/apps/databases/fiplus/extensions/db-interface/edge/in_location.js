@@ -1,12 +1,12 @@
 var db = require('org/arangodb').db;
 var error = require('error');
-var timestamp = require('time_stamp');
+var location = require('location');
 
 /**
  * Constructs an in_location db interface object
  * @constructor
  */
-var In_location = function()
+var InLocation = function()
 {
     this.db = db;
     this.COLLECTION_NAME = 'in_location';
@@ -17,15 +17,16 @@ var In_location = function()
 /**
  * Creating an in_location edge between a user and location.
  */
-In_location.prototype.saveInLocationUserEdge = function(user, location)
+InLocation.prototype.saveInLocationUserEdge = function(user_id, latitude, longitude)
 {
     var fromField = this.FROM_FIELD;
     var toField = this.TO_FIELD;
     var result;
 
-    var in_location_object = {fromField:user._id, toField:location._id};
+    var location = location.saveLocation(latitude, longitude);
+    var in_location_object = {fromField:user_id, toField:location._id};
     //Only allow one in_location edge per user.
-    if(this.db.in_location.firstExample({fromField:user._id}) == null)
+    if(this.db.in_location.firstExample({fromField:user_id}) == null)
     {
         result = this.db.in_location.save(in_location_object);
         if(result.error == true)
@@ -35,33 +36,7 @@ In_location.prototype.saveInLocationUserEdge = function(user, location)
     }
     else
     {
-        throw new error.NotAllowedError('Multiple in_location edges for user ' + user);
-    }
-    return result;
-}
-
-/**
- * Creating an in_location edge between an activity and location.
- */
-In_location.prototype.saveInLocationActivityEdge = function(activity, location)
-{
-    var fromField = this.FROM_FIELD;
-    var toField = this.TO_FIELD;
-    var result;
-
-    var in_location_object = {fromField:activity._id, toField:location._id};
-    //Only allow one in_location edge per activity.
-    if(this.db.in_location.firstExample({fromField:activity._id}) == null)
-    {
-        result = this.db.in_location.save(in_location_object);
-        if(result.error == true)
-        {
-            throw new error.GenericError('Saving activity location ' + location + ' failed.');
-        }
-    }
-    else
-    {
-        throw new error.NotAllowedError('Multiple in_location edges for activity ' + activity);
+        throw new error.NotAllowedError('Multiple in_location edges for user ' + user_id);
     }
     return result;
 }
@@ -69,7 +44,7 @@ In_location.prototype.saveInLocationActivityEdge = function(activity, location)
 /**
  * Updating the location of a user.
  */
-In_location.prototype.updateInLocationUserEdge = function(in_location, user, location)
+InLocation.prototype.updateInLocationUserEdge = function(in_location, user, location)
 {
     var fromField = this.FROM_FIELD;
     var toField = this.TO_FIELD;
@@ -86,24 +61,5 @@ In_location.prototype.updateInLocationUserEdge = function(in_location, user, loc
     return result;
 }
 
-/**
- * Updating the location of an activity.
- */
-In_location.prototype.updateInLocationActivityEdge = function(in_location, activity, location)
-{
-    var fromField = this.FROM_FIELD;
-    var toField = this.TO_FIELD;
-    var result;
 
-    var in_location_object = {fromField:activity._id, toField:location._id};
-
-    result = this.db.in_location.update(in_location._id, in_location_object);
-    if(result.error == true)
-    {
-        throw new error.GenericError('Location update for ' + activity + ' failed.');
-    }
-
-    return result;
-}
-
-exports.In_location = In_location;
+exports.InLocation = InLocation;
