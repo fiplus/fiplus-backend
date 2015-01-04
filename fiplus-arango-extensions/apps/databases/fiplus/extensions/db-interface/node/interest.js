@@ -18,6 +18,12 @@ Interest.prototype.getInterestsWithPrefix = function(prefix)
     return this.db.interest.fulltext(this.NAME_FIELD, "prefix:" + prefix).toArray();
 };
 
+Interest.prototype.getInterestWithText = function(interestText)
+{
+    var nameField = this.NAME_FIELD;
+    return this.db.interest.firstExample({nameField:interestText});
+};
+
 Interest.prototype.getAllInterests = function()
 {
     return this.db.interest.toArray();
