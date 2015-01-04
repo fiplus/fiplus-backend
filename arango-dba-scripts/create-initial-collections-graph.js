@@ -27,6 +27,7 @@ if (graph._exists('fiplus'))
     graph._drop('fiplus', true);
 }
 
+
 var start = graph._directedRelation('start', 'time_period', 'time_stamp');
 var end = graph._directedRelation('end', 'time_period', 'time_stamp');
 var confirmed = graph._directedRelation('confirmed', ['activity','user'], ['time_period','location','activity']);
