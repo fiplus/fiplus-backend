@@ -27,16 +27,16 @@ End.prototype.saveEndEdge = function(time_period_id, timestamp)
 
     var endObject = {fromField:time_period_id, toField:stamp_node._id};
 
+    result = this.db.end.firstExample({fromField:time_period_id});
     // Only allow one end edge per time period.
-    if(this.db.end.firstExample({fromField:time_period_id}) == null) {
+    if(result == null)
+    {
         result = this.db.end.save(endObject);
         if(result.error == true) {
             throw new error.GenericError('Saving start time' + timestamp + ' failed.');
         }
-    } else {
-        throw new error.NotAllowedError('Multiple end edges for time period' + time_period_id);
     }
     return result;
 };
 
-exports.Start = Start;
+exports.End = End;
