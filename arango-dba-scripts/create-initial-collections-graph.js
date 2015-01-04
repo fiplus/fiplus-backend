@@ -71,3 +71,4 @@ db.start.ensureUniqueConstraint('_to', '_from');
 db.end.ensureUniqueConstraint('_to', '_from');
 db.location.ensureUniqueConstraint('latitude', 'longitude');
 db.in_location.ensureUniqueConstraint('_to', '_from');
+db.user.ensureUniqueConstraint('email');
