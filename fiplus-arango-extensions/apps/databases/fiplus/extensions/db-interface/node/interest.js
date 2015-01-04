@@ -28,7 +28,7 @@ Interest.prototype.saveInterestToDb = function(name)
     var nameField = this.NAME_FIELD;
     var interestObject = {nameField:name};
     var result;
-    if(!this.db.interest.firstExample(interestObject) != null)
+    if(this.db.interest.firstExample(interestObject) == null)
     {
         result = this.db.interest.save(interestObject);
         if(result.error == true)

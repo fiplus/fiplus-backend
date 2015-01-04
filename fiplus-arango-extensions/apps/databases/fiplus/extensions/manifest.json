@@ -7,7 +7,7 @@
     "/userfi/": "user.js",
 	"/activity/": "activity.js",
 	"/match/": "match.js",
-    "/interest/": "interestController.js",
+    "/interest/": "controllers/interestController.js",
     "/response/": "response.js"
   }
 }
