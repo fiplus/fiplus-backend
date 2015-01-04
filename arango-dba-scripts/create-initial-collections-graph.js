@@ -5,8 +5,7 @@ db._drop('time_period');
 db._drop('activity');
 db._drop('location');
 db._drop('comment');
-db._drop('suggested_location');
-db._drop('suggested_time');
+db._drop('suggestion');
 db._drop('icebreaker');
 
 db._create('time_stamp');
@@ -25,7 +24,6 @@ if (graph._exists('fiplus'))
 {
     graph._drop('fiplus', true);
 }
-
 
 var start = graph._directedRelation('start', 'time_period', 'time_stamp');
 var end = graph._directedRelation('end', 'time_period', 'time_stamp');
@@ -75,4 +73,6 @@ db.in_location.ensureUniqueConstraint('_to', '_from');
 db.tagged.ensureUniqueConstraint('_to', '_from');
 db.interested_in.ensureUniqueConstraint('_to', '_from');
 db.joined.ensureUniqueConstraint('_to', '_from');
+db.is.ensureUniqueConstraint('_to', '_from');
+db.suggested.ensureUniqueConstraint('_to', '_from');
 db.participated.ensureUniqueConstraint('_to', '_from');

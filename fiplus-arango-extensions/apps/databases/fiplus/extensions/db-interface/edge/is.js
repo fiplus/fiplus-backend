@@ -53,14 +53,12 @@ Is.prototype.saveIsLocationEdge = function(suggestion_id, latitude, longitude)
 
     var isObject = {fromField:suggestion_id, toField:location_node._id};
 
-    // Only allow one is edge per suggestion.
-    if(this.db.is.firstExample({fromField:suggestion_id}) == null) {
+    result = this.db.is.firstExample({fromField:suggestion_id});
+    if(result == null) {
         result = this.db.is.save(isObject);
         if(result.error == true) {
             throw new error.GenericError('Saving location suggestion is ' + latitude + ', ' + longitude + ' failed.');
         }
-    } else {
-        throw new error.NotAllowedError('Multiple is edges for suggestion ' + suggestion_id);
     }
     return result;
 };
