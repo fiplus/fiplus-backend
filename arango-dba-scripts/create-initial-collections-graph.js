@@ -66,3 +66,6 @@ graph._create('fiplus', edges);
 // Indexes
 db.interest.ensureFulltextIndex('name');
 db.interest.ensureUniqueConstraint('name');
+db.time_stamp.ensureUniqueConstraint('value');
+db.start.ensureUniqueConstraint('_to', '_from');
+db.end.ensureUniqueConstraint('_to', '_from');
