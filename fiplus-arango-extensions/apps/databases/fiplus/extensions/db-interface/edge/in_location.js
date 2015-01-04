@@ -44,18 +44,18 @@ InLocation.prototype.saveInLocationEdge = function(user_id, latitude, longitude)
 /**
  * Updating the location of a user.
  */
-InLocation.prototype.updateInLocationEdge = function(in_location, user, latitude, longitude)
+InLocation.prototype.updateInLocationEdge = function(in_location_id, user_id, latitude, longitude)
 {
     var fromField = this.FROM_FIELD;
     var toField = this.TO_FIELD;
     var result;
 
     var location = (new location.Location()).saveLocation(latitude, longitude);
-    var in_location_object = {fromField:user._id, toField:location._id};
-    result = this.db.in_location.update(in_location._id, in_location_object);
+    var in_location_object = {fromField:user_id, toField:location._id};
+    result = this.db.in_location.update(in_location_id, in_location_object);
     if(result.error == true)
     {
-        throw new error.GenericError('Location update for ' + user + ' failed.');
+        throw new error.GenericError('Location update for ' + user_id + ' failed.');
     }
 
     return result;
