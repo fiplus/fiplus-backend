@@ -17,7 +17,7 @@ var InLocation = function()
 /**
  * Creating an in_location edge between a user and location.
  */
-InLocation.prototype.saveInLocationUserEdge = function(user_id, latitude, longitude)
+InLocation.prototype.saveInLocationEdge = function(user_id, latitude, longitude)
 {
     var fromField = this.FROM_FIELD;
     var toField = this.TO_FIELD;
@@ -44,14 +44,14 @@ InLocation.prototype.saveInLocationUserEdge = function(user_id, latitude, longit
 /**
  * Updating the location of a user.
  */
-InLocation.prototype.updateInLocationUserEdge = function(in_location, user, location)
+InLocation.prototype.updateInLocationEdge = function(in_location, user, latitude, longitude)
 {
     var fromField = this.FROM_FIELD;
     var toField = this.TO_FIELD;
     var result;
 
+    var location = (new location.Location()).saveLocation(latitude, longitude);
     var in_location_object = {fromField:user._id, toField:location._id};
-
     result = this.db.in_location.update(in_location._id, in_location_object);
     if(result.error == true)
     {
