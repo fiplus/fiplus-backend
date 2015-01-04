@@ -28,8 +28,8 @@ if (graph._exists('fiplus'))
 }
 
 
-var start = graph._directedRelation('starts', 'time_period', 'time_stamp');
-var end = graph._directedRelation('ends', 'time_period', 'time_stamp');
+var start = graph._directedRelation('start', 'time_period', 'time_stamp');
+var end = graph._directedRelation('end', 'time_period', 'time_stamp');
 var confirmed = graph._directedRelation('confirmed', ['activity','user'], ['time_period','location','activity']);
 var in_location = graph._directedRelation('in_location', 'user', 'location');
 var is_available = graph._directedRelation('is_available', 'user', 'time_period');
