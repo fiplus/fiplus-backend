@@ -21,26 +21,20 @@ Tagged.prototype.tagActivityWithInterest = function(activityHandle, interestText
 
     // Checking for interest and saving if doesn't exist
     var interestApi = new interest.Interest();
-    var existingInterest = interestApi.getInterestWithText(interestText);
-    if(existingInterest == null)
-    {
-        existingInterest = interestApi.saveInterestToDb(interestText);
-    }
+    var existingInterest = interestApi.saveInterestToDb(interestText);
 
     var taggedObject = {fromField:activityHandle,toField:existingInterest._id};
 
-    if(this.db.tagged.firstExample(taggedObject) == null)
+    var result = this.db.tagged.firstExample(taggedObject);
+    if(result == null)
     {
-        var result = this.db.tagged.save(activityHandle,existingInterest._id,{});
+        result = this.db.tagged.save(taggedObject);
         if(result.error == true)
         {
             throw new error.GenericError('Saving activity tag failed');
         }
     }
-    else
-    {
-        throw new error.NotAllowedError('Duplicate tagging');
-    }
+    return result;
 };
 
 exports.Tagged = Tagged;

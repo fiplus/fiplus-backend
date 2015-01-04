@@ -33,18 +33,14 @@ Interest.prototype.saveInterestToDb = function(name)
 {
     var nameField = this.NAME_FIELD;
     var interestObject = {nameField:name};
-    var result;
-    if(this.db.interest.firstExample(interestObject) == null)
+    var result = this.db.interest.firstExample(interestObject);
+    if(result == null)
     {
         result = this.db.interest.save(interestObject);
         if(result.error == true)
         {
             throw new error.GenericError('Saving ' + name + ' failed.');
         }
-    }
-    else
-    {
-        throw new error.NotAllowedError('Duplicate interests');
     }
     return result;
 };
