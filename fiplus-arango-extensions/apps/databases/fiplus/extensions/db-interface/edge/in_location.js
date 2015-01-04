@@ -23,7 +23,7 @@ InLocation.prototype.saveInLocationUserEdge = function(user_id, latitude, longit
     var toField = this.TO_FIELD;
     var result;
 
-    var location = location.saveLocation(latitude, longitude);
+    var location = (new location.Location()).saveLocation(latitude, longitude);
     var in_location_object = {fromField:user_id, toField:location._id};
     //Only allow one in_location edge per user.
     if(this.db.in_location.firstExample({fromField:user_id}) == null)
