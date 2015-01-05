@@ -75,3 +75,5 @@ db.end.ensureUniqueConstraint('_to', '_from');
 db.in_location.ensureUniqueConstraint('_to', '_from');
 db.tagged.ensureUniqueConstraint('_to', '_from');
 db.interested_in.ensureUniqueConstraint('_to', '_from');
+db.joined.ensureUniqueConstraint('_to', '_from');
+db.participated.ensureUniqueConstraint('_to', '_from');
