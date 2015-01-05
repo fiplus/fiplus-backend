@@ -24,7 +24,7 @@ Activity.prototype.saveActivityToDb = function(name, description, maximum_attend
     var maxField = this.MAXIMUM_ATTENDANCE_FIELD;
     
     var activityObject = {nameField:name, descriptionField:description, maxField:maximum_attendance};
-    var result = this.db.user.save(activityObject);
+    var result = this.db.activity.save(activityObject);
     if(result.error == true)
     {
         throw new error.GenericError('Saving activity ' + name + ' failed.');
