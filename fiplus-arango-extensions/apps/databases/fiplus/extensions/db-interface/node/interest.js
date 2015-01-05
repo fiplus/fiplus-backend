@@ -18,6 +18,12 @@ Interest.prototype.getInterestsWithPrefix = function(prefix)
     return this.db.interest.fulltext(this.NAME_FIELD, "prefix:" + prefix).toArray();
 };
 
+Interest.prototype.getInterestWithText = function(interestText)
+{
+    var nameField = this.NAME_FIELD;
+    return this.db.interest.firstExample({nameField:interestText});
+};
+
 Interest.prototype.getAllInterests = function()
 {
     return this.db.interest.toArray();
@@ -27,18 +33,14 @@ Interest.prototype.saveInterestToDb = function(name)
 {
     var nameField = this.NAME_FIELD;
     var interestObject = {nameField:name};
-    var result;
-    if(this.db.interest.firstExample(interestObject) == null)
+    var result = this.db.interest.firstExample(interestObject);
+    if(result == null)
     {
         result = this.db.interest.save(interestObject);
         if(result.error == true)
         {
             throw new error.GenericError('Saving ' + name + ' failed.');
         }
-    }
-    else
-    {
-        throw new error.NotAllowedError('Duplicate interests');
     }
     return result;
 };

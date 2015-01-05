@@ -67,8 +67,10 @@ graph._create('fiplus', edges);
 db.interest.ensureFulltextIndex('name');
 db.interest.ensureUniqueConstraint('name');
 db.time_stamp.ensureUniqueConstraint('value');
+db.location.ensureUniqueConstraint('latitude', 'longitude');
+db.user.ensureUniqueConstraint('email');
+
 db.start.ensureUniqueConstraint('_to', '_from');
 db.end.ensureUniqueConstraint('_to', '_from');
-db.location.ensureUniqueConstraint('latitude', 'longitude');
 db.in_location.ensureUniqueConstraint('_to', '_from');
-db.user.ensureUniqueConstraint('email');
+db.tagged.ensureUniqueConstraint('_to', '_from');
