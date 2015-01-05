@@ -1,5 +1,5 @@
 var db = require('org/arangodb').db;
-var error = require('error');
+var error = require('./error');
 
 /**
 * Constructs a time stamp db interface object
@@ -17,8 +17,8 @@ var TimeStamp = function()
  */
 TimeStamp.prototype.saveTimeStamp = function(value)
 {
-    var valueField = this.VALUE_FIELD;
-    var valueObject = {valueField:value};
+    var valueObject = {};
+    valueObject[this.VALUE_FIELD] = value;
     var result;
 
     result = this.db.time_stamp.firstExample(valueObject);

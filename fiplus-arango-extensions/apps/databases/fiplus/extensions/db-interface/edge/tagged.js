@@ -1,6 +1,6 @@
 var db = require('org/arangodb').db;
-var error = require('error');
-var interest = require('interest');
+var error = require('./error');
+var interest = require('./../node/interest');
 
 /**
  * Constructs an tagged db interface object
@@ -16,19 +16,18 @@ var Tagged = function()
 
 Tagged.prototype.tagActivityWithInterest = function(activityHandle, interestText)
 {
-    var fromField = this.FROM_FIELD;
-    var toField = this.TO_FIELD;
-
     // Checking for interest and saving if doesn't exist
     var interestApi = new interest.Interest();
     var existingInterest = interestApi.saveInterestToDb(interestText);
 
     var taggedObject = {fromField:activityHandle,toField:existingInterest._id};
+    taggedObject[this.FROM_FIELD] = activityHandle;
+    taggedObject[this.TO_FIELD] = existingInterest._id;
 
     var result = this.db.tagged.firstExample(taggedObject);
     if(result == null)
     {
-        result = this.db.tagged.save(taggedObject);
+        result = this.db.tagged.save(activityHandle, existingInterest._id, {});
         if(result.error == true)
         {
             throw new error.GenericError('Saving activity tag failed');

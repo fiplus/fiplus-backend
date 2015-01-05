@@ -1,5 +1,5 @@
 var db = require('org/arangodb').db;
-var error = require('error');
+var error = require('./error');
 
 var Participated = new function()
 {
@@ -11,14 +11,14 @@ var Participated = new function()
 
 Participated.prototype.setUserParticipatedInActivity = function(userHandle, activityHandle)
 {
-    var fromField = this.FROM_FIELD;
-    var toField = this.TO_FIELD;
+    var participatedObject = {};
+    participatedObject[this.FROM_FIELD] = userHandle;
+    participatedObject[this.TO_FIELD] = activityHandle;
 
-    var participatedObject = {fromField:userHandle, toField:activityHandle};
     var result = this.db.participated.firstExample(participatedObject);
     if(result == null)
     {
-        result = this.db.participated.save(participatedObject);
+        result = this.db.participated.save(userHandle, activityHandle, {});
         if(result.error == true)
         {
             throw new error.GenericError('Saving user participated in activity failed.');

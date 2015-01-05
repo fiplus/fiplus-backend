@@ -1,5 +1,5 @@
 var db = require('org/arangodb').db;
-var error = require('error');
+var error = require('./error');
 
 /**
  * Constructs a user db interface object
@@ -20,15 +20,15 @@ var User = function()
 
 User.prototype.getUserWithEmail = function(email)
 {
-    var emailField = this.EMAIL_FIELD;
-    var userObject = {emailField:email};
+    var userObject = {};
+    userObject[this.EMAIL_FIELD] = email;
     return this.db.user.firstExample(userObject);
-}
+};
 
 User.prototype.saveUserToDb = function(email)
 {
-    var emailField = this.EMAIL_FIELD;
-    var userObject = {emailField:email};
+    var userObject = {};
+    userObject[this.EMAIL_FIELD] = email;
     var result;
     if(this.db.user.firstExample(userObject) == null)
     {
@@ -47,62 +47,67 @@ User.prototype.saveUserToDb = function(email)
 
 User.prototype.updateUserUsername = function(target_user_id, username)
 {
-    var usernameField = this.USERNAME_FIELD;
     var result;
-    result = this.db.user.update(target_user_id, {usernameField:username});
+    var updateObject = {};
+    updateObject[this.USERNAME_FIELD] = username;
+    result = this.db.user.update(target_user_id, updateObject);
     if(result.error == true)
     {
         throw new error.GenericError('Username update for ' + target_user_id + ' failed.');
     }
     return result;
-}
+};
 
 User.prototype.updateUserProfilePic = function(target_user_id, profile_pic)
 {
-    var profile_picField = this.PROFILE_PIC_FIELD;
     var result;
-    result = this.db.user.update(target_user_id, {profile_picField:profile_pic});
+    var updateObject = {};
+    updateObject[this.PROFILE_PIC_FIELD] = profile_pic;
+    result = this.db.user.update(target_user_id, updateObject);
     if(result.error == true)
     {
         throw new error.GenericError('Profile pic update for ' + target_user_id + ' failed.');
     }
     return result;
-}
+};
 
 User.prototype.updateUserAge = function(target_user_id, age)
 {
-    var ageField = this.AGE_FIELD;
     var result;
-    result = this.db.user.update(target_user_id, {ageField:age});
+    var updateObject = {};
+    updateObject[this.AGE_FIELD] = age;
+    result = this.db.user.update(target_user_id, updateObject);
     if(result.error == true)
     {
         throw new error.GenericError('Age update for ' + target_user_id + ' failed.');
     }
     return result;
-}
+};
 
 User.prototype.updateUserGender = function(target_user_id, gender)
 {
-    var genderField = this.GENDER_FIELD;
     var result;
-    result = this.db.user.update(target_user_id, {genderField:gender});
+    var updateObject = {};
+    updateObject[this.GENDER_FIELD] = gender;
+    result = this.db.user.update(target_user_id, updateObject);
     if(result.error == true)
     {
         throw new error.GenericError('Gender update for ' + target_user_id + ' failed.');
     }
     return result;
-}
+};
 
 User.prototype.updateUserLocationProximitySetting = function(target_user_id, location_proximity_setting)
 {
-    var location_proximity_settingField = this.LOCATION_PROXIMITY_SETTING_FIELD;
     var result;
-    result = this.db.user.update(target_user_id, {location_proximity_settingField:location_proximity_setting});
+    var updateObject = {};
+    updateObject[this.LOCATION_PROXIMITY_SETTING_FIELD] = location_proximity_setting;
+    result = this.db.user.update(target_user_id, updateObject);
     if(result.error == true)
     {
         throw new error.GenericError('Location Proximity Setting update for ' + target_user_id + ' failed.');
     }
     return result;
-}
+};
 
 exports.User = User;

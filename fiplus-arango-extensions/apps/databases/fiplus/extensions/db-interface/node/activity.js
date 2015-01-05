@@ -1,6 +1,6 @@
 var db = require('org/arangodb').db;
-var error = require('error');
-var tagged = require('tagged');
+var error = require('./error');
+var tagged = require('./../edge/tagged');
 
 /**
  * Constructs an activity db interface object
@@ -19,11 +19,11 @@ var Activity = function()
 
 Activity.prototype.saveActivityToDb = function(name, description, maximum_attendance)
 {
-    var nameField = this.NAME_FIELD;
-    var descriptionField = this.DESCRIPTION_FIELD;
-    var maxField = this.MAXIMUM_ATTENDANCE_FIELD;
-    
-    var activityObject = {nameField:name, descriptionField:description, maxField:maximum_attendance};
+    var activityObject = {};
+    activityObject[this.NAME_FIELD] = name;
+    activityObject[this.DESCRIPTION_FIELD] = description;
+    activityObject[this.MAXIMUM_ATTENDANCE_FIELD] = maximum_attendance;
+
     var result = this.db.activity.save(activityObject);
     if(result.error == true)
     {

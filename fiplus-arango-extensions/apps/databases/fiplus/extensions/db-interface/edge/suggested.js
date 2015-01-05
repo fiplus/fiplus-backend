@@ -1,7 +1,7 @@
 var db = require('org/arangodb').db;
-var error = require('error');
-var period = require('time_period');
-var sug = require('suggestion');
+var error = require('./error');
+var period = require('./../node/time_period');
+var sug = require('./../node/suggestion');
 
 /**
 * Constructs a suggested db interface object
@@ -20,8 +20,6 @@ var Suggested = function()
  */
 Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, end_time)
 {
-    var fromField = this.FROM_FIELD;
-    var toField = this.TO_FIELD;
     var result;
 
     // check to see if suggestion already exists
@@ -42,9 +40,7 @@ Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, en
     });
 
     var suggestion_node = (new sug.Suggestion()).saveTimeSuggestion(start_time, end_time);
-    var suggestedObject = {fromField:activity_id, toField:suggestion_node._id};
-
-    var result = this.db.suggested.save(suggestedObject);
+    var result = this.db.suggested.save(activity_id, suggestion_node._id, {});
     if(result.error == true) {
         throw new error.GenericError('Saving suggested time ' + start_time + ', ' + end_time + ' failed.');
     }
@@ -56,8 +52,6 @@ Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, en
  */
 Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, longitude)
 {
-    var fromField = this.FROM_FIELD;
-    var toField = this.TO_FIELD;
     var result;
 
     // check to see if suggestion already exists
@@ -75,9 +69,7 @@ Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, 
     });
 
     var suggestion_node = (new sug.Suggestion()).saveLocationSuggestion(latitude, longitude);
-    var suggestedObject = {fromField:activity_id, toField:suggestion_node._id};
-
-    result = this.db.suggested.save(suggestedObject);
+    result = this.db.suggested.save(activity_id, suggestion_node, {});
     if(result.error == true) {
         throw new error.GenericError('Saving suggested location ' + latitude + ', ' + longitude + ' failed.');
     }
