@@ -66,13 +66,3 @@ db.interest.ensureUniqueConstraint('name');
 db.time_stamp.ensureUniqueConstraint('value');
 db.location.ensureUniqueConstraint('latitude', 'longitude');
 db.user.ensureUniqueConstraint('email');
-
-db.start.ensureUniqueConstraint('_to', '_from');
-db.end.ensureUniqueConstraint('_to', '_from');
-db.in_location.ensureUniqueConstraint('_to', '_from');
-db.tagged.ensureUniqueConstraint('_to', '_from');
-db.interested_in.ensureUniqueConstraint('_to', '_from');
-db.joined.ensureUniqueConstraint('_to', '_from');
-db.is.ensureUniqueConstraint('_to', '_from');
-db.suggested.ensureUniqueConstraint('_to', '_from');
-db.participated.ensureUniqueConstraint('_to', '_from');
