@@ -20,7 +20,7 @@ Tagged.prototype.tagActivityWithInterest = function(activityHandle, interestText
     var interestApi = new interest.Interest();
     var existingInterest = interestApi.saveInterestToDb(interestText);
 
-    var taggedObject = {fromField:activityHandle,toField:existingInterest._id};
+    var taggedObject = {};
     taggedObject[this.FROM_FIELD] = activityHandle;
     taggedObject[this.TO_FIELD] = existingInterest._id;
 

@@ -1,11 +1,11 @@
 var frisby = require('frisby');
 
-frisby.create('Tag an event with existing interest')
+frisby.create('Tag an activity with existing interest')
     .put("http://localhost:8529/_db/fiplus/dev/extensions/activity/1/interest/soccer")
     .expectStatus(200)
     .toss();
 
-frisby.create('Tag an event with a non-existing interest')
+frisby.create('Tag an activity with a non-existing interest')
     .put("http://localhost:8529/_db/fiplus/dev/extensions/activity/1/interest/newinterest")
     .expectStatus(200)
     .toss();
@@ -15,12 +15,7 @@ frisby.create('Tag an non-existing activity')
     .expectStatus(404)
     .toss();
 
-frisby.create('Duplicate tag an activity')
-    .put("http://localhost:8529/_db/fiplus/dev/extensions/activity/1/interest/soccer")
-    .expectStatus(400)
-    .toss();
-
-frisby.create('Check for if event got properly tagged')
+frisby.create('Check for if activity got properly tagged')
     .post("http://localhost:8529/_db/fiplus/_api/traversal",
     {
         startVertex:'activity/1',

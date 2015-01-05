@@ -1,20 +1,23 @@
 var foxx = require("org/arangodb/foxx");
 var joi = require("joi");
 var db = require("org/arangodb").db;
+var interest = require('db-interface/node/interest');
 
 (function () {
     var controller = new foxx.Controller(applicationContext);
 
     controller.get("/", function(request, response) {
         var input = request.params("input");
+        var interestApi = new interest.Interest();
+
         var results;
         if(input != null)
         {
-            results = db.interest.fulltext("name", "prefix:" + input).toArray();
+            results = interestApi.getInterestsWithPrefix(input);
         }
         else
         {
-            results = db.interest.toArray();
+            results = interestApi.getAllInterests();
         }
 
         var interests = [];

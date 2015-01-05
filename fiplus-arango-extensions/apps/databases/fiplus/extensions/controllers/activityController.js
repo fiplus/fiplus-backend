@@ -1,8 +1,8 @@
 var foxx = require("org/arangodb/foxx");
 var joi = require("joi");
 var db = require("org/arangodb").db;
-var errors = require('errors');
-var util = require('util');
+var error = require('error');
+var tag = require('db-interface/edge/tagged');
 
 (function() {
     "use strict";
@@ -13,6 +13,22 @@ var util = require('util');
     });
 
     var controller = new foxx.Controller(applicationContext);
+    controller.allRoutes
+        .errorResponse(error.NotAllowedError, error.NotAllowedError.code, 'Not Allowed', function(e) {
+            return {
+                error: e.message
+            }
+        })
+        .errorResponse(error.NotFoundError, error.NotFoundError.code, 'Not Found', function(e) {
+            return {
+                error: e.message
+            }
+        })
+        .errorResponse(error.GenericError, error.GenericError.code, 'Server Error', function(e) {
+            return {
+                error: e.message
+            }
+        });
 
     var ActivityModel = foxx.Model.extend({
         schema: {
@@ -165,23 +181,20 @@ var util = require('util');
         var activityHandle = 'activity/' + request.params('activityid');
         var interest = request.params('interest');
 
-        util.linkActivityWithInterest(activityHandle, interest);
+        if(!db.activity.exists(activityHandle))
+        {
+            throw new error.NotFoundError('Activity');
+        }
+
+        (new tag.Tagged()).tagActivityWithInterest(activityHandle, interest);
     }).pathParam('activityid', {
         type: joi.string(),
-        description: 'Event being tagged'
+        description: 'Activity being tagged'
     }).pathParam('interest', {
         type: joi.string(),
         description: 'The interest text'
     }).bodyParam('Undocumented', {
         type: EmptyBody
-    }).errorResponse(errors.NotFoundError, 404, 'Not Found', function(e) {
-        return {
-            error: e.message
-        }
-    }).errorResponse(errors.NotAllowedError, 400, 'Not Allowed', function(e) {
-        return  {
-            error: e.message
-        }
     });
 
 }());
