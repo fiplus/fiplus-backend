@@ -24,32 +24,29 @@ TimePeriod.prototype.saveTimePeriod = function(start_time, end_time)
     var time_period_collection = this.db.time_period.toArray();
     var time_period_collection_length = this.db.time_period.count();
     var time_period;
-    var time_period_found;
     for (var i=0; i < time_period_collection_length; i++)
     {
         time_period = time_period_collection[i];
         this.db.start.outEdges(time_period._id).forEach(function (edge) {
-            var start_timestamp = edge._to;
-            if (start_timestamp == start_time) {
+            var start_timestamp_id = edge._to;
+            var start_timestamp_value = this.db.time_stamp.document(start_timestamp_id).value;
+            if (start_timestamp_value == start_time) {
                 this.db.end.outEdges(time_period._id).forEach(function (edge) {
-                    var end_timestamp = edge._to;
-                    if (end_timestamp == end_time) {
+                    var end_timestamp_id = edge._to;
+                    var end_timestamp_value = this.db.time_stamp.document(end_timestamp_id).value;
+                    if (end_timestamp_value == end_time) {
                         //We found an existing time_period node with the same start and end time
                         result = time_period;
-                        time_period_found = true;
-                        break;
+                        return result;
                     }
                 });
             }
         });
     }
-    if(time_period_found != true)
-    {
-        // Every created time period is unique
-        result = this.db.time_period.save({});
-        if (result.error == true) {
-            throw new error.GenericError('Saving time period failed.');
-        }
+    // Every created time period is unique
+    result = this.db.time_period.save({});
+    if (result.error == true) {
+        throw new error.GenericError('Saving time period failed.');
     }
 
     var start_edge = (new start.Start()).saveStartEdge(result._id, start_time);
