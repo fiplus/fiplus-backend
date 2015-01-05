@@ -14,15 +14,34 @@ var TimePeriod = function()
 };
 
 /**
- * Add a time period with start and end times
+ * Add a time period with start and end times.
  */
 TimePeriod.prototype.saveTimePeriod = function(start_time, end_time)
 {
     var result;
 
+    //Prevent the creation of a time period with the same start and end time as another time period.
+    var time_period_collection = this.db.time_period.toArray();
+    var time_period_collection_length = this.db.time_period.count();
+    var time_period;
+    for (var i=0; i < time_period_collection_length; i++)
+    {
+        time_period = time_period_collection[i];
+        var start_timestamp_id = this.db.start.outEdges(time_period._id)._to ;
+        var start_timestamp_value = this.db.time_stamp.document(start_timestamp_id).value;
+        if (start_timestamp_value == start_time) {
+            var end_timestamp_id = this.db.end.outEdges(time_period._id)._to;
+            var end_timestamp_value = this.db.time_stamp.document(end_timestamp_id).value;
+            if (end_timestamp_value == end_time) {
+                //We found an existing time_period node with the same start and end time
+                result = time_period;
+                return result;
+            }
+        }
+    }
     // Every created time period is unique
     result = this.db.time_period.save({});
-    if(result.error == true) {
+    if (result.error == true) {
         throw new error.GenericError('Saving time period failed.');
     }
 
