@@ -31,9 +31,9 @@ Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, en
 
         // if node found is time and not location
         if (db.time_period.exists(timePeriod_id)) {
-            var startStamp = db.time_stamp.document(db.start.outEdge(timePeriod_id)._to);
+            var startStamp = db.time_stamp.document(db.start.outEdges(timePeriod_id)._to);
             if (startStamp.value == start_time) {
-                var endStamp = db.time_stamp.document(db.end.outEdge(timePeriod_id)._to);
+                var endStamp = db.time_stamp.document(db.end.outEdges(timePeriod_id)._to);
                 if (endStamp.value == end_time) {
                     throw new error.NotAllowedError("Time period suggestion already exists for this activity. Duplicate suggestions");
                 }
@@ -44,8 +44,8 @@ Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, en
     var suggestion_node = (new sug.Suggestion()).saveTimeSuggestion(start_time, end_time);
     var suggestedObject = {fromField:activity_id, toField:suggestion_node._id};
 
-    result = this.db.suggested.firstExample(suggestedObject);
-    if(result == null) {
+    var result = this.db.suggested.save(suggestedObject);
+    if(result.error == true) {
         throw new error.GenericError('Saving suggested time ' + start_time + ', ' + end_time + ' failed.');
     }
     return result;
@@ -77,12 +77,9 @@ Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, 
     var suggestion_node = (new sug.Suggestion()).saveLocationSuggestion(latitude, longitude);
     var suggestedObject = {fromField:activity_id, toField:suggestion_node._id};
 
-    result = this.db.suggested.firstExample(suggestedObject);
-    if(result == null) {
-        result = this.db.suggested.save(suggestedObject);
-        if(result.error == true) {
-            throw new error.GenericError('Saving suggested location ' + latitude + ', ' + longitude + ' failed.');
-        }
+    result = this.db.suggested.save(suggestedObject);
+    if(result.error == true) {
+        throw new error.GenericError('Saving suggested location ' + latitude + ', ' + longitude + ' failed.');
     }
     return result;
 };
