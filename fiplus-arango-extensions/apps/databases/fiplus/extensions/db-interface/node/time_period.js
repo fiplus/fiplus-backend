@@ -4,7 +4,7 @@ var start = require('start');
 var end = require('end');
 
 /**
-* Constructs an time stamp db interface object
+* Constructs an time period db interface object
 * @constructor
 */
 var TimePeriod = function()
@@ -20,7 +20,7 @@ TimePeriod.prototype.saveTimePeriod = function(start_time, end_time)
 {
     var result;
 
-    // Every created time stamp is unique
+    // Every created time period is unique
     result = this.db.time_period.save({});
     if(result.error == true) {
         throw new error.GenericError('Saving time period failed.');
