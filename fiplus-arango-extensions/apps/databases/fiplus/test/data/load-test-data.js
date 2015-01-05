@@ -1,5 +1,5 @@
 // User test data
-var user1 = db.users.save({
+var user1 = db.user.save({
     "_key": "1",
     "email": "test@data.com",
     "profile_pic": "any",
@@ -8,7 +8,7 @@ var user1 = db.users.save({
     "location_proximity_setting": true
 });
 
-var user2 = db.users.save({
+var user2 = db.user.save({
     "_key": "2",
     "email": "test2@data.com",
     "profile_pic": "any",
@@ -18,7 +18,7 @@ var user2 = db.users.save({
 });
 
 // A newly registered user used in user profile tests
-var user3 = db.users.save({
+var user3 = db.user.save({
     _key: "3",
     email: "test3@data.com"
 });
@@ -51,10 +51,10 @@ var tp1 = db.time_period.save({});
 var tp2 = db.time_period.save({});
 
 // start test data
-db.starts.save(tp1,time1,{});
-db.ends.save(tp1,time2,{});
-db.starts.save(tp2,time3,{});
-db.ends.save(tp2,time4,{});
+db.start.save(tp1,time1,{});
+db.end.save(tp1,time2,{});
+db.start.save(tp2,time3,{});
+db.end.save(tp2,time4,{});
 
 // In Location test data
 db.in_location.save(user1, loc1,{});
