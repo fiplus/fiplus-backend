@@ -34,6 +34,6 @@ Location.prototype.saveLocation = function(latitude, longitude)
         }
     }
     return result;
-}
+};
 
 exports.Location = Location;

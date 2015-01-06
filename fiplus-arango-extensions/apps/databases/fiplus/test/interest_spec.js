@@ -1,5 +1,5 @@
 var frisby = require('frisby');
-
+/*
 frisby.create("Get interests based on input")
     .get("http://localhost:8529/_db/fiplus/dev/extensions/interest?input=So")
     .inspectJSON()
@@ -22,3 +22,4 @@ frisby.create("Get all interests")
     .expectBodyContains('hockey')
     .expectBodyContains('basketball')
     .toss();
+*/

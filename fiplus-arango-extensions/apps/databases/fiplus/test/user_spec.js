@@ -1,22 +1,33 @@
 var frisby = require('frisby');
 
+
+
 frisby.create("Register user basic test")
     .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
     {
         email: "test@frisby.com"
     }, {json: true})
-    .expectBodyContains('Success')
+    .expectStatus(200)
     .toss();
 
 frisby.create("Confirm newly registered user is saved")
     .put('http://localhost:8529/_db/fiplus/_api/simple/by-example', {
-        "collection":"users",
+        "collection":"user",
         "example":{"email":"test@frisby.com"}
     }, {json:true})
     .expectJSON('result.?', {
         email:'test@frisby.com'
     })
     .toss();
+
+frisby.create("Register duplicate user basic test")
+    .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
+    {
+        email: "test@frisby.com"
+    }, {json: true})
+    .expectStatus(400)
+    .toss();
+
 
 frisby.create("User configure profile basic test")
     .put('http://localhost:8529/_db/fiplus/dev/extensions/userfi/profile',
@@ -46,13 +57,13 @@ frisby.create("User configure profile basic test")
             'basketball'
         ]
     }, {json: true})
-    .expectBodyContains('Success')
+    .expectStatus(200)
     .toss();
 
 frisby.create("Check for documents/edges created in basic user profile test")
     .post('http://localhost:8529/_db/fiplus/_api/traversal',
     {
-        startVertex: 'users/3',
+        startVertex: 'user/3',
         graphName: 'fiplus',
         direction: 'any',
         maxDepth: 2
@@ -90,4 +101,5 @@ frisby.create("Check for documents/edges created in basic user profile test")
     {
         value: 1420243200000
     })
+
     .toss();

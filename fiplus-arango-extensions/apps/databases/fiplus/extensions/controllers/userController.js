@@ -13,6 +13,22 @@ var interested_in = require('db-interface/edge/interested_in');
     "use strict";
 
     var controller = new foxx.Controller(applicationContext);
+    controller.allRoutes
+        .errorResponse(error.NotAllowedError, error.NotAllowedError.code, 'Not Allowed', function(e) {
+            return {
+                error: e.message
+            }
+        })
+        .errorResponse(error.NotFoundError, error.NotFoundError.code, 'Not Found', function(e) {
+            return {
+                error: e.message
+            }
+        })
+        .errorResponse(error.GenericError, error.GenericError.code, 'Server Error', function(e) {
+            return{
+                error: e.message
+            }
+        })
 
     var UserModel = foxx.Model.extend({
         schema: {
@@ -22,15 +38,9 @@ var interested_in = require('db-interface/edge/interested_in');
 
     //Register user
     controller.post("/register", function (req, res) {
-        var user = req.params("User");
-        var result = db.users.save({"email":user.get("email")});
+        var user_input = req.params("User");
+        (new user.User()).saveUserToDb(user_input.get("email"));
 
-        if(result.error == true) {
-            res.body = "Error";
-        }
-        else {
-            res.body = "Success";
-        }
     }).bodyParam("User", {
         type: UserModel
     });
@@ -89,35 +99,16 @@ var interested_in = require('db-interface/edge/interested_in');
     controller.put("/profile", function (req, res) {
         var userprofile = req.params("UserProfile");
         var config_success = true; //Assume success in the start. Will turn to false if one save or update fails.
-        var result;
+
         //It is expected that this will return a valid value because the email used at this point is the email used to login
         //which is a prerequisite before a user can configure a profile. No error check needed.
-        var target_user = db.users.firstExample("email", userprofile.get("email"));
-        result = db.users.update(target_user._id, {"profile_pic":userprofile.get("profile_pic"), "age":userprofile.get("age"), "gender":userprofile.get("gender"), "location_proximity_setting":userprofile.get("location_proximity_setting")});
-        if(result.error == true)
-        {
-            config_success = false;
-        }
+        var target_user = (new user.User()).getUserWithEmail(userprofile.get("email"));
+        (new user.User()).updateUserProfilePic(target_user._id, userprofile.get("profile_pic"));
+        (new user.User()).updateUserAge(target_user._id, userprofile.get("age"));
+        (new user.User()).updateUserGender(target_user._id, userprofile.get("gender"));
+        (new user.User()).updateUserLocationProximitySetting(target_user._id, userprofile.get("location_proximity_setting"));
 
-        var input_location_object = {"latitude":userprofile.get("latitude"), "longitude":userprofile.get("longitude")};
-        var location_object;
-        if(db.location.byExample(input_location_object).count() > 0)
-        {
-            location_object = db.location.firstExample(input_location_object);
-        }
-        else
-        {
-            location_object = db.location.save(input_location_object);
-            if(location_object.error == true)
-            {
-                config_success = false;
-            }
-        }
-        result = db.in_location.save(target_user._id, location_object._id, {});
-        if(result.error == true)
-        {
-            config_success = false;
-        }
+        (new in_location.InLocation()).saveInLocationEdge(target_user._id, userprofile.get("latitude"), userprofile.get("longitude"));
 
         var start_time;
         var end_time;
@@ -125,63 +116,15 @@ var interested_in = require('db-interface/edge/interested_in');
         for(var i = 0; i < availabilities.length; i++)
         {
             var start = availabilities[i].start;
-            start_time = db.time_stamp.firstExample({value:start});
-            if(start_time == null)
-            {
-                start_time = db.time_stamp.save({value:start});
-            }
-
             var end = availabilities[i].end;
-             end_time = db.time_stamp.firstExample({value:end});
-            if(end_time == null)
-            {
-                end_time = db.time_stamp.save({value:end});
-            }
-
-            var time_period = db.time_period.save({});
-            db.starts.save(time_period._id, start_time._id, {});
-            db.ends.save(time_period._id, end_time._id, {});
-
-            if(time_period.error == true)
-            {
-                config_success = false;
-            }
-
-            result = db.is_available.save(target_user._id, time_period._id, {});
-            if(result.error == true)
-            {
-                config_success = false;
-            }
+            (new is_available.IsAvailable()).saveIsAvailableEdge(target_user._id, start, end);
         }
 
         var tagged_interests = userprofile.get("tagged_interests");
         for (var i = 0; i < tagged_interests.length; i++)
         {
-            var input_interest_object = {name: tagged_interests[i]};
-            var interest_object;
-            if(db.interest.byExample(input_interest_object).count() > 0)
-            {
-                interest_object = db.interest.firstExample(input_interest_object);
-            }
-            else
-            {
-                interest_object = db.interest.save(input_interest_object);
-                if(interest_object.error == true)
-                {
-                    config_success = false;
-                }
-            }
-            result = db.interested_in.save(target_user._id, interest_object._id, {});
-            if(result.error == true)
-            {
-                config_success = false;
-            }
-        }
-        if(config_success == false) {
-            res.body = "Error";
-        }
-        else {
-            res.body = "Success";
+            var input_interest_name = tagged_interests[i];
+            (new interested_in.InterestedIn()).saveUserInterest(target_user._id, input_interest_name);
         }
     }).bodyParam("UserProfile", {
         type: UserProfileModel

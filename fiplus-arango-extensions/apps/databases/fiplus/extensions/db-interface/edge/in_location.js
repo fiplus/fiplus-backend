@@ -2,6 +2,7 @@ var db = require('org/arangodb').db;
 var error = require('error');
 var location = require('db-interface/node/location');
 
+
 /**
  * Constructs an in_location db interface object
  * @constructor
@@ -19,18 +20,19 @@ var InLocation = function()
  */
 InLocation.prototype.saveInLocationEdge = function(user_id, latitude, longitude)
 {
+    var locationApi = new location.Location();
+    var location_node = locationApi.saveLocation(latitude, longitude);
     var result;
-    var location = (new location.Location()).saveLocation(latitude, longitude);
 
     //Only allow one in_location edge per user.
     var example = {};
     example[this.FROM_FIELD] = user_id;
     if(this.db.in_location.firstExample(example) == null)
     {
-        result = this.db.in_location.save(user_id, location._id, {});
+        result = this.db.in_location.save(user_id, location_node._id, {});
         if(result.error == true)
         {
-            throw new error.GenericError('Saving user location ' + location + ' failed.');
+            throw new error.GenericError('Saving user location ' + location_node + ' failed.');
         }
     }
     else
