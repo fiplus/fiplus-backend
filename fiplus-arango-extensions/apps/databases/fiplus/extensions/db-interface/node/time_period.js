@@ -1,7 +1,7 @@
 var db = require('org/arangodb').db;
-var error = require('./error');
-var start = require('./../edge/start');
-var end = require('./../edge/end');
+var error = require('./../error');
+var start = require('./edge/start');
+var end = require('./edge/end');
 
 /**
 * Constructs an time period db interface object

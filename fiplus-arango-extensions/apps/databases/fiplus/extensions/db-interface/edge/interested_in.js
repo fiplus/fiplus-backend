@@ -1,6 +1,6 @@
 var db = require('org/arangodb').db;
-var error = require('./error');
-var interest = require('./../node/interest');
+var error = require('./../error');
+var interest = require('./node/interest');
 
 /**
  * Constructs a user interest db interface object
