@@ -45,6 +45,9 @@ var tag = require('db-interface/edge/tagged');
         }
     });
 
+    /**
+     * createActivity
+     */
     controller.post('/', function(req, res) {
         var activity = req.params('activity');
 
@@ -225,6 +228,9 @@ var tag = require('db-interface/edge/tagged');
         type: ReportModel
     });
 
+    /**
+     * tagActivityWithInterest
+     */
     controller.put('/:activityid/interest/:interest', function(request, response){
         var activityHandle = 'activity/' + request.params('activityid');
         var interest = request.params('interest');

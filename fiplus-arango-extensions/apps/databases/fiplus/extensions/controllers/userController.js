@@ -28,7 +28,7 @@ var interested_in = require('db-interface/edge/interested_in');
             return{
                 error: e.message
             }
-        })
+        });
 
     var UserModel = foxx.Model.extend({
         schema: {
@@ -64,7 +64,7 @@ var interested_in = require('db-interface/edge/interested_in');
 
     controller.delete("/", function (req, res) {
         //stub
-    })
+    });
 
     //Edit user
     var ConfigUserModel = foxx.Model.extend({
@@ -96,6 +96,9 @@ var interested_in = require('db-interface/edge/interested_in');
         }
     });
 
+    /**
+     * saveUserProfile
+     */
     controller.put("/profile", function (req, res) {
         var userprofile = req.params("UserProfile");
         var config_success = true; //Assume success in the start. Will turn to false if one save or update fails.
