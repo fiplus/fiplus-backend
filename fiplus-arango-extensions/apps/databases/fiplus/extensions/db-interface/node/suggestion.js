@@ -1,6 +1,6 @@
 var db = require('org/arangodb').db;
-var error = require('./error');
-var is = require('./../edge/is');
+var error = require('error');
+var is = require('db-interface/edge/is');
 
 /**
 * Constructs a suggestion db interface object

@@ -1,6 +1,6 @@
 var db = require('org/arangodb').db;
-var error = require('./error');
-var location = require('./../node/location');
+var error = require('error');
+var location = require('db-interface/node/location');
 
 /**
  * Constructs an in_location db interface object
