@@ -16,11 +16,16 @@ var Tagged = function()
 
 Tagged.prototype.tagActivityWithInterest = function(activityHandle, interestText)
 {
+    if(!db.activity.exists(activityHandle))
+    {
+        throw new error.NotFoundError('Activity');
+    }
+
     // Checking for interest and saving if doesn't exist
     var interestApi = new interest.Interest();
     var existingInterest = interestApi.saveInterestToDb(interestText);
 
-    var taggedObject = {fromField:activityHandle,toField:existingInterest._id};
+    var taggedObject = {};
     taggedObject[this.FROM_FIELD] = activityHandle;
     taggedObject[this.TO_FIELD] = existingInterest._id;
 

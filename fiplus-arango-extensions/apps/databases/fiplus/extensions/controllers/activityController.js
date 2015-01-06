@@ -1,6 +1,8 @@
 var foxx = require("org/arangodb/foxx");
 var joi = require("joi");
 var db = require("org/arangodb").db;
+var error = require('error');
+var tag = require('db-interface/edge/tagged');
 
 (function() {
     "use strict";
@@ -11,6 +13,22 @@ var db = require("org/arangodb").db;
     });
 
     var controller = new foxx.Controller(applicationContext);
+    controller.allRoutes
+        .errorResponse(error.NotAllowedError, error.NotAllowedError.code, 'Not Allowed', function(e) {
+            return {
+                error: e.message
+            }
+        })
+        .errorResponse(error.NotFoundError, error.NotFoundError.code, 'Not Found', function(e) {
+            return {
+                error: e.message
+            }
+        })
+        .errorResponse(error.GenericError, error.GenericError.code, 'Server Error', function(e) {
+            return {
+                error: e.message
+            }
+        });
 
     var ActivityModel = foxx.Model.extend({
         schema: {
@@ -157,6 +175,21 @@ var db = require("org/arangodb").db;
 
     }).bodyParam('Report', {
         type: ReportModel
+    });
+
+    controller.put('/:activityid/interest/:interest', function(request, response){
+        var activityHandle = 'activity/' + request.params('activityid');
+        var interest = request.params('interest');
+
+        (new tag.Tagged()).tagActivityWithInterest(activityHandle, interest);
+    }).pathParam('activityid', {
+        type: joi.string(),
+        description: 'Activity being tagged'
+    }).pathParam('interest', {
+        type: joi.string(),
+        description: 'The interest text'
+    }).bodyParam('Undocumented', {
+        type: EmptyBody
     });
 
 }());
