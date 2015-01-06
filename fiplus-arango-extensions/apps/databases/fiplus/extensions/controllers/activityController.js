@@ -181,11 +181,6 @@ var tag = require('db-interface/edge/tagged');
         var activityHandle = 'activity/' + request.params('activityid');
         var interest = request.params('interest');
 
-        if(!db.activity.exists(activityHandle))
-        {
-            throw new error.NotFoundError('Activity');
-        }
-
         (new tag.Tagged()).tagActivityWithInterest(activityHandle, interest);
     }).pathParam('activityid', {
         type: joi.string(),
