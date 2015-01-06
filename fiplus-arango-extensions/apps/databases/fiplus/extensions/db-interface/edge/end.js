@@ -1,6 +1,6 @@
 var db = require('org/arangodb').db;
-var error = require('./error');
-var stamp = require('./../node/time_stamp');
+var error = require('error');
+var stamp = require('db-interface/node/time_stamp');
 
 /**
 * Constructs a end db interface object

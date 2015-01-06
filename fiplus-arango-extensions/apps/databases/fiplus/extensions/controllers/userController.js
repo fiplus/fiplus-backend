@@ -1,6 +1,11 @@
 var foxx = require("org/arangodb/foxx");
 var joi = require("joi");
 var db = require("org/arangodb").db;
+var error = require('error');
+var user = require('db-interface/node/user');
+var in_location = require('db-interface/edge/in_location');
+var is_available = require('db-interface/edge/is_available');
+var interested_in = require('db-interface/edge/interested_in');
 
 
 

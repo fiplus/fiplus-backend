@@ -1,6 +1,6 @@
 var db = require('org/arangodb').db;
-var error = require('./error');
-var act = require('./../node/activity');
+var error = require('error');
+var act = require('db-interface/node/activity');
 
 /**
  * Constructs a created db interface object
