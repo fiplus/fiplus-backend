@@ -12,6 +12,9 @@ var joi = require("joi");
        }
     });
 
+    /**
+     * responses
+     */
     controller.put('/', function(request, response) {
         // Empty as this request is only here as a placeholder for response models
     }).bodyParam('InterestResponse', {

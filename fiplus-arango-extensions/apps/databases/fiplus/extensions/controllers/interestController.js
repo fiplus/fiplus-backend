@@ -6,6 +6,9 @@ var interest = require('db-interface/node/interest');
 (function () {
     var controller = new foxx.Controller(applicationContext);
 
+    /**
+     * getInterestsWithInput
+     */
     controller.get("/", function(request, response) {
         var input = request.params("input");
         var interestApi = new interest.Interest();
