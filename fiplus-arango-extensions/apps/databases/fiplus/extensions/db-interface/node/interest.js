@@ -32,7 +32,7 @@ Interest.prototype.getAllInterests = function()
 
 Interest.prototype.saveInterestToDb = function(name)
 {
-    var interestObject = {nameField:name};
+    var interestObject = {};
     interestObject[this.NAME_FIELD] = name;
     var result = this.db.interest.firstExample(interestObject);
     if(result == null)
