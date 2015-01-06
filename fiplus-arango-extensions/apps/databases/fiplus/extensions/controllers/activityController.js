@@ -49,7 +49,7 @@ var tag = require('db-interface/edge/tagged');
      * createActivity
      */
     controller.post('/', function(req, res) {
-        var activity = req.params('activity');
+        var activity = req.params('Activity');
 
         var max = activity.get('max_attendees');
         if(max < 2) {
