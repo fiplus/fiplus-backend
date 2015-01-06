@@ -1,6 +1,6 @@
 var db = require('org/arangodb').db;
-var error = require('./error');
-var time_period = require('./../node/time_period');
+var error = require('./../error');
+var time_period = require('./node/time_period');
 
 /**
  * Constructs an is_available db interface object

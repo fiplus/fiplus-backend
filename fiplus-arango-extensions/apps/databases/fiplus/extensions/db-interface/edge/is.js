@@ -1,7 +1,7 @@
 var db = require('org/arangodb').db;
-var error = require('./error');
-var period = require('./../node/time_period');
-var loc = require('./../node/location');
+var error = require('./../error');
+var period = require('./node/time_period');
+var loc = require('./node/location');
 
 /**
 * Constructs an is db interface object

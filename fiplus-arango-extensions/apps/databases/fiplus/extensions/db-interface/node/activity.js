@@ -1,6 +1,6 @@
 var db = require('org/arangodb').db;
-var error = require('./error');
-var tagged = require('./../edge/tagged');
+var error = require('./../error');
+var tagged = require('./edge/tagged');
 
 /**
  * Constructs an activity db interface object

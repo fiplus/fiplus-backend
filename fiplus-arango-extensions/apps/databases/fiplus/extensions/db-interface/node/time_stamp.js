@@ -1,5 +1,5 @@
 var db = require('org/arangodb').db;
-var error = require('./error');
+var error = require('./../error');
 
 /**
 * Constructs a time stamp db interface object
