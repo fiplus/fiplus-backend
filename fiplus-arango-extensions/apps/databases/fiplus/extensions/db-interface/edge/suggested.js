@@ -25,13 +25,15 @@ Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, en
     // check to see if suggestion already exists
     db.suggested.outEdges(activity_id).forEach(function(edge) {
         var suggestion_id = edge._to;
-        var timePeriod_id = db.is.outEdges(suggestion_id)._to;
+        var timePeriod_id = db.is.outEdges(suggestion_id)[0]._to;
 
         // if node found is time and not location
-        if (db.time_period.exists(timePeriod_id)) {
-            var startStamp = db.time_stamp.document(db.start.outEdges(timePeriod_id)._to);
+        if (timePeriod_id.indexOf("time_period") > -1) {
+            var start_id = db.start.outEdges(timePeriod_id)[0]._to;
+            var startStamp = db.time_stamp.document(start_id);
             if (startStamp.value == start_time) {
-                var endStamp = db.time_stamp.document(db.end.outEdges(timePeriod_id)._to);
+                var end_id = db.end.outEdges(timePeriod_id)[0]._to;
+                var endStamp = db.time_stamp.document(end_id);
                 if (endStamp.value == end_time) {
                     throw new error.NotAllowedError("Time period suggestion already exists for this activity. Duplicate suggestions");
                 }
@@ -57,13 +59,15 @@ Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, 
     // check to see if suggestion already exists
     db.suggested.outEdges(activity_id).forEach(function(edge) {
         var suggestion_id = edge._to;
-        var location_id = db.is.outEdges(suggestion_id)._to;
+        var location_id = db.is.outEdges(suggestion_id)[0]._to;
 
         // if node found is location and not time
-        location = db.location.document(location_id);
-        if (location != null) {
-            if (location.latitude == latitude && location.longitude == longitude) {
-                throw new error.NotAllowedError("Location suggestion already exists for this activity. Duplicate suggestions");
+        if (location_id.indexOf("location") > -1) {
+            location = db.location.document(location_id);
+            if (location != null) {
+                if (location.latitude == latitude && location.longitude == longitude) {
+                    throw new error.NotAllowedError("Location suggestion already exists for this activity. Duplicate suggestions");
+                }
             }
         }
     });

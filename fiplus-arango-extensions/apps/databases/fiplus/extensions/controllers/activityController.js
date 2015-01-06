@@ -1,6 +1,9 @@
 var foxx = require("org/arangodb/foxx");
 var joi = require("joi");
 var db = require("org/arangodb").db;
+var creator = require('db-interface/edge/created').Created;
+var tagger = require('db-interface/edge/tagged').Tagged;
+var suggester = require('db-interface/edge/suggested').Suggested;
 var error = require('error');
 var tag = require('db-interface/edge/tagged');
 
@@ -34,13 +37,58 @@ var tag = require('db-interface/edge/tagged');
         schema: {
             name: joi.string(),
             description: joi.string(),
-            tagged_interests: joi.array()
+            max_attendees: joi.number().integer(),
+            creator: joi.string(),
+            tagged_interests: joi.array(),    // format string
+            suggested_times: joi.array(),     // format TimeModel
+            suggested_locations: joi.array() // format LocationModel
         }
     });
 
     controller.post('/', function(req, res) {
+        var activity = req.params('activity');
 
-    }).bodyParam('Activity', {
+        var max = activity.get('max_attendees');
+        if(max < 2) {
+            throw new error.NotAllowedError("Non-group activities are ");
+        }
+
+        var Creator = new creator();
+        var created_edge = db.created.document((Creator.saveCreatedEdge(activity.get('creator'),activity.get('name'),
+            activity.get('description'), max))._id);
+        var activity_id = created_edge._to;
+
+
+        var Tagger = new tagger();
+        var interests = activity.get('tagged_interests');
+        for (var i = 0; i < interests.length; i++) {
+            Tagger.tagActivityWithInterest(activity_id, interests[i]);
+        }
+
+        var Suggester = new suggester();
+        var times = activity.get('suggested_times');
+        for (var i = 0; i < times.length; i++) {
+            var time = times[i];
+            // disallow end time before start time
+            if(time.end < time.start) {
+                throw new error.NotAllowedError("Activity ending before it starts is ");
+            }
+            // disallow date suggestions in the past
+            var now = Date();
+            if(time.end < now.value) {
+                throw new error.NotAllowedError("A suggestion in the past is ");
+            }
+            Suggester.saveSuggestedTimeEdge(activity_id, time.start, time.end);
+        }
+
+        var locations = activity.get('suggested_locations');
+        for (var i = 0; i < locations.length; i++) {
+            var location = locations[i];
+            Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude);
+        }
+
+        res.body = "Success";
+    }).bodyParam('activity', {
         type: ActivityModel
     });
 
@@ -180,8 +228,7 @@ var tag = require('db-interface/edge/tagged');
     controller.put('/:activityid/interest/:interest', function(request, response){
         var activityHandle = 'activity/' + request.params('activityid');
         var interest = request.params('interest');
-
-        (new tag.Tagged()).tagActivityWithInterest(activityHandle, interest);
+        (new tagger()).tagActivityWithInterest(activityHandle, interest);
     }).pathParam('activityid', {
         type: joi.string(),
         description: 'Activity being tagged'
