@@ -1,7 +1,7 @@
 var db = require('org/arangodb').db;
-var error = require('error');
-var period = require('time_period');
-var loc = require('location');
+var error = require('./error');
+var period = require('./../node/time_period');
+var loc = require('./../node/location');
 
 /**
 * Constructs an is db interface object
@@ -20,17 +20,14 @@ var Is = function()
  */
 Is.prototype.saveIsTimeEdge = function(suggestion_id, start_time, end_time)
 {
-    var fromField = this.FROM_FIELD;
-    var toField = this.TO_FIELD;
     var result;
-
     var period_node = (new period.TimePeriod()).saveTimePeriod(start_time, end_time);
 
-    var isObject = {fromField:suggestion_id, toField:period_node._id};
-
     // Only allow one is edge per suggestion.
-    if(this.db.is.firstExample({fromField:suggestion_id}) == null) {
-        result = this.db.is.save(isObject);
+    var example = {};
+    example[this.FROM_FIELD] = suggestion_id;
+    if(this.db.is.firstExample(example) == null) {
+        result = this.db.is.save(suggestion_id, period_node._id, {});
         if(result.error == true) {
             throw new error.GenericError('Saving time suggestion is ' + start_time + ', ' + end_time + ' failed.');
         }
@@ -45,17 +42,15 @@ Is.prototype.saveIsTimeEdge = function(suggestion_id, start_time, end_time)
  */
 Is.prototype.saveIsLocationEdge = function(suggestion_id, latitude, longitude)
 {
-    var fromField = this.FROM_FIELD;
-    var toField = this.TO_FIELD;
     var result;
 
     var location_node = (new loc.Location()).saveLocation(latitude, longitude);
 
-    var isObject = {fromField:suggestion_id, toField:location_node._id};
-
-    result = this.db.is.firstExample({fromField:suggestion_id});
+    var example = {};
+    example[this.FROM_FIELD] = suggestion_id;
+    result = this.db.is.firstExample(example);
     if(result == null) {
-        result = this.db.is.save(isObject);
+        result = this.db.is.save(suggestion_id, location_node._id, {});
         if(result.error == true) {
             throw new error.GenericError('Saving location suggestion is ' + latitude + ', ' + longitude + ' failed.');
         }

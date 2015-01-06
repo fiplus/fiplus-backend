@@ -1,5 +1,5 @@
 var db = require('org/arangodb').db;
-var error = require('error');
+var error = require('./error');
 
 /**
  * Constructs a location db interface object
@@ -19,9 +19,9 @@ var Location = function()
  */
 Location.prototype.saveLocation = function(latitude, longitude)
 {
-    var latitudeFIELD = this.LATITUDE_FIELD;
-    var longitudeFIELD = this.LONGITUDE_FIELD;
-    var locationObject = {latitudeFIELD:latitude,longitudeFIELD:longitude};
+    var locationObject = {};
+    locationObject[this.LATITUDE_FIELD] = latitude;
+    locationObject[this.LONGITUDE_FIELD] = longitude;
     var result;
 
     result = this.db.location.firstExample(locationObject);

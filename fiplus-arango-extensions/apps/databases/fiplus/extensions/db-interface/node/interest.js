@@ -1,5 +1,5 @@
 var db = require('org/arangodb').db;
-var error = require('error');
+var error = require('./error');
 
 /**
  * Constructs an interest db interface object
@@ -20,8 +20,9 @@ Interest.prototype.getInterestsWithPrefix = function(prefix)
 
 Interest.prototype.getInterestWithText = function(interestText)
 {
-    var nameField = this.NAME_FIELD;
-    return this.db.interest.firstExample({nameField:interestText});
+    var example = {};
+    example[this.NAME_FIELD] = interestText;
+    return this.db.interest.firstExample(example);
 };
 
 Interest.prototype.getAllInterests = function()
@@ -31,8 +32,8 @@ Interest.prototype.getAllInterests = function()
 
 Interest.prototype.saveInterestToDb = function(name)
 {
-    var nameField = this.NAME_FIELD;
-    var interestObject = {nameField:name};
+    var interestObject = {};
+    interestObject[this.NAME_FIELD] = name;
     var result = this.db.interest.firstExample(interestObject);
     if(result == null)
     {

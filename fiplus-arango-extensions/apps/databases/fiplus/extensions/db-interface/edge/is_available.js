@@ -1,6 +1,6 @@
 var db = require('org/arangodb').db;
-var error = require('error');
-var time_period = require('time_period');
+var error = require('./error');
+var time_period = require('./../node/time_period');
 
 /**
  * Constructs an is_available db interface object
@@ -19,14 +19,11 @@ var IsAvailable = function()
  */
 IsAvailable.prototype.saveIsAvailableEdge = function(user_id, start_time, end_time)
 {
-    var fromField = this.FROM_FIELD;
-    var toField = this.TO_FIELD;
     var result;
-
     var time_period = (new time_period.TimePeriod()).saveTimePeriod(start_time, end_time);
-    var is_available_object = {fromField:user_id, toField:time_period._id};
+
     //Allow for multiple is_available per user. Save directly.
-    result = this.db.is_available.save(is_available_object);
+    result = this.db.is_available.save(user_id, time_period._id, {});
     if(result.error == true)
     {
         throw new error.GenericError('Saving user time availability for ' + user_id + ' failed.');
