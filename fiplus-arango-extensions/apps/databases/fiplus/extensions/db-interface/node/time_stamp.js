@@ -23,7 +23,7 @@ TimeStamp.prototype.saveTimeStamp = function(value)
 
     result = this.db.time_stamp.firstExample(valueObject);
     if(result == null) {
-        result = this.db.interest.save(valueObject);
+        result = this.db.time_stamp.save(valueObject);
         if(result.error == true) {
             throw new error.GenericError('Saving ' + value + ' failed.');
         }

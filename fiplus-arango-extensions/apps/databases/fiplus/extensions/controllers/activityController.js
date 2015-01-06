@@ -1,6 +1,9 @@
 var foxx = require("org/arangodb/foxx");
 var joi = require("joi");
 var db = require("org/arangodb").db;
+var creator = require('db-interface/edge/created').Created;
+var tagger = require('db-interface/edge/tagged').Tagged;
+var suggester = require('db-interface/edge/suggested').Suggested;
 var error = require('error');
 var tag = require('db-interface/edge/tagged');
 
@@ -45,24 +48,24 @@ var tag = require('db-interface/edge/tagged');
     controller.post('/', function(req, res) {
         var activity = req.params('activity');
 
-        // disallow max_attendees less than 2
         var max = activity.get('max_attendees');
         if(max < 2) {
             throw new error.NotAllowedError("Non-group activities are ");
         }
 
-        var Creator = new cl.Created();
-        var created_edge = Creator.saveCreatedEdge('user/' + activity.get('creator'),activity.get('name'),
-            activity.get('description'), max);
+        var Creator = new creator();
+        var created_edge = db.created.document((Creator.saveCreatedEdge(activity.get('creator'),activity.get('name'),
+            activity.get('description'), max))._id);
         var activity_id = created_edge._to;
 
-        var Tagger = new cl.Tagged();
+
+        var Tagger = new tagger();
         var interests = activity.get('tagged_interests');
         for (var i = 0; i < interests.length; i++) {
-            Tagger.tagActivityWithInterest(activity_id, interest);
+            Tagger.tagActivityWithInterest(activity_id, interests[i]);
         }
 
-        var Suggester = new cl.Suggested();
+        var Suggester = new suggester();
         var times = activity.get('suggested_times');
         for (var i = 0; i < times.length; i++) {
             var time = times[i];
@@ -72,7 +75,7 @@ var tag = require('db-interface/edge/tagged');
             }
             // disallow date suggestions in the past
             var now = Date();
-            if(time.end < now.value()) {
+            if(time.end < now.value) {
                 throw new error.NotAllowedError("A suggestion in the past is ");
             }
             Suggester.saveSuggestedTimeEdge(activity_id, time.start, time.end);
@@ -81,7 +84,7 @@ var tag = require('db-interface/edge/tagged');
         var locations = activity.get('suggested_locations');
         for (var i = 0; i < locations.length; i++) {
             var location = locations[i];
-            Suggester.saveSuggestedTimeEdge(activity_id, location.latitude, location.longitude);
+            Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude);
         }
 
         res.body = "Success";
@@ -225,8 +228,7 @@ var tag = require('db-interface/edge/tagged');
     controller.put('/:activityid/interest/:interest', function(request, response){
         var activityHandle = 'activity/' + request.params('activityid');
         var interest = request.params('interest');
-
-        (new tag.Tagged()).tagActivityWithInterest(activityHandle, interest);
+        (new tagger()).tagActivityWithInterest(activityHandle, interest);
     }).pathParam('activityid', {
         type: joi.string(),
         description: 'Activity being tagged'
