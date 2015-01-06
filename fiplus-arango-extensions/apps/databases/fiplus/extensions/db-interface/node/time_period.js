@@ -28,14 +28,17 @@ TimePeriod.prototype.saveTimePeriod = function(start_time, end_time)
     {
         time_period = time_period_collection[i];
         var start_timestamp_id = this.db.start.outEdges(time_period._id)._to ;
-        var start_timestamp_value = this.db.time_stamp.document(start_timestamp_id).value;
-        if (start_timestamp_value == start_time) {
-            var end_timestamp_id = this.db.end.outEdges(time_period._id)._to;
-            var end_timestamp_value = this.db.time_stamp.document(end_timestamp_id).value;
-            if (end_timestamp_value == end_time) {
-                //We found an existing time_period node with the same start and end time
-                result = time_period;
-                return result;
+        if(start_timestamp_id != null)
+        {
+            var start_timestamp_value = this.db.time_stamp.document(start_timestamp_id).value;
+            if (start_timestamp_value == start_time) {
+                var end_timestamp_id = this.db.end.outEdges(time_period._id)._to;
+                var end_timestamp_value = this.db.time_stamp.document(end_timestamp_id).value;
+                if (end_timestamp_value == end_time) {
+                    //We found an existing time_period node with the same start and end time
+                    result = time_period;
+                    return result;
+                }
             }
         }
     }
