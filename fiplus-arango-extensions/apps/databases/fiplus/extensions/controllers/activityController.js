@@ -91,7 +91,7 @@ var tag = require('db-interface/edge/tagged');
         }
 
         res.body = "Success";
-    }).bodyParam('activity', {
+    }).bodyParam('Activity', {
         type: ActivityModel
     });
 
