@@ -1,7 +1,7 @@
 var foxx = require("org/arangodb/foxx");
 var joi = require("joi");
 var db = require("org/arangodb").db;
-
+var model = require("model");
 
 var UserModel = foxx.Model.extend({
     schema: {
@@ -13,13 +13,6 @@ var UserModel = foxx.Model.extend({
     "use strict";
     
     var controller = new foxx.Controller(applicationContext);
-
-    var locationModel = foxx.Model.extend({
-	schema: {
-	    lat: joi.number(),
-	    lon: joi.number()
-	}
-    });
 
     /*
      * matchEvents
@@ -43,7 +36,7 @@ var UserModel = foxx.Model.extend({
       required: false,
       description: 'The priority level to start at (zero by default). To be used when updating event list with new events and the first priority_offest number of events should be skipped.'
     }).bodyParam('location', {
-      type: locationModel,
+      type: model.LocationModel,
 	  required: false,
       description: 'Location near which to search for events'
     });

@@ -6,14 +6,10 @@ var tagger = require('db-interface/edge/tagged').Tagged;
 var suggester = require('db-interface/edge/suggested').Suggested;
 var joiner = require('db-interface/edge/joined').Joined;
 var error = require('error');
+var model = require('model');
 
 (function() {
     "use strict";
-
-    var EmptyBody = foxx.Model.extend({
-        schema: {
-        }
-    });
 
     var controller = new foxx.Controller(applicationContext);
     controller.allRoutes
@@ -32,18 +28,6 @@ var error = require('error');
                 error: e.message
             }
         });
-
-    var ActivityModel = foxx.Model.extend({
-        schema: {
-            name: joi.string(),
-            description: joi.string(),
-            max_attendees: joi.number().integer(),
-            creator: joi.string(),
-            tagged_interests: joi.array(),    // format string
-            suggested_times: joi.array(),     // format TimeModel
-            suggested_locations: joi.array() // format LocationModel
-        }
-    });
 
     /*
      * createActivity
@@ -86,36 +70,19 @@ var error = require('error');
 
         res.body = "Success";
     }).bodyParam('Activity', {
-        type: ActivityModel
-    });
-
-    var IcebreakerAnswerModel = foxx.Model.extend({
-        schema: {
-            activity_id: joi.string(),
-            user_id: joi.string(),
-            answer: joi.string()
-        }
+        type: model.ActivityModel
     });
 
     controller.post('/icebreaker/answer', function(req, res) {
 
     }).bodyParam('Answer', {
-        type: IcebreakerAnswerModel
+        type: model.IcebreakerAnswerModel
     });
-
-    var IcebreakerModel = foxx.Model.extend({
-        schema: {
-            activity_id: joi.string(),
-            question: joi.string(),
-            answer: joi.string()
-        }
-    });
-
 
     controller.put('/icebreaker', function(req, res) {
 
     }).bodyParam('Icebreaker', {
-        type: IcebreakerModel
+        type: model.IcebreakerModel
     });
 
     controller.delete('/:activity_id/user/:user_id', function(req, res) {
@@ -128,19 +95,12 @@ var error = require('error');
         description: 'The user to remove from activity'
     });
 
-    var TimeModel = foxx.Model.extend({
-       schema: {
-           start: joi.number().integer(),
-           end: joi.number().integer()
-       }
-    });
-
     controller.put('/:activity_id/time', function(req, res) {
 
     }).pathParam('activity_id', {
         type: joi.string()
     }).bodyParam('Time', {
-        type: TimeModel
+        type: model.TimeModel
     });
 
     controller.post('/:activity_id/time/:time_id/user/:user_id', function(req, res) {
@@ -155,21 +115,16 @@ var error = require('error');
         type: joi.string(),
         description: 'The user that is confirming'
     }).bodyParam('Undocumented', {
-        type: EmptyBody
+        type: model.EmptyBody
     });
 
-    var LocationModel = foxx.Model.extend({
-        schema: {
-            activity_id: joi.string(),
-            latitude: joi.number(),
-            longitude: joi.number()
-        }
-    });
+    controller.put(':activity_id/location', function(req, res) {
 
-    controller.put('/location', function(req, res) {
-
+    }).pathParam('activity_id', {
+        type: joi.string(),
+        description: 'The activity to suggest location for'
     }).bodyParam('Location', {
-        type: LocationModel
+        type: model.LocationModel
     });
 
     controller.post('/:activity_id/location/:location_id', function(req, res) {
@@ -181,34 +136,19 @@ var error = require('error');
         type: joi.string(),
         description: 'The location to confirm for'
     }).bodyParam('Undocumented', {
-        type: EmptyBody
-    });
-
-    var CommentModel = foxx.Model.extend({
-       schema: {
-           activity_id: joi.string(),
-           user_id: joi.string(),
-           comment: joi.string()
-       }
+        type: model.EmptyBody
     });
 
     controller.put('/comment', function(req, res) {
 
     }).bodyParam('Comment', {
-        type: CommentModel
-    });
-
-    var ReportModel = foxx.Model.extend({
-       schema: {
-           reported_user_id: joi.string(),
-           reported_comment_id: joi.string()
-       }
+        type: model.CommentModel
     });
 
     controller.put('/report', function(req, res) {
 
     }).bodyParam('Report', {
-        type: ReportModel
+        type: model.ReportModel
     });
 
     /*
@@ -226,7 +166,7 @@ var error = require('error');
         type: joi.string(),
         description: 'The interest text'
     }).bodyParam('Undocumented', {
-        type: EmptyBody
+        type: model.EmptyBody
     });
 
     /*
@@ -244,6 +184,6 @@ var error = require('error');
         type: joi.string(),
         description: 'User id to add to activity'
     }).bodyParam('Undocumented', {
-        type: EmptyBody
+        type: model.EmptyBody
     });
 }());

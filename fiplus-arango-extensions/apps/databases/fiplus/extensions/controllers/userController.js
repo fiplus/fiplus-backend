@@ -6,7 +6,7 @@ var user = require('db-interface/node/user');
 var in_location = require('db-interface/edge/in_location');
 var is_available = require('db-interface/edge/is_available');
 var interested_in = require('db-interface/edge/interested_in');
-
+var model = require('model');
 
 
 (function() {
@@ -30,33 +30,20 @@ var interested_in = require('db-interface/edge/interested_in');
             }
         });
 
-    var UserModel = foxx.Model.extend({
-        schema: {
-            email: joi.string()
-        }
-    });
-
     //Register user
     controller.post("/register", function (req, res) {
         var user_input = req.params("User");
         (new user.User()).saveUserToDb(user_input.get("email"));
 
     }).bodyParam("User", {
-        type: UserModel
-    });
-
-    var HistoryRequestModel = foxx.Model.extend({
-        schema: {
-            duration: joi.number().integer(),
-            targetuser: joi.string()
-        }
+        type: model.UserModel
     });
 
     //User can view recently attended activities
     controller.get("/users/history", function (req, res) {
         //stub
     }).bodyParam("HistoryRequest", {
-        type: HistoryRequestModel
+        type: model.HistoryRequestModel
     });
 
     //Delete user
@@ -66,34 +53,10 @@ var interested_in = require('db-interface/edge/interested_in');
         //stub
     });
 
-    //Edit user
-    var ConfigUserModel = foxx.Model.extend({
-        schema: {
-            username: joi.string(),
-            email: joi.string(),
-            password: joi.string()
-        }
-    });
-
     controller.put("/", function (req, res) {
         //stub
     }).bodyParam("ConfigUser", {
-        type: ConfigUserModel
-    });
-
-    //User configures profile/setting
-    var UserProfileModel = foxx.Model.extend({
-        schema: {
-            email: joi.string(),
-            profile_pic: joi.string(),
-            age: joi.number().integer(),
-            gender: joi.string(),
-            latitude: joi.number(),
-            longitude: joi.number(),
-            location_proximity_setting: joi.boolean(),
-            availabilities: joi.array(), // item type TimeModel
-            tagged_interests: joi.array() // type String
-        }
+        type: model.ConfigUserModel
     });
 
     /*
@@ -130,21 +93,16 @@ var interested_in = require('db-interface/edge/interested_in');
             (new interested_in.InterestedIn()).saveUserInterest(target_user._id, input_interest_name);
         }
     }).bodyParam("UserProfile", {
-        type: UserProfileModel
+        type: model.UserProfileModel
     });
 
-
-    var EmptyBody = foxx.Model.extend({
-        schema: {
-        }
-    });
     //Add Favourite
     controller.post("/favourites/:user_name", function (req, res) {
         //stub
     }).pathParam('user_name', {
         type: joi.string(),
         description: 'The user to add to favourites'
-    }).bodyParam("Undocumented",{type: EmptyBody});
+    }).bodyParam("Undocumented",{type: model.EmptyBody});
 
     //Delete Favourite
     controller.delete("/favourites/:user_name", function (req, res) {
