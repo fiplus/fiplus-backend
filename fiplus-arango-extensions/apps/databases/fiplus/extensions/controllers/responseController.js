@@ -6,6 +6,7 @@ var model = require("model");
    'use strict';
 
     var controller = new foxx.Controller(applicationContext);
+
     /*
      * responses
      */
@@ -13,5 +14,7 @@ var model = require("model");
         // Empty as this request is only here as a placeholder for response models
     }).bodyParam('InterestResponse', {
         type: model.InterestArrayModel
+    }).bodyParam('ActivityResponse', {
+        type: model.ActivityArrayModel
     });
 }());
