@@ -1,7 +1,11 @@
 var db = require('org/arangodb').db;
 var error = require('error');
 
-var Joined = new function()
+/**
+ * Constructs a joined db interface object
+ * @constructor
+ */
+var Joined = function()
 {
     this.db = db;
     this.COLLECTION_NAME = 'joined';

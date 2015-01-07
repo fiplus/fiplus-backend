@@ -71,4 +71,16 @@ db.interested_in.save(user2,int2,{});
 db.interested_in.save(user2,int3,{});
 
 // Activity
-db.activity.save({_key:'1'});
+db.activity.save({
+    _key:'1',
+    name:'A1',
+    description:'event 1',
+    max_attendees:5
+});
+
+db.activity.save({
+    _key:'2',
+    name:'A2',
+    description:'event 2',
+    max_attendees:0
+});

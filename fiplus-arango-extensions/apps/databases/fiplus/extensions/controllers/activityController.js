@@ -4,8 +4,8 @@ var db = require("org/arangodb").db;
 var creator = require('db-interface/edge/created').Created;
 var tagger = require('db-interface/edge/tagged').Tagged;
 var suggester = require('db-interface/edge/suggested').Suggested;
+var joiner = require('db-interface/edge/joined').Joined;
 var error = require('error');
-var tag = require('db-interface/edge/tagged');
 
 (function() {
     "use strict";
@@ -53,11 +53,14 @@ var tag = require('db-interface/edge/tagged');
             throw new error.NotAllowedError("Non-group activities are ");
         }
 
+        var creator_id = 'user/' + activity.get('creator');
         var Creator = new creator();
-        var created_edge = db.created.document((Creator.saveCreatedEdge(activity.get('creator'),activity.get('name'),
+        var created_edge = db.created.document((Creator.saveCreatedEdge(creator_id ,activity.get('name'),
             activity.get('description'), max))._id);
         var activity_id = created_edge._to;
 
+        var Joiner = new joiner();
+        Joiner.setUserJoinedActivity(creator_id, activity_id);
 
         var Tagger = new tagger();
         var interests = activity.get('tagged_interests');
@@ -147,15 +150,7 @@ var tag = require('db-interface/edge/tagged');
     }).pathParam('user_id', {
         type: joi.string(),
         description: 'User id to add to activity'
-    }).errorResponse(errors.NotFoundError, 404, 'Not Found', function(e) {
-        return {
-            error: e.message
-        }
-    }).errorResponse(errors.NotAllowedError, 400, 'Not Allowed', function(e) {
-        return {
-            error: e.message
-        }
-    });;
+    });
 
     controller.delete('/:activity_id/user/:user_id', function(req, res) {
 

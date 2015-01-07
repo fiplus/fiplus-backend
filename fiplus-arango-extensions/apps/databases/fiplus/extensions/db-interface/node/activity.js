@@ -32,4 +32,14 @@ Activity.prototype.saveActivityToDb = function(name, description, maximum_attend
     return result;
 };
 
+Activity.prototype.getNumJoiners = function(activity_id) {
+    return this.db.joined.outEdges(activity_id).length;
+};
+Activity.prototype.getMaximum = function(activity_id) {
+    return this.db.activity.document(activity_id).maximum_attendance;
+};
+Activity.prototype.activityFull = function(activity_id) {
+    return this.getNumJoiners(activity_id) >= this.getMaximum(activity_id);
+};
+
 exports.Activity = Activity;
