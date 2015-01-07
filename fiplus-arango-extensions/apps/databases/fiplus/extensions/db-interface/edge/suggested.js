@@ -22,6 +22,11 @@ Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, en
 {
     var result;
 
+    if(!(db.activity.exists(activity_id)))
+    {
+        throw new error.NotFoundError('Activity');
+    }
+
     // check to see if suggestion already exists
     db.suggested.outEdges(activity_id).forEach(function(edge) {
         var suggestion_id = edge._to;
@@ -55,6 +60,11 @@ Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, en
 Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, longitude)
 {
     var result;
+
+    if(!db.activity.exists(activity_id))
+    {
+        throw new error.NotFoundError('Activity');
+    }
 
     // check to see if suggestion already exists
     db.suggested.outEdges(activity_id).forEach(function(edge) {

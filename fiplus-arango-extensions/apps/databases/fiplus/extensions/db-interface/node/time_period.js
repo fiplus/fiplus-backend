@@ -24,8 +24,8 @@ TimePeriod.prototype.saveTimePeriod = function(start_time, end_time)
         throw new error.NotAllowedError("End time before start time");
     }
 
-    var now = Date();
-    if(end_time < now.value) {
+    var nowMillis = Date.now();
+    if(end_time < nowMillis) {
         throw new error.NotAllowedError("Time periods in past");
     }
 
