@@ -95,14 +95,6 @@ var model = require('model');
         description: 'The user to remove from activity'
     });
 
-    controller.put('/:activity_id/time', function(req, res) {
-
-    }).pathParam('activity_id', {
-        type: joi.string()
-    }).bodyParam('Time', {
-        type: model.TimeModel
-    });
-
     controller.post('/:activity_id/time/:time_id/user/:user_id', function(req, res) {
 
     }).pathParam('activity_id', {
@@ -118,13 +110,39 @@ var model = require('model');
         type: model.EmptyBody
     });
 
-    controller.put(':activity_id/location', function(req, res) {
+    /*
+     * suggestTimePeriodForActivity
+     */
+    controller.put('/:activityId/time', function(request, response) {
+        var activityId = 'activity/'+request.params('activityId');
+        var times = request.params('Time');
 
-    }).pathParam('activity_id', {
+        var suggest = new suggester();
+        suggest.saveSuggestedTimeEdge(activityId, times.get('start'), times.get('end'));
+
+    }).pathParam('activityId', {
         type: joi.string(),
-        description: 'The activity to suggest location for'
+        description: 'Activity suggestion will be linked to'
+    }).bodyParam('Time', {
+        type: model.TimeModel,
+        description: 'The suggested start and end time'
+    });
+
+    /*
+     * suggestLocationForActivity
+     */
+    controller.put('/:activityId/location', function(request, response) {
+        var activityId = 'activity/'+request.params('activityId');
+        var times = request.params('Location');
+
+        var suggest = new suggester();
+        suggest.saveSuggestedLocationEdge(activityId, times.get('latitude'), times.get('longitude'));
+    }).pathParam('activityId', {
+        type: joi.string(),
+        description: 'Activity to be linked to location'
     }).bodyParam('Location', {
-        type: model.LocationModel
+        type: model.LocationModel,
+        description: 'The latitude and longitude of the location'
     });
 
     controller.post('/:activity_id/location/:location_id', function(req, res) {

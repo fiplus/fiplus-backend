@@ -42,13 +42,13 @@ frisby.create("User configure profile basic test")
         "availabilities": [
             {
                 // 1/1/2015 1 - 5am
-                start: 1420099200000,
-                end: 1420113600000
+                start: 4102513200000,
+                end: 4102516800000
             },
             {
                 // 2/1/2015 1 - 5pm
-                start: 1420228800000,
-                end: 1420243200000
+                start: 4105191600000,
+                end: 4105195200000
             }
         ],
         "tagged_interests": [
@@ -87,19 +87,19 @@ frisby.create("Check for documents/edges created in basic user profile test")
     })
     .expectJSON('result.visited.vertices.?',
     {
-        value: 1420099200000
+        value: 4102513200000
     })
     .expectJSON('result.visited.vertices.?',
     {
-        value: 1420113600000
+        value: 4102516800000
     })
     .expectJSON('result.visited.vertices.?',
     {
-        value: 1420228800000
+        value: 4105191600000
     })
     .expectJSON('result.visited.vertices.?',
     {
-        value: 1420243200000
+        value: 4105195200000
     })
 
     .toss();

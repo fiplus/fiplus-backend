@@ -107,3 +107,121 @@ describe("Join activity", function () {
     });
 });
 
+describe('Suggest Time', function() {
+    it('should suggest time', function(){
+        frisby.create('Suggest Valid Time for activity')
+            .put('http://localhost:8529/_db/fiplus/dev/extensions/activity/1/time',
+            {
+                // jan. 1, 2050 12 - 1pm
+                start:2524676400000,
+                end:2524680000000
+            },{json:true})
+            .expectStatus(200)
+            .toss();
+
+        frisby.create('Check if suggestion got properly added')
+            .post("http://localhost:8529/_db/fiplus/_api/traversal",
+            {
+                startVertex:'activity/1',
+                graphName:'fiplus',
+                direction:'outbound'
+            }, {json:true})
+            .expectJSON('result.visited.vertices.?',
+            {
+                value:2524676400000
+            })
+            .expectJSON('result.visited.vertices.?',
+            {
+                value:2524680000000
+            })
+            .toss();
+    });
+
+    it('suggests duplicate time', function() {
+        frisby.create('Suggest Duplicate Time')
+            .put('http://localhost:8529/_db/fiplus/dev/extensions/activity/1/time',
+            {
+                // jan. 1, 2050 12 - 1pm
+                start:2524676400000,
+                end:2524680000000
+            },{json:true})
+            .expectStatus(400)
+            .toss();
+    });
+
+    it('suggests past time', function() {
+        frisby.create('Suggest Past Time for activity')
+            .put('http://localhost:8529/_db/fiplus/dev/extensions/activity/1/time',
+            {
+                // jan. 1, 2000 12 - 1pm
+                start:946753200000,
+                end:946756800000
+            },{json:true})
+            .expectStatus(400)
+            .toss();
+    });
+
+    it('suggest invalid time', function() {
+        frisby.create('Suggest invalid time period for activity')
+            .put('http://localhost:8529/_db/fiplus/dev/extensions/activity/1/time',
+            {
+                // jan. 1, 2000 12 - 1pm
+                start:946756800000,
+                end:946753200000
+            },{json:true})
+            .expectStatus(400)
+            .toss();
+    });
+
+    it('suggests for non-existing activity', function() {
+        frisby.create('Suggest Non-existing for activity')
+            .put('http://localhost:8529/_db/fiplus/dev/extensions/activity/0/time',
+            {
+                // jan. 1, 2000 12 - 1pm
+                start:946753200000,
+                end:946756800000
+            },{json:true})
+            .expectStatus(404)
+            .toss();
+    });
+});
+
+describe('Suggest Location', function(){
+    it('suggests a location', function() {
+        frisby.create('Suggest Valid Location for activity')
+            .put('http://localhost:8529/_db/fiplus/dev/extensions/activity/1/location',
+            {
+                // jan. 1, 2050 12 - 1pm
+                latitude:100,
+                longitude:23
+            },{json:true})
+            .expectStatus(200)
+            .toss();
+
+        frisby.create('Check if suggestion got properly added')
+            .post("http://localhost:8529/_db/fiplus/_api/traversal",
+            {
+                startVertex:'activity/1',
+                graphName:'fiplus',
+                direction:'outbound'
+            }, {json:true})
+            .expectJSON('result.visited.vertices.?',
+            {
+                latitude:100,
+                longitude:23
+            })
+            .toss();
+    });
+
+    it('suggests duplicate location', function() {
+        frisby.create('Suggest duplicate Valid Location for activity')
+            .put('http://localhost:8529/_db/fiplus/dev/extensions/activity/1/location',
+            {
+                // jan. 1, 2050 12 - 1pm
+                latitude:100,
+                longitude:23
+            },{json:true})
+            .expectStatus(400)
+            .toss();
+    });
+});
