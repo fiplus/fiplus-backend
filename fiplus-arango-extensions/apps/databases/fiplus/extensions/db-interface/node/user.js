@@ -110,4 +110,11 @@ User.prototype.updateUserLocationProximitySetting = function(target_user_id, loc
     return result;
 };
 
+User.prototype.exists = function(user_id) {
+    if(!this.db.user.exists(user_id)) {
+        throw new error.NotFoundError("User " + user_id);
+    }
+    return true;
+};
+
 exports.User = User;

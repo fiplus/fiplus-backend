@@ -32,4 +32,19 @@ Activity.prototype.saveActivityToDb = function(name, description, maximum_attend
     return result;
 };
 
+Activity.prototype.exists = function(activity_id) {
+    if(!this.db.activity.exists(activity_id)) {
+        throw new error.NotFoundError("Activity " + activity_id);
+    }
+    return true;
+};
+
+Activity.prototype.activityFull = function(activity_id) {
+    var activity = this.db.activity.document(activity_id);
+    var max = activity[this.MAXIMUM_ATTENDANCE_FIELD];
+    var fill = this.db.joined.outEdges(activity_id).length;
+
+    return (fill >= max);
+};
+
 exports.Activity = Activity;

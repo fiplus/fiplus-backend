@@ -4,8 +4,8 @@ var db = require("org/arangodb").db;
 var creator = require('db-interface/edge/created').Created;
 var tagger = require('db-interface/edge/tagged').Tagged;
 var suggester = require('db-interface/edge/suggested').Suggested;
+var joiner = require('db-interface/edge/joined').Joined;
 var error = require('error');
-var tag = require('db-interface/edge/tagged');
 
 (function() {
     "use strict";
@@ -56,11 +56,14 @@ var tag = require('db-interface/edge/tagged');
             throw new error.NotAllowedError("Non-group activities are ");
         }
 
+        var creator_id = 'user/' + activity.get('creator');
         var Creator = new creator();
-        var created_edge = db.created.document((Creator.saveCreatedEdge(activity.get('creator'),activity.get('name'),
+        var created_edge = db.created.document((Creator.saveCreatedEdge(creator_id ,activity.get('name'),
             activity.get('description'), max))._id);
         var activity_id = created_edge._to;
 
+        var Joiner = new joiner();
+        Joiner.setUserJoinedActivity(creator_id, activity_id);
 
         var Tagger = new tagger();
         var interests = activity.get('tagged_interests');
@@ -108,22 +111,11 @@ var tag = require('db-interface/edge/tagged');
         }
     });
 
+
     controller.put('/icebreaker', function(req, res) {
 
     }).bodyParam('Icebreaker', {
         type: IcebreakerModel
-    });
-
-    controller.put('/:activity_id/user/:user_id', function(req, res) {
-
-    }).pathParam('activity_id', {
-        type: joi.string(),
-        description: 'The activity to join'
-    }).pathParam('user_id', {
-        type: joi.string(),
-        description: 'User id to add to activity'
-    }).bodyParam('Undocumented', {
-        type: EmptyBody
     });
 
     controller.delete('/:activity_id/user/:user_id', function(req, res) {
@@ -225,6 +217,7 @@ var tag = require('db-interface/edge/tagged');
     controller.put('/:activityid/interest/:interest', function(request, response){
         var activityHandle = 'activity/' + request.params('activityid');
         var interest = request.params('interest');
+
         (new tagger()).tagActivityWithInterest(activityHandle, interest);
     }).pathParam('activityid', {
         type: joi.string(),
@@ -236,4 +229,21 @@ var tag = require('db-interface/edge/tagged');
         type: EmptyBody
     });
 
+    /*
+     * joinActivity
+     */
+    controller.put('/:activityid/user/:userid', function(req, res) {
+        var activity_id = 'activity/' + req.params('activityid');
+        var user_id = 'user/' + req.params('userid');
+
+        (new joiner()).setUserJoinedActivity(user_id, activity_id);
+    }).pathParam('activityid', {
+        type: joi.string(),
+        description: 'The activity to join'
+    }).pathParam('userid', {
+        type: joi.string(),
+        description: 'User id to add to activity'
+    }).bodyParam('Undocumented', {
+        type: EmptyBody
+    });
 }());
