@@ -84,3 +84,15 @@ db.activity.save({
     description:'activity 2',
     maximum_attendance:0
 });
+var activity1 = db.activity.save({name:'BasketballNW'});
+var activity2 = db.activity.save({name:'BasketballSW'});
+var activity3 = db.activity.save({name:'BasketballNE'});
+var activity4 = db.activity.save({name:'BasketballSE'});
+var activity5 = db.activity.save({name:'SoccerSE'});
+
+//tagged
+db.tagged.save(activity1,int3,{});
+db.tagged.save(activity2,int3,{});
+db.tagged.save(activity3,int3,{});
+db.tagged.save(activity4,int3,{});
+db.tagged.save(activity5,int1,{});
