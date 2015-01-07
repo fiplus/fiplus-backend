@@ -32,13 +32,15 @@ var UserModel = foxx.Model.extend({
             }
         });
 
-    /*
-     * matchActivities
-     */
-    controller.get('/activities', function (request, response) {
-        var user_email = request.params('email');
-        var num_activities_requested = request.params('num_activities');
-        var user_object = (new user.User()).getUserWithEmail(user_email);
+
+    var locationModel = foxx.Model.extend({
+	schema: {
+	    lat: joi.number(),
+	    lon: joi.number()
+	}
+    });
+
+    function matchEventsWithUserInterests(user_object, num_activities_requested){
         var user_interests_array = [];
         //Get all interests of given user
         db.interested_in.outEdges(user_object._id).forEach(function(edge) {
@@ -58,6 +60,18 @@ var UserModel = foxx.Model.extend({
                 }
             });
         }
+        return activities;
+    };
+
+    /*
+     * matchActivities
+     */
+    controller.get('/activities', function (request, response) {
+        var user_email = request.params('email');
+        var num_activities_requested = request.params('num_activities');
+        var user_object = (new user.User()).getUserWithEmail(user_email);
+        var activities = matchEventsWithUserInterests(user_object, num_activities_requested);
+
         var jsonactivities = {};
         jsonactivities["activities"] = activities;
         response.json(jsonactivities);
@@ -73,14 +87,14 @@ var UserModel = foxx.Model.extend({
     }).queryParam("by_interest", {
       type: joi.boolean(),
       required: false,
-      description: 'If activities should be filtered by user interest (false by default)'
+      description: 'NOT USABLE YET! If activities should be filtered by user interest (false by default)'
     }).queryParam("priority_offset", {
       type: joi.number().integer(),
       required: false,
-      description: 'The priority level to start at (zero by default). To be used when updating activity list with new activities and the first priority_offset number of activities should be skipped.'
+      description: 'NOT USABLE YET! The priority level to start at (zero by default). To be used when updating activity list with new activities and the first priority_offset number of activities should be skipped.'
     }).bodyParam('location', {
       type: model.LocationModel,
 	  required: false,
-      description: 'Location near which to search for activities'
+      description: 'NOT USABLE YET! Location near which to search for activities'
     });
 }());

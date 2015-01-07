@@ -6,6 +6,19 @@ var model = require("model");
    'use strict';
 
     var controller = new foxx.Controller(applicationContext);
+
+    var InterestArrayModel = foxx.Model.extend({
+       schema: {
+           interests: joi.array()
+       }
+    });
+
+    var ActivityArrayModel = foxx.Model.extend({
+        schema: {
+            activities: joi.array()
+        }
+    });
+
     /*
      * responses
      */
