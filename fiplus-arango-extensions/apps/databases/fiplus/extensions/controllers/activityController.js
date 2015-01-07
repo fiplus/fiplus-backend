@@ -5,6 +5,8 @@ var creator = require('db-interface/edge/created').Created;
 var tagger = require('db-interface/edge/tagged').Tagged;
 var suggester = require('db-interface/edge/suggested').Suggested;
 var joiner = require('db-interface/edge/joined').Joined;
+var actor = require('db-interface/node/activity').Activity;
+var user = require('db-interface/node/user').User;
 var error = require('error');
 
 (function() {
@@ -117,39 +119,11 @@ var error = require('error');
         }
     });
 
+
     controller.put('/icebreaker', function(req, res) {
 
     }).bodyParam('Icebreaker', {
         type: IcebreakerModel
-    });
-
-    controller.put('/:activity_id/user/:user_id', function(req, res) {
-        var activity_id = req.params('activity_id');
-        var user_id = req.params('user_id');
-        
-        if(!db.activity.exists(activity_id)) {
-            throw new errors.NotFoundError('Activity');
-        }
-    
-        if(!db.users.exists(user_id)) {
-            throw new errors.NotFoundError('Users');
-        }
-    
-        var joinedEdge = db.joined.firstExample({ _to : user_id, _from : user_id });
-        if(taggedEdge == null) {
-            var result = db.joined.save(user_id, event_id, {});
-            if(result.error == true) {
-                throw new GenericError('Failed to save joined edge.');
-            }
-        } else {
-            throw new errors.NotAllowedError('Duplicate tags');
-        }
-    }).pathParam('activity_id', {
-        type: joi.string(),
-        description: 'The activity to join'
-    }).pathParam('user_id', {
-        type: joi.string(),
-        description: 'User id to add to activity'
     });
 
     controller.delete('/:activity_id/user/:user_id', function(req, res) {
@@ -248,6 +222,7 @@ var error = require('error');
     controller.put('/:activityid/interest/:interest', function(request, response){
         var activityHandle = 'activity/' + request.params('activityid');
         var interest = request.params('interest');
+
         (new tagger()).tagActivityWithInterest(activityHandle, interest);
     }).pathParam('activityid', {
         type: joi.string(),
@@ -259,4 +234,28 @@ var error = require('error');
         type: EmptyBody
     });
 
+    controller.put('/:activityid/user/:userid', function(req, res) {
+        var activity_id = 'activity/' + req.params('activityid');
+        var user_id = 'user/' + req.params('userid');
+
+        var Actor = new actor();
+        Actor.exists(activity_id);
+        (new user()).exists(user_id);
+
+        if(Actor.activityFull(activity_id)) {
+            throw new error.NotAllowedError('Activity is full. Joining is');
+        } else {
+            (new joiner()).setUserJoinedActivity(user_id, activity_id);
+        }
+
+        res.body = "Success";
+    }).pathParam('activityid', {
+        type: joi.string(),
+        description: 'The activity to join'
+    }).pathParam('userid', {
+        type: joi.string(),
+        description: 'User id to add to activity'
+    }).bodyParam('Undocumented', {
+        type: EmptyBody
+    });
 }());

@@ -35,11 +35,20 @@ Activity.prototype.saveActivityToDb = function(name, description, maximum_attend
 Activity.prototype.getNumJoiners = function(activity_id) {
     return this.db.joined.outEdges(activity_id).length;
 };
-Activity.prototype.getMaximum = function(activity_id) {
-    return this.db.activity.document(activity_id).maximum_attendance;
+
+Activity.prototype.exists = function(activity_id) {
+    if(!this.db.activity.exists(activity_id)) {
+        throw new error.NotFoundError("Activity " + activity_id);
+    }
+    return true;
 };
+
 Activity.prototype.activityFull = function(activity_id) {
-    return this.getNumJoiners(activity_id) >= this.getMaximum(activity_id);
+    var activity = this.db.activity.document(activity_id);
+    var max = activity.maximum_attendance;
+    var fill = this.db.joined.outEdges(activity_id).length;
+
+    return (fill >= max);
 };
 
 exports.Activity = Activity;

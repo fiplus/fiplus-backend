@@ -12,6 +12,7 @@ var Joined = function()
     this.FROM_FIELD = '_from';
     this.TO_FIELD = '_to';
 };
+var console = require('console');
 
 Joined.prototype.setUserJoinedActivity = function(userHandle, activityHandle)
 {
@@ -21,6 +22,7 @@ Joined.prototype.setUserJoinedActivity = function(userHandle, activityHandle)
     var result = this.db.joined.firstExample(joinedObject);
     if(result == null)
     {
+        console.log(joinedObject);
         result = this.db.joined.save(userHandle, activityHandle, {});
         if(result.error == true)
         {

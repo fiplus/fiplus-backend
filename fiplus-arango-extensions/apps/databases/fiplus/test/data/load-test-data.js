@@ -75,12 +75,12 @@ db.activity.save({
     _key:'1',
     name:'A1',
     description:'event 1',
-    max_attendees:5
+    maximum_attendance:5
 });
 
 db.activity.save({
     _key:'2',
     name:'A2',
     description:'event 2',
-    max_attendees:0
+    maximum_attendance:0
 });
