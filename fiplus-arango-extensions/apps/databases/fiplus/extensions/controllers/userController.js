@@ -96,7 +96,7 @@ var interested_in = require('db-interface/edge/interested_in');
         }
     });
 
-    /**
+    /*
      * saveUserProfile
      */
     controller.put("/profile", function (req, res) {

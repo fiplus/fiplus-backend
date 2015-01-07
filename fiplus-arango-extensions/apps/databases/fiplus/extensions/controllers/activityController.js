@@ -45,7 +45,7 @@ var error = require('error');
         }
     });
 
-    /**
+    /*
      * createActivity
      */
     controller.post('/', function(req, res) {
@@ -211,7 +211,7 @@ var error = require('error');
         type: ReportModel
     });
 
-    /**
+    /*
      * tagActivityWithInterest
      */
     controller.put('/:activityid/interest/:interest', function(request, response){

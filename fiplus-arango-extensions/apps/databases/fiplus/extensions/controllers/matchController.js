@@ -21,7 +21,7 @@ var UserModel = foxx.Model.extend({
 	}
     });
 
-    /**
+    /*
      * matchEvents
      */
     controller.get('/events', function (req, res) {

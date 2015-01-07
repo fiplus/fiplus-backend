@@ -12,7 +12,7 @@ var joi = require("joi");
        }
     });
 
-    /**
+    /*
      * responses
      */
     controller.put('/', function(request, response) {
