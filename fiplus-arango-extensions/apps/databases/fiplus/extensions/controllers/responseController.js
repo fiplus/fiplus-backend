@@ -7,18 +7,6 @@ var model = require("model");
 
     var controller = new foxx.Controller(applicationContext);
 
-    var InterestArrayModel = foxx.Model.extend({
-       schema: {
-           interests: joi.array()
-       }
-    });
-
-    var ActivityArrayModel = foxx.Model.extend({
-        schema: {
-            activities: joi.array()
-        }
-    });
-
     /*
      * responses
      */
@@ -26,5 +14,7 @@ var model = require("model");
         // Empty as this request is only here as a placeholder for response models
     }).bodyParam('InterestResponse', {
         type: model.InterestArrayModel
+    }).bodyParam('ActivityResponse', {
+        type: model.ActivityArrayModel
     });
 }());

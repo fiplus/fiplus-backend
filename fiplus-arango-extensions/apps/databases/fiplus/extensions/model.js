@@ -119,3 +119,10 @@ var InterestArrayModel = foxx.Model.extend({
     }
 });
 exports.InterestArrayModel = InterestArrayModel;
+
+var ActivityArrayModel = foxx.Model.extend({
+    schema: {
+        activities: joi.array()
+    }
+});
+exports.ActivityArrayModel = ActivityArrayModel;
