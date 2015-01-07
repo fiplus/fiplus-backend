@@ -72,15 +72,6 @@ var tag = require('db-interface/edge/tagged');
         var times = activity.get('suggested_times');
         for (var i = 0; i < times.length; i++) {
             var time = times[i];
-            // disallow end time before start time
-            if(time.end < time.start) {
-                throw new error.NotAllowedError("Activity ending before it starts is ");
-            }
-            // disallow date suggestions in the past
-            var now = Date();
-            if(time.end < now.value) {
-                throw new error.NotAllowedError("A suggestion in the past is ");
-            }
             Suggester.saveSuggestedTimeEdge(activity_id, time.start, time.end);
         }
 

@@ -20,6 +20,15 @@ TimePeriod.prototype.saveTimePeriod = function(start_time, end_time)
 {
     var result;
 
+    if(end_time < start_time) {
+        throw new error.NotAllowedError("End time before start time");
+    }
+
+    var now = Date();
+    if(end_time < now.value) {
+        throw new error.NotAllowedError("Time periods in past");
+    }
+
     //Prevent the creation of a time period with the same start and end time as another time period.
     var time_period_collection = this.db.time_period.toArray();
     var time_period_collection_length = this.db.time_period.count();
