@@ -69,41 +69,41 @@ describe("Tag activity", function () {
 describe("Join activity", function () {
     it("should join existing activity", function () {
         frisby.create(this.description)
-            .put("http://localhost:8529/_db/fiplus/dev/extensions/activity/1/user/2")
-            .expectStatus(200)
-             .after(function() {
-             frisby.create(this.description + ' db check')
-             .post("http://localhost:8529/_db/fiplus/_api/traversal", {
-             startVertex: 'activity/1',
-             graphName: 'fiplus',
-             direction: 'inbound',
-             edgeCollection: 'joined'
-             }, {json: true})
-             .expectJSON('result.visited.vertices.?', {
-             email: 'test2@data.com'
-             })
-             .toss();
-             })
+        .put("http://localhost:8529/_db/fiplus/dev/extensions/activity/1/user/2")
+        .expectStatus(200)
+        .after(function() {
+            frisby.create(this.description + ' db check')
+            .post("http://localhost:8529/_db/fiplus/_api/traversal", {
+                startVertex: 'activity/1',
+                graphName: 'fiplus',
+                direction: 'inbound',
+                edgeCollection: 'joined'
+            }, {json: true})
+            .expectJSON('result.visited.vertices.?', {
+                email: 'test2@data.com'
+            })
             .toss();
+        })
+        .toss();
     });
 
-     it("should fail to join a non-existing activity", function () {
-     frisby.create(this.description)
-     .put("http://localhost:8529/_db/fiplus/dev/extensions/activity/0/user/2")
-     .expectStatus(404)
-     .toss();
-     });
-     it("should fail to join a non-existing user", function () {
-     frisby.create(this.description)
-     .put("http://localhost:8529/_db/fiplus/dev/extensions/activity/1/user/0")
-     .expectStatus(404)
-     .toss();
-     });
-     it("should fail to join if activity is full", function () {
-     frisby.create(this.description)
-     .put("http://localhost:8529/_db/fiplus/dev/extensions/activity/2/user/2")
-     .expectStatus(400)
-     .toss();
-     });
+    it("should fail to join a non-existing activity", function () {
+        frisby.create(this.description)
+        .put("http://localhost:8529/_db/fiplus/dev/extensions/activity/0/user/2")
+        .expectStatus(404)
+        .toss();
+    });
+    it("should fail to join a non-existing user", function () {
+        frisby.create(this.description)
+        .put("http://localhost:8529/_db/fiplus/dev/extensions/activity/1/user/0")
+        .expectStatus(404)
+        .toss();
+    });
+    it("should fail to join if activity is full", function () {
+        frisby.create(this.description)
+        .put("http://localhost:8529/_db/fiplus/dev/extensions/activity/2/user/2")
+        .expectStatus(400)
+        .toss();
+    });
 });
 

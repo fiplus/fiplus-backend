@@ -74,13 +74,13 @@ db.interested_in.save(user2,int3,{});
 db.activity.save({
     _key:'1',
     name:'A1',
-    description:'event 1',
+    description:'activity 1',
     maximum_attendance:5
 });
 
 db.activity.save({
     _key:'2',
     name:'A2',
-    description:'event 2',
+    description:'activity 2',
     maximum_attendance:0
 });

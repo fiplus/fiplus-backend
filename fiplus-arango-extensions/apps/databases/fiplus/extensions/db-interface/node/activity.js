@@ -32,10 +32,6 @@ Activity.prototype.saveActivityToDb = function(name, description, maximum_attend
     return result;
 };
 
-Activity.prototype.getNumJoiners = function(activity_id) {
-    return this.db.joined.outEdges(activity_id).length;
-};
-
 Activity.prototype.exists = function(activity_id) {
     if(!this.db.activity.exists(activity_id)) {
         throw new error.NotFoundError("Activity " + activity_id);
@@ -45,7 +41,7 @@ Activity.prototype.exists = function(activity_id) {
 
 Activity.prototype.activityFull = function(activity_id) {
     var activity = this.db.activity.document(activity_id);
-    var max = activity.maximum_attendance;
+    var max = activity[this.MAXIMUM_ATTENDANCE_FIELD];
     var fill = this.db.joined.outEdges(activity_id).length;
 
     return (fill >= max);

@@ -5,8 +5,6 @@ var creator = require('db-interface/edge/created').Created;
 var tagger = require('db-interface/edge/tagged').Tagged;
 var suggester = require('db-interface/edge/suggested').Suggested;
 var joiner = require('db-interface/edge/joined').Joined;
-var actor = require('db-interface/node/activity').Activity;
-var user = require('db-interface/node/user').User;
 var error = require('error');
 
 (function() {
@@ -234,21 +232,14 @@ var error = require('error');
         type: EmptyBody
     });
 
+    /*
+     * joinActivity
+     */
     controller.put('/:activityid/user/:userid', function(req, res) {
         var activity_id = 'activity/' + req.params('activityid');
         var user_id = 'user/' + req.params('userid');
 
-        var Actor = new actor();
-        Actor.exists(activity_id);
-        (new user()).exists(user_id);
-
-        if(Actor.activityFull(activity_id)) {
-            throw new error.NotAllowedError('Activity is full. Joining is');
-        } else {
-            (new joiner()).setUserJoinedActivity(user_id, activity_id);
-        }
-
-        res.body = "Success";
+        (new joiner()).setUserJoinedActivity(user_id, activity_id);
     }).pathParam('activityid', {
         type: joi.string(),
         description: 'The activity to join'
