@@ -5,8 +5,10 @@ var creator = require('db-interface/edge/created').Created;
 var tagger = require('db-interface/edge/tagged').Tagged;
 var suggester = require('db-interface/edge/suggested').Suggested;
 var joiner = require('db-interface/edge/joined').Joined;
+var voted = require('db-interface/edge/voted').Voted;
 var error = require('error');
 var model = require('model');
+
 
 (function() {
     "use strict";
@@ -143,6 +145,25 @@ var model = require('model');
     }).bodyParam('Location', {
         type: model.LocationModel,
         description: 'The latitude and longitude of the location'
+    });
+
+    /*
+     * voteForSuggestion
+     */
+    controller.post('/suggestion/:suggestionId/user/:userId', function(request, response) {
+        var suggestionId = 'suggestion/' + request.params('suggestionId');
+        var userId = 'user/' + request.params('userId');
+
+        (new voted()).saveUserVote(userId, suggestionId);
+
+    }).pathParam('suggestionId', {
+        type: joi.string(),
+        description: 'The suggestion id being voted for'
+    }).pathParam('userId', {
+        type: joi.string(),
+        description: 'The user that is voting'
+    }).bodyParam('Undocumented', {
+        type: model.EmptyBody
     });
 
     controller.post('/:activity_id/location/:location_id', function(req, res) {
