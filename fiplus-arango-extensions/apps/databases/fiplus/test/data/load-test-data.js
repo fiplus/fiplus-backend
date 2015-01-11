@@ -46,15 +46,24 @@ var time3 = db.time_stamp.save({"value":1417456800000});
 // 1 pm
 var time4 = db.time_stamp.save({"value":1417464000000});
 
+//1/1/2100 1200
+var time5 = db.time_stamp.save({"value":4102513200000});
+//1/1/2100 1300
+var time6 = db.time_stamp.save({"value":4102516800000});
+
 // Time period
 var tp1 = db.time_period.save({});
 var tp2 = db.time_period.save({});
+var tp3 = db.time_period.save({});
 
 // start test data
 db.start.save(tp1,time1,{});
 db.end.save(tp1,time2,{});
 db.start.save(tp2,time3,{});
 db.end.save(tp2,time4,{});
+
+db.start.save(tp3,time5,{});
+db.end.save(tp3,time6,{});
 
 // In Location test data
 db.in_location.save(user1, loc1,{});
@@ -71,14 +80,14 @@ db.interested_in.save(user2,int2,{});
 db.interested_in.save(user2,int3,{});
 
 // Activity
-db.activity.save({
+var act1 = db.activity.save({
     _key:'1',
     name:'A1',
     description:'activity 1',
     maximum_attendance:5
 });
 
-db.activity.save({
+var act2 = db.activity.save({
     _key:'2',
     name:'A2',
     description:'activity 2',
@@ -96,3 +105,12 @@ db.tagged.save(activity2,int3,{});
 db.tagged.save(activity3,int3,{});
 db.tagged.save(activity4,int3,{});
 db.tagged.save(activity5,int1,{});
+
+//Suggestions
+var sug1 = db.suggestion.save({_key:'1'});
+db.is.save(sug1, tp3, {});
+db.suggested.save(act1, sug1, {});
+
+var sug2 = db.suggestion.save({_key:'2'});
+db.is.save(sug2, loc4, {});
+db.suggested.save(act1, sug2, {});

@@ -225,3 +225,41 @@ describe('Suggest Location', function(){
             .toss();
     });
 });
+
+describe('Suggestion Vote', function() {
+    it('saves suggestion votes', function() {
+        frisby.create('time vote')
+            .post('http://localhost:8529/_db/fiplus/dev/extensions/activity/suggestion/1/user/1')
+            .expectStatus(200)
+            .toss();
+
+        frisby.create('location vote')
+            .post('http://localhost:8529/_db/fiplus/dev/extensions/activity/suggestion/2/user/1')
+            .expectStatus(200)
+            .toss();
+
+        frisby.create('Check if vote got properly added')
+            .post("http://localhost:8529/_db/fiplus/_api/traversal",
+            {
+                startVertex: 'user/1',
+                graphName: 'fiplus',
+                direction: 'outbound',
+                edgeCollection: 'voted',
+                maxDepth: 3
+            }, {json: true})
+            .expectJSON('result.visited.vertices.?',
+            {
+                value: 4102513200000
+            })
+            .expectJSON('result.visited.vertices.?',
+            {
+                value: 4102516800000
+            })
+            .expectJSON('result.visited.vertices.?',
+            {
+                latitude: 150,
+                longitude: 150
+            });
+
+    });
+});
