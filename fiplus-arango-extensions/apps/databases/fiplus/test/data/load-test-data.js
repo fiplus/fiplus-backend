@@ -43,19 +43,16 @@ var time2 = db.time_stamp.save({"value":1417460400000});
 var time3 = db.time_stamp.save({"value":1417456800000});
 // Dec 1, 2014 1 pm
 var time4 = db.time_stamp.save({"value":1417464000000});
-// Jan 10, 3012 2 pm
-var time5 = db.time_stamp.save({"value":32883069600000});
-// Jan 10, 3012 3 pm
-var time6 = db.time_stamp.save({"value":32883073200000});
+//1/1/2100 1200
+var time5 = db.time_stamp.save({"value":4102513200000});
+//1/1/2100 1300
+var time6 = db.time_stamp.save({"value":4102516800000});
 // Jan 11, 3012 8 pm
 var time7 = db.time_stamp.save({"value":32883177600000});
 // Jan 11, 3012 9 pm
 var time8 = db.time_stamp.save({"value":32883181200000});
 
-//1/1/2100 1200
-var time5 = db.time_stamp.save({"value":4102513200000});
-//1/1/2100 1300
-var time6 = db.time_stamp.save({"value":4102516800000});
+
 
 // Time period
 var tp1 = db.time_period.save({});
@@ -72,9 +69,6 @@ db.start.save(tp3, time5,{});
 db.end.save(tp3, time6,{});
 db.start.save(tp4, time7,{});
 db.end.save(tp4, time8,{});
-
-db.start.save(tp3,time5,{});
-db.end.save(tp3,time6,{});
 
 // In Location test data
 db.in_location.save(user1, loc1,{});

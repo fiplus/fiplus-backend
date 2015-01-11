@@ -60,7 +60,7 @@ Joined.prototype.getJoiners = function(activity_id, maximum)
     var limit = (num_joiners <= maximum)? num_joiners: maximum;
 
     for(var i = 0; i < limit; i++) {
-        joiners.push(joined_array[i]._from);
+        joiners.push(this.db.user.document(joined_array[i]._from)._key);
     }
     return joiners;
 }

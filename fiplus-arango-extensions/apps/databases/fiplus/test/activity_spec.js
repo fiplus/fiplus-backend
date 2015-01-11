@@ -277,7 +277,7 @@ describe('Get Activity', function() {
                 "name": "A2",
                 "description": "activity 2",
                 "max_attendees": 0,
-                "creator": "user/2",
+                "creator": "2",
                 "tagged_interests": [
                     "hockey",
                     "basketball"
@@ -287,8 +287,8 @@ describe('Get Activity', function() {
                         "attributes": {},
                         "isValid": true,
                         "errors": {},
-                        "start": 32883069600000,
-                        "end": 32883073200000
+                        "start": 4102513200000,
+                        "end": 4102516800000
                     }
                 ],
                 "suggested_locations": [
@@ -332,9 +332,9 @@ describe('Get Attendees', function() {
                 "errors": {},
                 "num_attendees": 3,
                 "joiners": [
-                    "user/2",
-                    "user/3",
-                    "user/1"
+                    "2",
+                    "3",
+                    "1"
                 ]
             })
             .toss();
@@ -358,8 +358,8 @@ describe('Get Attendees', function() {
                 "errors": {},
                 "num_attendees": 3,
                 "joiners": [
-                    "user/2",
-                    "user/3"
+                    "2",
+                    "3"
                 ]
             })
             .toss();
@@ -376,9 +376,9 @@ describe('Get Attendees', function() {
                 "errors": {},
                 "num_attendees": 3,
                 "joiners": [
-                    "user/2",
-                    "user/3",
-                    "user/1"
+                    "2",
+                    "3",
+                    "1"
                 ]
             })
             .toss();

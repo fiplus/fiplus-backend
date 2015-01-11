@@ -32,7 +32,8 @@ Created.prototype.saveCreatedEdge = function(user_id, activity_name, description
 
 Created.prototype.getCreator = function(activity_id)
 {
-    return this.db.created.inEdges(activity_id)[0]._from;
+    var creator_id = this.db.created.inEdges(activity_id)[0]._from;
+    return this.db.user.document(creator_id)._key;
 }
 
 exports.Created = Created;
