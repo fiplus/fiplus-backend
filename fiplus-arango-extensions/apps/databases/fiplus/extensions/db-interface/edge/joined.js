@@ -13,6 +13,7 @@ var Joined = function()
     this.COLLECTION_NAME = 'joined';
     this.FROM_FIELD = '_from';
     this.TO_FIELD = '_to';
+    this.GET_JOINER_MAX = 50;
 };
 
 Joined.prototype.setUserJoinedActivity = function(userHandle, activityHandle)
@@ -42,5 +43,26 @@ Joined.prototype.setUserJoinedActivity = function(userHandle, activityHandle)
     }
     return result;
 };
+
+Joined.prototype.getNumJoiners = function(activity_id)
+{
+    return this.db.joined.edges(activity_id).length;
+}
+
+Joined.prototype.getJoiners = function(activity_id, maximum)
+{
+    if(maximum == null) {
+        maximum = this.GET_JOINER_MAX;
+    }
+    var joiners = [];
+    var num_joiners = this.getNumJoiners(activity_id);
+    var joined_array = this.db.joined.inEdges(activity_id);
+    var limit = (num_joiners <= maximum)? num_joiners: maximum;
+
+    for(var i = 0; i < limit; i++) {
+        joiners.push(joined_array[i]._from);
+    }
+    return joiners;
+}
 
 exports.Joined = Joined;

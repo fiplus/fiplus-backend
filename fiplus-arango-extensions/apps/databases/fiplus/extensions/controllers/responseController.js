@@ -16,7 +16,7 @@ var model = require("model");
         type: model.InterestArrayModel
     }).bodyParam('ActivitiesResponse', {
         type: model.ActivityArrayModel
-    }).bodyParam('ActivityResponse', {
+    }).bodyParam('ActivityDetailResponse', {
         type: model.ActivityModel
     });
 }());

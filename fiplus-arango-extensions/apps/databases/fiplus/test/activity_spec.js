@@ -318,3 +318,69 @@ describe('Get Activity', function() {
             .toss();
     });
 });
+
+describe('Get Attendees', function() {
+    it('should return a list of attendees information.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/activity/2/user?Limit=100',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "attributes": {},
+                "isValid": true,
+                "errors": {},
+                "num_attendees": 3,
+                "joiners": [
+                    "user/2",
+                    "user/3",
+                    "user/1"
+                ]
+            })
+            .toss();
+    });
+    it('should fail to get non-existent activity.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/activity/0?Limit=100',
+            {})
+            .expectStatus(404)
+            .toss();
+    });
+    it('should only return as many users as the prescribed limit.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/activity/2/user?Limit=2',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "attributes": {},
+                "isValid": true,
+                "errors": {},
+                "num_attendees": 3,
+                "joiners": [
+                    "user/2",
+                    "user/3"
+                ]
+            })
+            .toss();
+    });
+    it('should default to 50 as a limit.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/activity/2/user',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "attributes": {},
+                "isValid": true,
+                "errors": {},
+                "num_attendees": 3,
+                "joiners": [
+                    "user/2",
+                    "user/3",
+                    "user/1"
+                ]
+            })
+            .toss();
+    });
+});

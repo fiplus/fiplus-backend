@@ -136,8 +136,13 @@ var locSug4 = db.suggestion.save({});
 
 // Creators
 db.created.save(user1, act1, {});
+db.joined.save(user1, act1, {});
 db.created.save(user2, act2, {});
+db.joined.save(user2, act2, {});
 
+// Joiners
+db.joined.save(user1, act2, {});
+db.joined.save(user3, act2, {});
 // Tagged
 db.tagged.save(act1, int1, {});
 db.tagged.save(act2, int2, {});

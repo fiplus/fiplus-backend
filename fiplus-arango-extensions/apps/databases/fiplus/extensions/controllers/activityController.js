@@ -1,6 +1,5 @@
 var foxx = require("org/arangodb/foxx");
 var joi = require("joi");
-var qb = require('aqb');
 var db = require("org/arangodb").db;
 var creator = require('db-interface/edge/created').Created;
 var tagger = require('db-interface/edge/tagged').Tagged;
@@ -82,23 +81,46 @@ var model = require('model');
     */
     controller.get('/:activityid', function(req, res) {
         var activity_id = 'activity/' + req.params('activityid');
-        var eventDetail = new model.ActivityModel();
+        var activityDetail = new model.ActivityModel();
         var Actor = new actor();
         var activity_node = Actor.get(activity_id);
-        eventDetail.name = activity_node[Actor.NAME_FIELD];
-        eventDetail.description = activity_node[Actor.DESCRIPTION_FIELD];
-        eventDetail.max_attendees = activity_node[Actor.MAXIMUM_ATTENDANCE_FIELD];
-        eventDetail.creator = (new creator()).getCreator(activity_id);
-        eventDetail.tagged_interests = (new tagger()).getTags(activity_id);
+        activityDetail.name = activity_node[Actor.NAME_FIELD];
+        activityDetail.description = activity_node[Actor.DESCRIPTION_FIELD];
+        activityDetail.max_attendees = activity_node[Actor.MAXIMUM_ATTENDANCE_FIELD];
+        activityDetail.creator = (new creator()).getCreator(activity_id);
+        activityDetail.tagged_interests = (new tagger()).getTags(activity_id);
         // TODO if there is a confirmed time/location, return an array of 1 with only the confirmed suggestion
         var Suggester = new suggester();
-        eventDetail.suggested_times = Suggester.getSuggestedTimes(activity_id);
-        eventDetail.suggested_locations = Suggester.getSuggestedLocations(activity_id);
+        activityDetail.suggested_times = Suggester.getSuggestedTimes(activity_id);
+        activityDetail.suggested_locations = Suggester.getSuggestedLocations(activity_id);
 
-        res.json(eventDetail);
+        res.json(activityDetail);
     }).pathParam('activityid', {
         type: joi.string(),
         description: 'The activity more information is requested for'
+    });
+
+    /*
+     * GetAttendees
+     */
+    controller.get('/:activityid/user', function(req, res) {
+        var activity_id = 'activity/' + req.params('activityid');
+        var lim = req.params('Limit');
+        var attendeeDetail = new model.AttendeeModel();
+        (new actor()).exists(activity_id);
+
+        var Joiner = new joiner();
+        attendeeDetail.num_attendees = Joiner.getNumJoiners(activity_id);
+        // TODO attendeeDetail.participants
+        attendeeDetail.joiners =  Joiner.getJoiners(activity_id, lim);
+
+        res.json(attendeeDetail);
+    }).pathParam('activityid', {
+        type: joi.string(),
+        description: 'The activity more information is requested for'
+    }).queryParam('Limit', {
+        type: joi.number().integer(),
+        description: 'The maximum number of attendees to return'
     });
 
     controller.post('/icebreaker/answer', function(req, res) {

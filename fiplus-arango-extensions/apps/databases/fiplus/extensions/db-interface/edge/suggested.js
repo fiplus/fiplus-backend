@@ -49,7 +49,7 @@ Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, en
         }
     });
 
-    var suggestion_node = (new sug.Suggestion()).saveTimeSuggestion(start_time, end_time);
+    var suggestion_node = (new sug()).saveTimeSuggestion(start_time, end_time);
     var result = this.db.suggested.save(activity_id, suggestion_node._id, {});
     if(result.error == true) {
         throw new error.GenericError('Saving suggested time ' + start_time + ', ' + end_time + ' failed.');
