@@ -10,7 +10,9 @@ var User = function()
 {
     this.db = db;
     this.COLLECTION_NAME = 'user';
+    this.USERNAME_FIELD = 'username';
     this.EMAIL_FIELD = 'email';
+    this.PASSWORD_FIELD = 'password';
     this.USERNAME_FIELD = 'username';
     this.PROFILE_PIC_FIELD = 'profile_pic';
     this.AGE_FIELD = 'age';
@@ -25,13 +27,15 @@ User.prototype.getUserWithEmail = function(email)
     return this.db.user.firstExample(userObject);
 };
 
-User.prototype.saveUserToDb = function(email)
+User.prototype.saveUserToDb = function(username, email, password)
 {
     var userObject = {};
     userObject[this.EMAIL_FIELD] = email;
     var result;
     if(this.db.user.firstExample(userObject) == null)
     {
+        userObject[this.USERNAME_FIELD] = username;
+        userObject[this.PASSWORD_FIELD] = password;
         result = this.db.user.save(userObject);
         if(result.error == true)
         {

@@ -1,4 +1,5 @@
 var foxx = require("org/arangodb/foxx");
+var auth = foxx.requireApp('/credential-auth').auth;
 var joi = require("joi");
 var db = require("org/arangodb").db;
 var error = require('error');
@@ -31,13 +32,18 @@ var model = require('model');
             }
         });
 
-    //Register user
-    controller.post("/register", function (req, res) {
-        var user_input = req.params("User");
-        (new user.User()).saveUserToDb(user_input.get("email"));
-
-    }).bodyParam("User", {
-        type: model.UserModel
+    /*
+     * registerUser
+     */
+    controller.post('/register', function(req, res) {
+        var credentials = req.params('credentials'),
+            username = credentials.get('username'),
+            email = credentials.get('email'),
+            password = auth.hashPassword(credentials.get('password'));
+        (new user.User()).saveUserToDb(username, email, password);
+    }).bodyParam('credentials', {
+        type: model.CredentialModel,
+        description: 'Username and Password'
     });
 
     //User can view recently attended activities
@@ -48,8 +54,6 @@ var model = require('model');
     });
 
     //Delete user
-
-
     controller.delete("/", function (req, res) {
         //stub
     });
