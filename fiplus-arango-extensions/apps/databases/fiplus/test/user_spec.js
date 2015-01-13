@@ -36,6 +36,39 @@ describe("Register User", function () {
     });
 });
 
+describe("Login", function () {
+    it("should allow the login of a registered user", function () {
+        frisby.create(this.description)
+            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
+            {
+                "user": "AUSER2",
+                "email": "auser2@auser.auser",
+                "password": "Au$3r2"
+            }, {json: true})
+            .toss();
+        frisby.create(this.description)
+            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/login',
+            {
+                "email": "auser2@auser.auser",
+                "password": "Au$3r2"
+            }, {json: true})
+            .expectStatus(200)
+            .toss();
+    });
+
+    it("should not register existing user", function () {
+        frisby.create(this.description)
+            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
+            {
+                "user": "AnotherUSER",
+                email: "auser@auser.auser",
+                "password": "pAssw0rd"
+            }, {json: true})
+            .expectStatus(400)
+            .toss();
+    });
+});
+
 describe("configure User Profile", function () {
     it("should add information to the user's profile", function () {
         frisby.create(this.description)

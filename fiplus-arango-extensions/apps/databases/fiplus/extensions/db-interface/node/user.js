@@ -27,6 +27,11 @@ User.prototype.getUserWithEmail = function(email)
     return this.db.user.firstExample(userObject);
 };
 
+User.prototype.getPassHashWithEmail = function(email)
+{
+    return this.getUserWithEmail(email)[this.PASSWORD_FIELD];
+};
+
 User.prototype.saveUserToDb = function(username, email, password)
 {
     var userObject = {};

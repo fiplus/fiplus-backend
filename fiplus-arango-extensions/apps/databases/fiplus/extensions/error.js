@@ -16,6 +16,13 @@ var NotAllowedError = function(operationdesc) {
 NotAllowedError.code = 400;
 NotAllowedError.prototype = new Error();
 
+var UnauthorizedError = function(credential, task) {
+    this.message = credential + ' is not authorized to perform ' + task + '.';
+};
+UnauthorizedError.code = 401;
+UnauthorizedError.prototype = new Error();
+
 exports.GenericError = GenericError;
 exports.NotFoundError = NotFoundError;
 exports.NotAllowedError = NotAllowedError;
+exports.UnauthorizedError = UnauthorizedError;

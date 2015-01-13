@@ -135,12 +135,19 @@ var AttendeeModel = foxx.Model.extend({
     }
 });
 exports.AttendeeModel = AttendeeModel;
-
 var CredentialModel = foxx.Model.extend({
     schema: {
-        username: joi.string(),
         email: joi.string(),
         password: joi.string()
     }
 });
 exports.CredentialModel = CredentialModel;
+
+var RegisterModel = foxx.Model.extend({
+    schema: {
+        email: joi.string(),
+        username: joi.string(),
+        password: joi.string()
+    }
+});
+exports.RegisterModel = RegisterModel;

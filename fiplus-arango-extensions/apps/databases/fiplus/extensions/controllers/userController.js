@@ -3,7 +3,7 @@ var auth = foxx.requireApp('/credential-auth').auth;
 var joi = require("joi");
 var db = require("org/arangodb").db;
 var error = require('error');
-var user = require('db-interface/node/user');
+var user = require('db-interface/node/user').User;
 var in_location = require('db-interface/edge/in_location');
 var location = require('db-interface/node/location');
 var is_available = require('db-interface/edge/is_available');
@@ -30,17 +30,40 @@ var model = require('model');
             return{
                 error: e.message
             }
+        })
+        .errorResponse(error.UnauthorizedError, error.UnauthorizedError.code, 'Authentication Error', function(e) {
+            return{
+                error: e.message
+            }
         });
 
     /*
      * registerUser
      */
     controller.post('/register', function(req, res) {
-        var credentials = req.params('credentials'),
+        var credentials = req.params('registration'),
             username = credentials.get('username'),
             email = credentials.get('email'),
             password = auth.hashPassword(credentials.get('password'));
-        (new user.User()).saveUserToDb(username, email, password);
+        (new user()).saveUserToDb(username, email, password);
+    }).bodyParam('registration', {
+        type: model.RegisterModel,
+        description: 'Username, Email, and Password'
+    });
+
+    /*
+     * login
+     */
+    controller.post('/login', function(req, res) {
+        var credentials = req.params('credentials'),
+            email = credentials.get('email');
+        var passHash = (new user()).getPassHashWithEmail(email);
+        var valid = auth.verifyPassword(passHash, credentials.get('password'));
+        if (valid) {
+            res.body = 'Success';
+        } else {
+            throw new error.UnauthorizedError(email, 'login');
+        }
     }).bodyParam('credentials', {
         type: model.CredentialModel,
         description: 'Username and Password'
@@ -73,12 +96,12 @@ var model = require('model');
 
         //It is expected that this will return a valid value because the email used at this point is the email used to login
         //which is a prerequisite before a user can configure a profile. No error check needed.
-        var target_user = (new user.User()).getUserWithEmail(userprofile.get("email"));
+        var target_user = (new user()).getUserWithEmail(userprofile.get("email"));
         (new user.User()).updateUsername(target_user._id, userprofile.get('username'));
-        (new user.User()).updateUserProfilePic(target_user._id, userprofile.get("profile_pic"));
-        (new user.User()).updateUserAge(target_user._id, userprofile.get("age"));
-        (new user.User()).updateUserGender(target_user._id, userprofile.get("gender"));
-        (new user.User()).updateUserLocationProximitySetting(target_user._id, userprofile.get("location_proximity_setting"));
+        (new user()).updateUserProfilePic(target_user._id, userprofile.get("profile_pic"));
+        (new user()).updateUserAge(target_user._id, userprofile.get("age"));
+        (new user()).updateUserGender(target_user._id, userprofile.get("gender"));
+        (new user()).updateUserLocationProximitySetting(target_user._id, userprofile.get("location_proximity_setting"));
 
         (new in_location.InLocation()).saveInLocationEdge(target_user._id, userprofile.get("latitude"), userprofile.get("longitude"));
 
