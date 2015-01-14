@@ -1,6 +1,6 @@
 var db = require('org/arangodb').db;
 var error = require('error');
-var location = require('db-interface/node/location');
+var location = require('db-interface/node/location').Location;
 
 
 /**
@@ -70,5 +70,15 @@ InLocation.prototype.updateInLocationEdge = function(in_location_id, user_id, la
     return result;
 };
 
+/**
+ * Get the location of a user.
+ */
+InLocation.prototype.getUserLocation = function(user_id)
+{
+    var userlocation_id = this.db.in_location.outEdges(user_id)[0]._to;
+    var Location = new location();
+    var userlocation_node = Location.get(userlocation_id);
+    return userlocation_node;
+};
 
 exports.InLocation = InLocation;

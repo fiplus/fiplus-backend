@@ -103,3 +103,47 @@ frisby.create("Check for documents/edges created in basic user profile test")
     })
 
     .toss();
+
+describe('Get User Profile', function() {
+    it('should return user profile information with given email address.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/userfi/profile/test3@data.com',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "attributes": {},
+                "isValid": true,
+                "errors": {},
+                "email": "test3@data.com",
+                "profile_pic": "any",
+                "age": 21,
+                "gender": "male",
+                "latitude": 101,
+                "longitude": 201,
+                "location_proximity_setting": true,
+                "availabilities": [
+                    {
+                        "attributes": {},
+                        "isValid": true,
+                        "errors": {},
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    },
+                    {
+                        "attributes": {},
+                        "isValid": true,
+                        "errors": {},
+                        "start": 4105191600000,
+                        "end": 4105195200000
+                    }
+                ],
+                "tagged_interests": [
+                    'soccer',
+                    'hockey',
+                    'basketball'
+                ]
+            })
+            .toss();
+    });
+});
