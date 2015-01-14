@@ -20,7 +20,6 @@ var ActivityModel = foxx.Model.extend({
 });
 exports.ActivityModel = ActivityModel;
 
-
 var IcebreakerModel = foxx.Model.extend({
     schema: {
         activity_id: joi.string(),
@@ -126,3 +125,13 @@ var ActivityArrayModel = foxx.Model.extend({
     }
 });
 exports.ActivityArrayModel = ActivityArrayModel;
+
+
+var AttendeeModel = foxx.Model.extend({
+    schema: {
+        num_attendees: joi.number().integer(),
+        participants: joi.array(),   // format string (ids)
+        joiners: joi.array()     // format string (ids)
+    }
+});
+exports.AttendeeModel = AttendeeModel;

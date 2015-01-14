@@ -263,3 +263,124 @@ describe('Suggestion Vote', function() {
 
     });
 });
+describe('Get Activity', function() {
+   it('should return activity information.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/activity/2',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "attributes": {},
+                "isValid": true,
+                "errors": {},
+                "name": "A2",
+                "description": "activity 2",
+                "max_attendees": 0,
+                "creator": "2",
+                "tagged_interests": [
+                    "hockey",
+                    "basketball"
+                ],
+                "suggested_times": [
+                    {
+                        "attributes": {},
+                        "isValid": true,
+                        "errors": {},
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    }
+                ],
+                "suggested_locations": [
+                    {
+                        "attributes": {},
+                        "isValid": true,
+                        "errors": {},
+                        "longitude": 150,
+                        "latitude": 150
+                    },
+                    {
+                        "attributes": {},
+                        "isValid": true,
+                        "errors": {},
+                        "longitude": 100,
+                        "latitude": 50
+                    }
+                ]
+            })
+            .toss();
+    });
+    it('should fail to get non-existent activity.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/activity/0',
+            {})
+            .expectStatus(404)
+            .toss();
+    });
+});
+
+describe('Get Attendees', function() {
+    it('should return a list of attendees information.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/activity/2/user?Limit=100',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "attributes": {},
+                "isValid": true,
+                "errors": {},
+                "num_attendees": 3,
+                "joiners": [
+                    "2",
+                    "3",
+                    "1"
+                ]
+            })
+            .toss();
+    });
+    it('should fail to get non-existent activity.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/activity/0?Limit=100',
+            {})
+            .expectStatus(404)
+            .toss();
+    });
+    it('should only return as many users as the prescribed limit.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/activity/2/user?Limit=2',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "attributes": {},
+                "isValid": true,
+                "errors": {},
+                "num_attendees": 3,
+                "joiners": [
+                    "2",
+                    "3"
+                ]
+            })
+            .toss();
+    });
+    it('should default to 50 as a limit.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/activity/2/user',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "attributes": {},
+                "isValid": true,
+                "errors": {},
+                "num_attendees": 3,
+                "joiners": [
+                    "2",
+                    "3",
+                    "1"
+                ]
+            })
+            .toss();
+    });
+});

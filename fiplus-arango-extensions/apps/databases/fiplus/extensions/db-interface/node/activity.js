@@ -32,6 +32,11 @@ Activity.prototype.saveActivityToDb = function(name, description, maximum_attend
     return result;
 };
 
+Activity.prototype.get = function(activity_id) {
+    this.exists(activity_id);
+    return this.db.activity.document(activity_id);
+}
+
 Activity.prototype.exists = function(activity_id) {
     if(!this.db.activity.exists(activity_id)) {
         throw new error.NotFoundError("Activity " + activity_id);

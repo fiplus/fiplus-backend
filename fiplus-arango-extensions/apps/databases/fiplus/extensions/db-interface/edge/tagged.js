@@ -1,7 +1,6 @@
 var db = require('org/arangodb').db;
 var error = require('error');
-var interest = require('db-interface/node/interest');
-
+var interest = require('db-interface/node/interest').Interest;
 /**
  * Constructs an tagged db interface object
  * @constructor
@@ -22,7 +21,7 @@ Tagged.prototype.tagActivityWithInterest = function(activityHandle, interestText
     }
 
     // Checking for interest and saving if doesn't exist
-    var interestApi = new interest.Interest();
+    var interestApi = new interest();
     var existingInterest = interestApi.saveInterestToDb(interestText);
 
     var taggedObject = {};
@@ -39,6 +38,16 @@ Tagged.prototype.tagActivityWithInterest = function(activityHandle, interestText
         }
     }
     return result;
+};
+
+Tagged.prototype.getTags = function(activity_id)
+{
+    var Interest = new interest();
+    var tags = [];
+    this.db.tagged.outEdges(activity_id).forEach(function(edge) {
+        tags.push(Interest.getInterest(edge._to));
+    });
+    return tags;
 };
 
 exports.Tagged = Tagged;
