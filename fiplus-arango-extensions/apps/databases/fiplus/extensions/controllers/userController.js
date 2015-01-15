@@ -105,6 +105,7 @@ var model = require('model');
         var userProfileDetail = new model.UserProfileModel();
         var User = new user.User();
         var user_node = User.getUserWithEmail(useremail);
+        User.exists(user_node._id);
         userProfileDetail.email = useremail;
         userProfileDetail.profile_pic = user_node[User.PROFILE_PIC_FIELD];
         userProfileDetail.age = user_node[User.AGE_FIELD];
