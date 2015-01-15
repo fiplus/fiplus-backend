@@ -4,6 +4,7 @@ var db = require("org/arangodb").db;
 var error = require('error');
 var user = require('db-interface/node/user');
 var in_location = require('db-interface/edge/in_location');
+var location = require('db-interface/node/location');
 var is_available = require('db-interface/edge/is_available');
 var interested_in = require('db-interface/edge/interested_in');
 var model = require('model');
@@ -94,6 +95,33 @@ var model = require('model');
         }
     }).bodyParam("UserProfile", {
         type: model.UserProfileModel
+    });
+
+    /*
+     * GetUserProfile
+     */
+    controller.get('/profile/:useremail', function(req, res) {
+        var useremail = req.params('useremail');
+        var userProfileDetail = new model.UserProfileModel();
+        var User = new user.User();
+        var user_node = User.getUserWithEmail(useremail);
+        User.exists(user_node._id);
+        userProfileDetail.email = useremail;
+        userProfileDetail.profile_pic = user_node[User.PROFILE_PIC_FIELD];
+        userProfileDetail.age = user_node[User.AGE_FIELD];
+        userProfileDetail.gender = user_node[User.GENDER_FIELD];
+        var Location = new location.Location();
+        var location_node = (new in_location.InLocation()).getUserLocation(user_node._id);
+        userProfileDetail.latitude = location_node[Location.LATITUDE_FIELD];
+        userProfileDetail.longitude = location_node[Location.LONGITUDE_FIELD];
+        userProfileDetail.location_proximity_setting = user_node[User.LOCATION_PROXIMITY_SETTING_FIELD];
+        userProfileDetail.availabilities = (new is_available.IsAvailable()).getUserAvailabilities(user_node._id);
+        userProfileDetail.tagged_interests = (new interested_in.InterestedIn()).getUserInterests(user_node._id);
+
+        res.json(userProfileDetail);
+    }).pathParam('useremail', {
+        type: joi.string(),
+        description: 'The email of user to get profile for'
     });
 
     //Add Favourite

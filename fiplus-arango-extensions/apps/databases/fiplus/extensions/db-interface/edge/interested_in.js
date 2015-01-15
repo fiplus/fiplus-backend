@@ -35,5 +35,16 @@ InterestedIn.prototype.saveUserInterest = function(userHandle, interestText)
     return result;
 };
 
+
+InterestedIn.prototype.getUserInterests = function(userHandle)
+{
+    var Interest = new interest.Interest();
+    var userinterests = [];
+    this.db.interested_in.outEdges(userHandle).forEach(function(edge) {
+        userinterests.push(Interest.getInterest(edge._to));
+    });
+    return userinterests;
+};
+
 exports.InterestedIn = InterestedIn;
 
