@@ -1,26 +1,32 @@
 // User test data
 var user1 = db.user.save({
     "_key": "1",
-    "email": "test@data.com",
-    "profile_pic": "any",
-    "age": 20,
-    "gender": "male",
-    "location_proximity_setting": true
+    "user": "test@data.com",
+    "userData" :
+    {
+        "profile_pic": "any",
+        "age": 20,
+        "gender": "male",
+        "location_proximity_setting": true
+    }
 });
 
 var user2 = db.user.save({
     "_key": "2",
-    "email": "test2@data.com",
-    "profile_pic": "any",
-    "age": 20,
-    "gender": "female",
-    "location_proximity_setting": true
+    "user": "test2@data.com",
+    "userData" :
+    {
+        "profile_pic": "any",
+        "age": 20,
+        "gender": "female",
+        "location_proximity_setting": true
+    }
 });
 
 // A newly registered user used in user profile tests
 var user3 = db.user.save({
     _key: "3",
-    email: "test3@data.com"
+    user: "test3@data.com"
 });
 
 // Location test data

@@ -42,23 +42,27 @@ var model = require('model');
      */
     controller.post('/register', function(req, res) {
         var credentials = req.params('registration'),
-            username = credentials.get('username'),
             email = credentials.get('email'),
-            password = auth.hashPassword(credentials.get('password'));
-        (new user()).saveUserToDb(username, email, password);
+            password = {simple: auth.hashPassword(credentials.get('password'))};
+        (new user()).saveUserToDb(email, password);
     }).bodyParam('registration', {
-        type: model.RegisterModel,
-        description: 'Username, Email, and Password'
+        type: model.CredentialModel,
+        description: 'Email, and Password'
     });
 
     /*
      * login
      */
     controller.post('/login', function(req, res) {
-        var credentials = req.params('credentials'),
-            email = credentials.get('email');
-        var passHash = (new user()).getPassHashWithEmail(email);
-        var valid = auth.verifyPassword(passHash, credentials.get('password'));
+        var credentials = req.params('credentials');
+        var User = new user();
+
+        var user_node = User.getUserWithEmail(credentials.get('email'));
+        var valid = auth.verifyPassword(
+            user_node ? user_node[User.AUTH_FIELD].simple : {},
+            credentials.get('password')
+        );
+
         if (valid) {
             res.body = 'Success';
         } else {
@@ -66,7 +70,7 @@ var model = require('model');
         }
     }).bodyParam('credentials', {
         type: model.CredentialModel,
-        description: 'Username and Password'
+        description: 'Email and Password'
     });
 
     //User can view recently attended activities
@@ -96,12 +100,13 @@ var model = require('model');
 
         //It is expected that this will return a valid value because the email used at this point is the email used to login
         //which is a prerequisite before a user can configure a profile. No error check needed.
-        var target_user = (new user()).getUserWithEmail(userprofile.get("email"));
-        (new user.User()).updateUsername(target_user._id, userprofile.get('username'));
-        (new user()).updateUserProfilePic(target_user._id, userprofile.get("profile_pic"));
-        (new user()).updateUserAge(target_user._id, userprofile.get("age"));
-        (new user()).updateUserGender(target_user._id, userprofile.get("gender"));
-        (new user()).updateUserLocationProximitySetting(target_user._id, userprofile.get("location_proximity_setting"));
+        var User = new user();
+        var target_user = User.getUserWithEmail(userprofile.get("email"));
+        User.updateUsername(target_user._id, userprofile.get('username'));
+        User.updateUserProfilePic(target_user._id, userprofile.get("profile_pic"));
+        User.updateUserAge(target_user._id, userprofile.get("age"));
+        User.updateUserGender(target_user._id, userprofile.get("gender"));
+        User.updateUserLocationProximitySetting(target_user._id, userprofile.get("location_proximity_setting"));
 
         (new in_location.InLocation()).saveInLocationEdge(target_user._id, userprofile.get("latitude"), userprofile.get("longitude"));
 
@@ -125,25 +130,29 @@ var model = require('model');
         type: model.UserProfileModel
     });
 
+    var console = require('console');
     /*
      * GetUserProfile
      */
     controller.get('/profile/:useremail', function(req, res) {
         var useremail = req.params('useremail');
         var userProfileDetail = new model.UserProfileModel();
-        var User = new user.User();
+        var User = new user();
+
         var user_node = User.getUserWithEmail(useremail);
-        User.exists(user_node._id);
         userProfileDetail.email = useremail;
-        userProfileDetail.username = user_node[User.USERNAME_FIELD];
-        userProfileDetail.profile_pic = user_node[User.PROFILE_PIC_FIELD];
-        userProfileDetail.age = user_node[User.AGE_FIELD];
-        userProfileDetail.gender = user_node[User.GENDER_FIELD];
+
+        var user_data = user_node[User.DATA_FIELD];
+        userProfileDetail.username = user_data[User.DATA_USERNAME_FIELD];
+        userProfileDetail.profile_pic = user_data[User.DATA_PROFILE_PIC_FIELD];
+        userProfileDetail.age = user_data[User.DATA_AGE_FIELD];
+        userProfileDetail.gender = user_data[User.DATA_GENDER_FIELD];
+        userProfileDetail.location_proximity_setting = user_data[User.DATA_LOCATION_PROXIMITY_SETTING_FIELD];
+
         var Location = new location.Location();
         var location_node = (new in_location.InLocation()).getUserLocation(user_node._id);
         userProfileDetail.latitude = location_node[Location.LATITUDE_FIELD];
         userProfileDetail.longitude = location_node[Location.LONGITUDE_FIELD];
-        userProfileDetail.location_proximity_setting = user_node[User.LOCATION_PROXIMITY_SETTING_FIELD];
         userProfileDetail.availabilities = (new is_available.IsAvailable()).getUserAvailabilities(user_node._id);
         userProfileDetail.tagged_interests = (new interested_in.InterestedIn()).getUserInterests(user_node._id);
 

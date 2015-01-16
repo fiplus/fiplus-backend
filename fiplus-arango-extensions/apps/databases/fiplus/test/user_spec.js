@@ -5,7 +5,6 @@ describe("Register User", function () {
         frisby.create(this.description)
             .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
             {
-                "user": "AUSER",
                 "email": "auser@auser.auser",
                 "password": "Au$3r"
             }, {json: true})
@@ -15,10 +14,10 @@ describe("Register User", function () {
         frisby.create(this.description + " dB check.")
             .put('http://localhost:8529/_db/fiplus/_api/simple/by-example', {
                 "collection": "user",
-                "example": {"email": "auser@auser.auser"}
+                "example": {"user": "auser@auser.auser"}
             }, {json: true})
             .expectJSON('result.?', {
-                email: 'auser@auser.auser'
+                user: 'auser@auser.auser'
             })
             .toss();
     });
@@ -27,7 +26,6 @@ describe("Register User", function () {
         frisby.create(this.description)
             .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
             {
-                "user": "AnotherUSER",
                 email: "auser@auser.auser",
                 "password": "pAssw0rd"
             }, {json: true})
@@ -41,7 +39,6 @@ describe("Login", function () {
         frisby.create(this.description)
             .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
             {
-                "user": "AUSER2",
                 "email": "auser2@auser.auser",
                 "password": "Au$3r2"
             }, {json: true})
@@ -56,11 +53,10 @@ describe("Login", function () {
             .toss();
     });
 
-    it("should not register existing user", function () {
+    it("should not login existing user", function () {
         frisby.create(this.description)
             .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
             {
-                "user": "AnotherUSER",
                 email: "auser@auser.auser",
                 "password": "pAssw0rd"
             }, {json: true})
@@ -69,13 +65,13 @@ describe("Login", function () {
     });
 });
 
-describe("configure User Profile", function () {
+describe("Configure User Profile", function () {
     it("should add information to the user's profile", function () {
         frisby.create(this.description)
             .put('http://localhost:8529/_db/fiplus/dev/extensions/userfi/profile',
             {
                 "email": "test3@data.com",
-        username: 'test3',
+                username: 'test3',
                 "profile_pic": "any",
                 "age": 21,
                 "gender": "male",
@@ -151,8 +147,7 @@ describe("configure User Profile", function () {
 describe('Get User Profile', function() {
     it('should return user profile information with given email address.', function() {
         frisby.create(this.description)
-            .get('http://localhost:8529/_db/fiplus/dev/extensions/userfi/profile/test3@data.com',
-            {})
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/userfi/profile/test3@data.com',{})
             .expectStatus(200)
             .expectJSON(
             {
@@ -167,27 +162,27 @@ describe('Get User Profile', function() {
                 "latitude": 101,
                 "longitude": 201,
                 "location_proximity_setting": true,
-                "availabilities": [
-                    {
-                        "attributes": {},
-                        "isValid": true,
-                        "errors": {},
-                        "start": 4102513200000,
-                        "end": 4102516800000
-                    },
-                    {
-                        "attributes": {},
-                        "isValid": true,
-                        "errors": {},
-                        "start": 4105191600000,
-                        "end": 4105195200000
-                    }
-                ],
                 "tagged_interests": [
                     'soccer',
-                    'hockey',
-                    'basketball'
+                    'basketball',
+                    'hockey'
                 ]
+            })
+            .expectJSON("availabilities.?",
+            {
+                "attributes": {},
+                "isValid": true,
+                "errors": {},
+                "start": 4102513200000,
+                "end": 4102516800000
+            })
+            .expectJSON("availabilities.?",
+            {
+                "attributes": {},
+                "isValid": true,
+                "errors": {},
+                "start": 4105191600000,
+                "end": 4105195200000
             })
             .toss();
     });

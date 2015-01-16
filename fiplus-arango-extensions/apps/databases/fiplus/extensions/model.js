@@ -142,12 +142,3 @@ var CredentialModel = foxx.Model.extend({
     }
 });
 exports.CredentialModel = CredentialModel;
-
-var RegisterModel = foxx.Model.extend({
-    schema: {
-        email: joi.string(),
-        username: joi.string(),
-        password: joi.string()
-    }
-});
-exports.RegisterModel = RegisterModel;
