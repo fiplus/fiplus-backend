@@ -33,6 +33,7 @@ frisby.create("User configure profile basic test")
     .put('http://localhost:8529/_db/fiplus/dev/extensions/userfi/profile',
     {
         "email": "test3@data.com",
+        username: 'test3',
         "profile_pic": "any",
         "age": 21,
         "gender": "male",
@@ -116,6 +117,7 @@ describe('Get User Profile', function() {
                 "isValid": true,
                 "errors": {},
                 "email": "test3@data.com",
+                username: 'test3',
                 "profile_pic": "any",
                 "age": 21,
                 "gender": "male",

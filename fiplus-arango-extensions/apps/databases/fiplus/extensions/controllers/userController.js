@@ -70,6 +70,7 @@ var model = require('model');
         //It is expected that this will return a valid value because the email used at this point is the email used to login
         //which is a prerequisite before a user can configure a profile. No error check needed.
         var target_user = (new user.User()).getUserWithEmail(userprofile.get("email"));
+        (new user.User()).updateUsername(target_user._id, userprofile.get('username'));
         (new user.User()).updateUserProfilePic(target_user._id, userprofile.get("profile_pic"));
         (new user.User()).updateUserAge(target_user._id, userprofile.get("age"));
         (new user.User()).updateUserGender(target_user._id, userprofile.get("gender"));
@@ -107,6 +108,7 @@ var model = require('model');
         var user_node = User.getUserWithEmail(useremail);
         User.exists(user_node._id);
         userProfileDetail.email = useremail;
+        userProfileDetail.username = user_node[User.USERNAME_FIELD];
         userProfileDetail.profile_pic = user_node[User.PROFILE_PIC_FIELD];
         userProfileDetail.age = user_node[User.AGE_FIELD];
         userProfileDetail.gender = user_node[User.GENDER_FIELD];

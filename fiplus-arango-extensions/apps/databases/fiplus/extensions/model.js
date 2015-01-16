@@ -100,6 +100,7 @@ exports.ConfigUserModel = ConfigUserModel;
 var UserProfileModel = foxx.Model.extend({
     schema: {
         email: joi.string(),
+        username: joi.string(),
         profile_pic: joi.string(),
         age: joi.number().integer(),
         gender: joi.string(),
