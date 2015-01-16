@@ -45,7 +45,7 @@ User.prototype.saveUserToDb = function(email)
     return result;
 };
 
-User.prototype.updateUserUsername = function(target_user_id, username)
+User.prototype.updateUsername = function(target_user_id, username)
 {
     var result;
     var updateObject = {};
