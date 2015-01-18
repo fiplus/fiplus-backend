@@ -135,8 +135,15 @@ var model = require('model');
         var config_success = true; //Assume success in the start. Will turn to false if one save or update fails.
         //It is expected that this will return a valid value because the email used at this point is the email used to login
         //which is a prerequisite before a user can configure a profile. No error check needed.
+        var email = userprofile.get("email");
+
         var User = new user();
-        var target_user = User.getUserWithEmail(userprofile.get("email"));
+        var target_user = User.getUserWithEmail(email);
+        var uid = req.session.get('uid');
+        if (uid != target_user._id) {
+            throw new error.UnauthorizedError(uid, "save user profile on " + email)
+        }
+
         User.updateUsername(target_user._id, userprofile.get('username'));
         User.updateUserProfilePic(target_user._id, userprofile.get("profile_pic"));
         User.updateUserAge(target_user._id, userprofile.get("age"));
@@ -177,18 +184,25 @@ var model = require('model');
         userProfileDetail.email = useremail;
 
         var user_data = user_node[User.DATA_FIELD];
+
+        // Public information
         userProfileDetail.username = user_data[User.DATA_USERNAME_FIELD];
         userProfileDetail.profile_pic = user_data[User.DATA_PROFILE_PIC_FIELD];
-        userProfileDetail.age = user_data[User.DATA_AGE_FIELD];
-        userProfileDetail.gender = user_data[User.DATA_GENDER_FIELD];
-        userProfileDetail.location_proximity_setting = user_data[User.DATA_LOCATION_PROXIMITY_SETTING_FIELD];
-
-        var Location = new location.Location();
-        var location_node = (new in_location.InLocation()).getUserLocation(user_node._id);
-        userProfileDetail.latitude = location_node[Location.LATITUDE_FIELD];
-        userProfileDetail.longitude = location_node[Location.LONGITUDE_FIELD];
-        userProfileDetail.availabilities = (new is_available.IsAvailable()).getUserAvailabilities(user_node._id);
         userProfileDetail.tagged_interests = (new interested_in.InterestedIn()).getUserInterests(user_node._id);
+
+        // Private information
+        if (req.session.get('uid') == user_node._id) {
+
+            userProfileDetail.age = user_data[User.DATA_AGE_FIELD];
+            userProfileDetail.gender = user_data[User.DATA_GENDER_FIELD];
+            userProfileDetail.location_proximity_setting = user_data[User.DATA_LOCATION_PROXIMITY_SETTING_FIELD];
+
+            var Location = new location.Location();
+            var location_node = (new in_location.InLocation()).getUserLocation(user_node._id);
+            userProfileDetail.latitude = location_node[Location.LATITUDE_FIELD];
+            userProfileDetail.longitude = location_node[Location.LONGITUDE_FIELD];
+            userProfileDetail.availabilities = (new is_available.IsAvailable()).getUserAvailabilities(user_node._id);
+        }
 
         res.json(userProfileDetail);
     }).pathParam('useremail', {

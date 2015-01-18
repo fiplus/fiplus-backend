@@ -135,6 +135,7 @@ var AttendeeModel = foxx.Model.extend({
     }
 });
 exports.AttendeeModel = AttendeeModel;
+
 var CredentialModel = foxx.Model.extend({
     schema: {
         email: joi.string(),
