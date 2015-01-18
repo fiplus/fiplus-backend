@@ -100,6 +100,14 @@ var model = require('model');
     controller.destroySession('/logout', function(req, res) {
         res.json({success: true});
     });
+    
+    controller.get('/whoami', function(req, res) {
+        if (!req.session.get('uid')) {
+            res.json({user: null, username: ''});
+        } else {
+            res.json({user: req.session.get('userData') || {}, username: req.session.get('sessionData').username});
+        }
+    }).onlyIfAuthenticated();
 
     //User can view recently attended activities
     controller.get("/users/history", function (req, res) {
@@ -125,7 +133,6 @@ var model = require('model');
     controller.put("/profile", function (req, res) {
         var userprofile = req.params("UserProfile");
         var config_success = true; //Assume success in the start. Will turn to false if one save or update fails.
-
         //It is expected that this will return a valid value because the email used at this point is the email used to login
         //which is a prerequisite before a user can configure a profile. No error check needed.
         var User = new user();
