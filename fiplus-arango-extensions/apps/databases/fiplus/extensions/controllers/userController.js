@@ -60,7 +60,7 @@ var model = require('model');
         req.session.setUser(User.resolve(email));
         req.session.save();
 
-        res.json({success: true});
+        res.json(req);
     }).bodyParam('registration', {
         type: model.CredentialModel,
         description: 'Email, and Password'
@@ -85,7 +85,7 @@ var model = require('model');
             req.session.setUser(User.resolve(email));
             req.session.save();
 
-            res.json({success: true});
+            res.json(req);
         } else {
             throw new error.UnauthorizedError(email, 'login');
         }

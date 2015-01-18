@@ -1,71 +1,5 @@
 var frisby = require('frisby');
 
-describe("Register User", function () {
-    it("should register a new user", function () {
-        frisby.create(this.description)
-            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
-            {
-                "email": "auser@auser.auser",
-                "password": "Au$3r"
-            }, {json: true})
-            .expectStatus(200)
-            .toss();
-
-        frisby.create(this.description + " dB check.")
-            .put('http://localhost:8529/_db/fiplus/_api/simple/by-example', {
-                "collection": "user",
-                "example": {"user": "auser@auser.auser"}
-            }, {json: true})
-            .expectJSON('result.?', {
-                user: 'auser@auser.auser'
-            })
-            .toss();
-    });
-
-    it("should not register existing user", function () {
-        frisby.create(this.description)
-            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
-            {
-                email: "auser@auser.auser",
-                "password": "pAssw0rd"
-            }, {json: true})
-            .expectStatus(400)
-            .toss();
-    });
-});
-
-describe("Login", function () {
-    it("should allow the login of a registered user", function () {
-        frisby.create(this.description)
-            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
-            {
-                "email": "auser2@auser.auser",
-                "password": "Au$3r2"
-            }, {json: true})
-            .toss();
-
-        frisby.create(this.description)
-            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/login',
-            {
-                "email": "auser2@auser.auser",
-                "password": "Au$3r2"
-            }, {json: true})
-            .expectStatus(200)
-            .toss();
-    });
-
-    it("should not login existing user", function () {
-        frisby.create(this.description)
-            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
-            {
-                email: "auser@auser.auser",
-                "password": "pAssw0rd"
-            }, {json: true})
-            .expectStatus(400)
-            .toss();
-    });
-});
-
 describe("Configure User Profile", function () {
     it("should add information to the user's profile", function () {
         frisby.create(this.description)
@@ -184,6 +118,25 @@ describe('Get User Profile', function() {
                     'basketball',
                     'hockey'
                 ]
+            })
+            .toss();
+    });
+});
+
+describe('Who Am I', function() {
+    it('should return the current user.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/userfi/whoami',{})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "user": {
+                    "location_proximity_setting": true,
+                    "age": 20,
+                    "profile_pic": "101",
+                    "gender": "female"
+                },
+                "username": "1234@data.com"
             })
             .toss();
     });

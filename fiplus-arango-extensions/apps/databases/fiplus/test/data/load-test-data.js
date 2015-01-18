@@ -1,4 +1,24 @@
 // User test data
+
+var defaultUser = db.user.save({ // password 1234
+    "_key": "101",
+    "userData": {
+        "profile_pic": "101",
+        "age": 20,
+        "gender": "female",
+        "location_proximity_setting": true
+    },
+    "user": "1234@data.com",
+    "authData": {
+        "active": true,
+        "keyLength": 66,
+        "workUnits": 60,
+        "hashMethod": "pbkdf2",
+        "hash": "1hmVAqCM7PMmpUnA8RzjqUfQqLn0iRNs4R394RFZrfeknnn+JPCW9jQWF+lu/61DcWMJZryD/PrAWmW7vNxeccfA",
+        "salt": "p9LsaCy8G0JQubalJvzLsttjmcrm0qsq6y6aqVSDc03IhWoLqyxRlwM89OtXZG3XYT"
+    }
+});
+
 var user1 = db.user.save({
     "_key": "1",
     "user": "test@data.com",

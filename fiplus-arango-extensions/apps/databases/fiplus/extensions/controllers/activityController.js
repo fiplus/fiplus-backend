@@ -86,7 +86,7 @@ var model = require('model');
     }).onlyIfAuthenticated();
 
    /*
-    * GetEvent
+    * GetActivity
     */
     controller.get('/:activityid', function(req, res) {
         var activity_id = 'activity/' + req.params('activityid');
