@@ -32,6 +32,15 @@ var model = require('model');
             }
         });
 
+    controller.activateSessions({
+        sessionStorageApp: '/sessions',
+        type: 'cookie',
+        cookie: {
+            name: 'sid',
+            secret: 'Answ3rK3y?B33nz!J0ck.'
+        }
+    });
+
     /*
      * createActivity
      */
@@ -74,7 +83,7 @@ var model = require('model');
         res.body = "Success";
     }).bodyParam('Activity', {
         type: model.ActivityModel
-    });
+    }).onlyIfAuthenticated();
 
    /*
     * GetEvent
@@ -98,7 +107,7 @@ var model = require('model');
     }).pathParam('activityid', {
         type: joi.string(),
         description: 'The activity more information is requested for'
-    });
+    }).onlyIfAuthenticated();
 
     /*
      * GetAttendees
@@ -121,19 +130,19 @@ var model = require('model');
     }).queryParam('Limit', {
         type: joi.number().integer(),
         description: 'The maximum number of attendees to return'
-    });
+    }).onlyIfAuthenticated();
 
     controller.post('/icebreaker/answer', function(req, res) {
 
     }).bodyParam('Answer', {
         type: model.IcebreakerAnswerModel
-    });
+    }).onlyIfAuthenticated();
 
     controller.put('/icebreaker', function(req, res) {
 
     }).bodyParam('Icebreaker', {
         type: model.IcebreakerModel
-    });
+    }).onlyIfAuthenticated();
 
     controller.delete('/:activity_id/user/:user_id', function(req, res) {
 
@@ -143,7 +152,7 @@ var model = require('model');
     }).pathParam('user_id', {
         type: joi.string(),
         description: 'The user to remove from activity'
-    });
+    }).onlyIfAuthenticated();
 
     controller.post('/:activity_id/time/:time_id/user/:user_id', function(req, res) {
 
@@ -158,7 +167,7 @@ var model = require('model');
         description: 'The user that is confirming'
     }).bodyParam('Undocumented', {
         type: model.EmptyBody
-    });
+    }).onlyIfAuthenticated();
 
     /*
      * suggestTimePeriodForActivity
@@ -176,7 +185,7 @@ var model = require('model');
     }).bodyParam('Time', {
         type: model.TimeModel,
         description: 'The suggested start and end time'
-    });
+    }).onlyIfAuthenticated();
 
     /*
      * suggestLocationForActivity
@@ -193,7 +202,7 @@ var model = require('model');
     }).bodyParam('Location', {
         type: model.LocationModel,
         description: 'The latitude and longitude of the location'
-    });
+    }).onlyIfAuthenticated();
 
     /*
      * voteForSuggestion
@@ -212,7 +221,7 @@ var model = require('model');
         description: 'The user that is voting'
     }).bodyParam('Undocumented', {
         type: model.EmptyBody
-    });
+    }).onlyIfAuthenticated();
 
     controller.post('/:activity_id/location/:location_id', function(req, res) {
 
@@ -224,19 +233,19 @@ var model = require('model');
         description: 'The location to confirm for'
     }).bodyParam('Undocumented', {
         type: model.EmptyBody
-    });
+    }).onlyIfAuthenticated();
 
     controller.put('/comment', function(req, res) {
 
     }).bodyParam('Comment', {
         type: model.CommentModel
-    });
+    }).onlyIfAuthenticated();
 
     controller.put('/report', function(req, res) {
 
     }).bodyParam('Report', {
         type: model.ReportModel
-    });
+    }).onlyIfAuthenticated();
 
     /*
      * tagActivityWithInterest
@@ -254,7 +263,7 @@ var model = require('model');
         description: 'The interest text'
     }).bodyParam('Undocumented', {
         type: model.EmptyBody
-    });
+    }).onlyIfAuthenticated();
 
     /*
      * joinActivity
@@ -272,5 +281,5 @@ var model = require('model');
         description: 'User id to add to activity'
     }).bodyParam('Undocumented', {
         type: model.EmptyBody
-    });
+    }).onlyIfAuthenticated();
 }());

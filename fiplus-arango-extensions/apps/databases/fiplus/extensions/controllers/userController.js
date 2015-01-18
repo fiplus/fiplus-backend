@@ -10,7 +10,6 @@ var is_available = require('db-interface/edge/is_available');
 var interested_in = require('db-interface/edge/interested_in');
 var model = require('model');
 
-
 (function() {
     "use strict";
 
@@ -37,14 +36,31 @@ var model = require('model');
             }
         });
 
+    controller.activateSessions({
+        sessionStorageApp: '/sessions',
+        type: 'cookie',
+        cookie: {
+            name: 'sid',
+            secret: 'Answ3rK3y?B33nz!J0ck.'
+        }
+    });
+
     /*
      * registerUser
      */
     controller.post('/register', function(req, res) {
         var credentials = req.params('registration'),
             email = credentials.get('email'),
-            password = {simple: auth.hashPassword(credentials.get('password'))};
-        (new user()).saveUserToDb(email, password);
+            User = new user();
+
+        var password = auth.hashPassword(credentials.get('password'));
+        User.saveUserToDb(email, password);
+
+        req.session.get('sessionData').username = email;
+        req.session.setUser(User.resolve(email));
+        req.session.save();
+
+        res.json({success: true});
     }).bodyParam('registration', {
         type: model.CredentialModel,
         description: 'Email, and Password'
@@ -54,17 +70,22 @@ var model = require('model');
      * login
      */
     controller.post('/login', function(req, res) {
-        var credentials = req.params('credentials');
-        var User = new user();
+        var credentials = req.params('credentials'),
+            email = credentials.get('email'),
+            User = new user();
 
-        var user_node = User.getUserWithEmail(credentials.get('email'));
+        var user_auth = User.getAuthWithEmail(email);
         var valid = auth.verifyPassword(
-            user_node ? user_node[User.AUTH_FIELD].simple : {},
+            user_auth ? user_auth : {},
             credentials.get('password')
         );
 
         if (valid) {
-            res.body = 'Success';
+            req.session.get('sessionData').username = email;
+            req.session.setUser(User.resolve(email));
+            req.session.save();
+
+            res.json({success: true});
         } else {
             throw new error.UnauthorizedError(email, 'login');
         }
@@ -73,23 +94,30 @@ var model = require('model');
         description: 'Email and Password'
     });
 
+    /*
+     * logout
+     */
+    controller.destroySession('/logout', function(req, res) {
+        res.json({success: true});
+    });
+
     //User can view recently attended activities
     controller.get("/users/history", function (req, res) {
         //stub
     }).bodyParam("HistoryRequest", {
         type: model.HistoryRequestModel
-    });
+    }).onlyIfAuthenticated();
 
     //Delete user
     controller.delete("/", function (req, res) {
         //stub
-    });
+    }).onlyIfAuthenticated();
 
     controller.put("/", function (req, res) {
         //stub
     }).bodyParam("ConfigUser", {
         type: model.ConfigUserModel
-    });
+    }).onlyIfAuthenticated();
 
     /*
      * saveUserProfile
@@ -128,9 +156,8 @@ var model = require('model');
         }
     }).bodyParam("UserProfile", {
         type: model.UserProfileModel
-    });
+    }).onlyIfAuthenticated();
 
-    var console = require('console');
     /*
      * GetUserProfile
      */
@@ -160,7 +187,7 @@ var model = require('model');
     }).pathParam('useremail', {
         type: joi.string(),
         description: 'The email of user to get profile for'
-    });
+    }).onlyIfAuthenticated();
 
     //Add Favourite
     controller.post("/favourites/:user_name", function (req, res) {
@@ -168,7 +195,9 @@ var model = require('model');
     }).pathParam('user_name', {
         type: joi.string(),
         description: 'The user to add to favourites'
-    }).bodyParam("Undocumented",{type: model.EmptyBody});
+    }).bodyParam("Undocumented",{
+        type: model.EmptyBody
+    }).onlyIfAuthenticated();
 
     //Delete Favourite
     controller.delete("/favourites/:user_name", function (req, res) {
@@ -176,10 +205,10 @@ var model = require('model');
     }).pathParam('user_name', {
         type: joi.string(),
         description: 'The user to remove from favourites'
-    });
+    }).onlyIfAuthenticated();
 
     //Get Favourite
     controller.get("/favourites", function (req, res) {
         //stub
-    });
+    }).onlyIfAuthenticated();
 }());

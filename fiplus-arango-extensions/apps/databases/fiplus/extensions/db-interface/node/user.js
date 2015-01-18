@@ -1,5 +1,20 @@
 var db = require('org/arangodb').db;
 var error = require('error');
+var foxx = require("org/arangodb/foxx");
+var joi = require("joi");
+
+var UserModel = foxx.Model.extend({
+    schema: {
+        user: joi.string().required(),
+        authData: joi.object().required(),
+        userData: joi.object().required()
+    }
+});
+
+var users = new foxx.Repository(
+    db._collection('user'),
+    {model: User}
+);
 
 /**
  * Constructs a user db interface object
@@ -24,11 +39,18 @@ User.prototype.createUser = function(email, userData, authData) {
     var userObject = {};
     userObject[this.EMAIL_FIELD] = email;
     var result;
+
+    authData.active = true;
+
     if(this.db.user.firstExample(userObject) == null)
     {
-        userObject[this.AUTH_FIELD] = authData;
-        userObject[this.DATA_FIELD] = userData;
-        result = this.db.user.save(userObject);
+        var user = new UserModel({
+            user: email,
+            userData: userData,
+            authData: authData
+        });
+        result = users.save(user);
+
         if(result.error == true)
         {
             throw new error.GenericError('Saving ' + email + ' failed.');
@@ -43,7 +65,7 @@ User.prototype.createUser = function(email, userData, authData) {
 
 User.prototype.saveUserToDb = function(email, password)
 {
-    this.createUser(email, {}, password);
+    return this.createUser(email, {}, password);
 };
 
 User.prototype.getUserWithEmail = function(email)
@@ -61,7 +83,15 @@ User.prototype.getAuthWithEmail = function(email)
 {
     return this.getUserWithEmail(email)[this.AUTH_FIELD];
 };
-var console = require('console');
+
+User.prototype.resolve = function (username)
+{
+    var user = users.firstExample({user: username});
+    if (!user.get('_key')) {
+        return null;
+    }
+    return user;
+}
 
 User.prototype.getDataObject = function(field, value){
     var dataObject = {};

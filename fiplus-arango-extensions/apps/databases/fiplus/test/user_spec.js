@@ -43,6 +43,7 @@ describe("Login", function () {
                 "password": "Au$3r2"
             }, {json: true})
             .toss();
+
         frisby.create(this.description)
             .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/login',
             {
@@ -162,27 +163,27 @@ describe('Get User Profile', function() {
                 "latitude": 101,
                 "longitude": 201,
                 "location_proximity_setting": true,
+                "availabilities" : [
+                    {
+                        "attributes": {},
+                        "isValid": true,
+                        "errors": {},
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    },
+                    {
+                        "attributes": {},
+                        "isValid": true,
+                        "errors": {},
+                        "start": 4105191600000,
+                        "end": 4105195200000
+                    }
+                ],
                 "tagged_interests": [
                     'soccer',
                     'basketball',
                     'hockey'
                 ]
-            })
-            .expectJSON("availabilities.?",
-            {
-                "attributes": {},
-                "isValid": true,
-                "errors": {},
-                "start": 4102513200000,
-                "end": 4102516800000
-            })
-            .expectJSON("availabilities.?",
-            {
-                "attributes": {},
-                "isValid": true,
-                "errors": {},
-                "start": 4105191600000,
-                "end": 4105195200000
             })
             .toss();
     });

@@ -32,6 +32,14 @@ var UserModel = foxx.Model.extend({
             }
         });
 
+    controller.activateSessions({
+        sessionStorageApp: '/sessions',
+        type: 'cookie',
+        cookie: {
+            name: 'sid',
+            secret: 'Answ3rK3y?B33nz!J0ck.'
+        }
+    });
 
     var locationModel = foxx.Model.extend({
 	schema: {
@@ -96,5 +104,5 @@ var UserModel = foxx.Model.extend({
       type: model.LocationModel,
 	  required: false,
       description: 'NOT USABLE YET! Location near which to search for activities'
-    });
+    }).onlyIfAuthenticated();
 }());
