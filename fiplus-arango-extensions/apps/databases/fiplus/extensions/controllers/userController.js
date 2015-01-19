@@ -109,6 +109,10 @@ var model = require('model');
         }
     }).onlyIfAuthenticated();
 
+    controller.get('/echo', function(req, res) {
+        res.json(req);
+    });
+
     //User can view recently attended activities
     controller.get("/users/history", function (req, res) {
         //stub

@@ -1,5 +1,26 @@
 var frisby = require('frisby');
 
+frisby.create(this.description)
+    .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/login',
+    {
+        "email": "1234@data.com",
+        "password": "1234"
+    }, {json: true})
+    .inspectJSON()
+    .afterJSON(function(res) {
+        frisby.globalSetup({
+            request:{
+                session: res.session,
+                headers: {
+                    connection: res.headers.connection,
+                    Cookie: res.headers.Cookie
+                }
+            }
+        });
+    })
+    .toss();
+
+/*
 describe("Configure User Profile", function () {
     it("should add information to the user's profile", function () {
         frisby.create(this.description)
@@ -122,7 +143,7 @@ describe('Get User Profile', function() {
             .toss();
     });
 });
-
+*/
 describe('Who Am I', function() {
     it('should return the current user.', function() {
         frisby.create(this.description)
@@ -141,3 +162,4 @@ describe('Who Am I', function() {
             .toss();
     });
 });
+
