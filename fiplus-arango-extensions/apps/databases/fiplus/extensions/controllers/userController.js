@@ -81,18 +81,26 @@ var model = require('model');
         var start_time;
         var end_time;
         var availabilities = userprofile.get('availabilities');
-        for(var i = 0; i < availabilities.length; i++)
-        {
-            var start = availabilities[i].start;
-            var end = availabilities[i].end;
-            (new is_available.IsAvailable()).saveIsAvailableEdge(target_user._id, start, end);
+        if(availabilities != null) {
+            //Delete old availabilities
+            (new is_available.IsAvailable()).deleteUserAvailabilities(target_user._id);
+            //Add new availabilities
+            for (var i = 0; i < availabilities.length; i++) {
+                var start = availabilities[i].start;
+                var end = availabilities[i].end;
+                (new is_available.IsAvailable()).saveIsAvailableEdge(target_user._id, start, end);
+            }
         }
 
         var tagged_interests = userprofile.get("tagged_interests");
-        for (var i = 0; i < tagged_interests.length; i++)
-        {
-            var input_interest_name = tagged_interests[i];
-            (new interested_in.InterestedIn()).saveUserInterest(target_user._id, input_interest_name);
+        if(tagged_interests != null) {
+            //Delete old interests
+            (new interested_in.InterestedIn()).deleteUserInterests(target_user._id);
+            //Add new interests
+            for (var i = 0; i < tagged_interests.length; i++) {
+                var input_interest_name = tagged_interests[i];
+                (new interested_in.InterestedIn()).saveUserInterest(target_user._id, input_interest_name);
+            }
         }
     }).bodyParam("UserProfile", {
         type: model.UserProfileModel

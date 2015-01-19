@@ -27,19 +27,21 @@ InLocation.prototype.saveInLocationEdge = function(user_id, latitude, longitude)
     //Only allow one in_location edge per user.
     var example = {};
     example[this.FROM_FIELD] = user_id;
-    if(this.db.in_location.firstExample(example) == null)
+    var user_in_location_edge = this.db.in_location.firstExample(example);
+    //If there is already a location associated to a user and the user wants to update it,
+    //delete the older location and save the new one
+    if(user_in_location_edge != null)
     {
-        result = this.db.in_location.save(user_id, location_node._id, {});
-        if(result.error == true)
-        {
-            throw new error.GenericError('Saving user location ' + location_node + ' failed.');
-        }
+        this.updateInLocationEdge(user_in_location_edge._id, user_id, latitude, longitude);
     }
     else
     {
-        throw new error.NotAllowedError('Multiple in_location edges for user ' + user_id);
+        result = this.db.in_location.save(user_id, location_node._id, {});
+        if (result.error == true) {
+            throw new error.GenericError('Saving user location ' + location_node + ' failed.');
+        }
+        return result;
     }
-    return result;
 };
 
 /**
@@ -49,19 +51,20 @@ InLocation.prototype.updateInLocationEdge = function(in_location_id, user_id, la
 {
     var result;
 
-    var location = (new location.Location()).saveLocation(latitude, longitude);
+    var location_object = (new location.Location()).saveLocation(latitude, longitude);
     var in_location_object = {};
     in_location_object[this.FROM_FIELD] = user_id;
-    in_location_object[this.TO_FIELD] = location._id;
-
     // _from and _to are immutable once saved, so need to delete and save
     result = this.db.in_location.removeByExample(in_location_object);
     if(result.error == true)
     {
-        throw new error.GenericError('Location update for ' + user_id + ' failed.');
+        throw new error.GenericError('in_location edge removal for ' + user_id + ' failed.');
     }
 
-    result = this.db.in_location.save(user_id, location._id, {});
+    in_location_object[this.FROM_FIELD] = user_id;
+    in_location_object[this.TO_FIELD] = location_object._id;
+
+    result = this.db.in_location.save(user_id, location_object._id, {});
     if(result.error == true)
     {
         throw new error.GenericError('Location update for ' + user_id + ' failed.');
