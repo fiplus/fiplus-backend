@@ -1,12 +1,34 @@
 var frisby = require('frisby');
 
+// Test setup - Login as default user
+frisby.create(this.description)
+    .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/login',
+    {
+        "email": "1234@data.com",
+        "password": "1234"
+    }, {json: true})
+    .addHeader('Cookie', 'sid=asdf;sid.sig=asdf')
+    .after(function (err, res, body) {
+        var sid = res.headers['set-cookie'][0];
+        var sidSig = res.headers['set-cookie'][1];
+
+        frisby.globalSetup({
+            request: {
+                headers: {
+                    cookie: sid.split(';')[0] + ';' + sidSig.split(';')[0]
+                }
+            }
+        });
+    })
+    .toss();
+
 describe("Configure User Profile", function () {
     it("should add information to the user's profile", function () {
         frisby.create(this.description)
             .put('http://localhost:8529/_db/fiplus/dev/extensions/userfi/profile',
             {
-                "email": "test3@data.com",
-                username: 'test3',
+                "email": "1234@data.com",
+                username: '1234',
                 "profile_pic": "any",
                 "age": 21,
                 "gender": "male",
@@ -37,7 +59,7 @@ describe("Configure User Profile", function () {
         frisby.create(this.description + " dB check.")
             .post('http://localhost:8529/_db/fiplus/_api/traversal',
             {
-                startVertex: 'user/3',
+                startVertex: 'user/101',
                 graphName: 'fiplus',
                 direction: 'any',
                 maxDepth: 2
@@ -79,25 +101,25 @@ describe("Configure User Profile", function () {
     });
 });
 
-describe('Get User Profile', function() {
-    it('should return user profile information with given email address.', function() {
+describe('Get User Profile', function () {
+    it('should return this user\'s profile.', function () {
         frisby.create(this.description)
-            .get('http://localhost:8529/_db/fiplus/dev/extensions/userfi/profile/test3@data.com',{})
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/userfi/profile/1234@data.com', {})
             .expectStatus(200)
             .expectJSON(
             {
                 "attributes": {},
                 "isValid": true,
                 "errors": {},
-                "email": "test3@data.com",
-                username: 'test3',
+                "email": "1234@data.com",
+                "username": '1234',
                 "profile_pic": "any",
                 "age": 21,
                 "gender": "male",
                 "latitude": 101,
                 "longitude": 201,
                 "location_proximity_setting": true,
-                "availabilities" : [
+                "availabilities": [
                     {
                         "attributes": {},
                         "isValid": true,
@@ -123,10 +145,10 @@ describe('Get User Profile', function() {
     });
 });
 
-describe('Who Am I', function() {
-    it('should return the current user.', function() {
+describe('Who Am I', function () {
+    it('should return the current user.', function () {
         frisby.create(this.description)
-            .get('http://localhost:8529/_db/fiplus/dev/extensions/userfi/whoami',{})
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/userfi/whoami', {})
             .expectStatus(200)
             .expectJSON(
             {
@@ -141,3 +163,4 @@ describe('Who Am I', function() {
             .toss();
     });
 });
+

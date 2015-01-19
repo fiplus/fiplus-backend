@@ -1,5 +1,28 @@
 var frisby = require('frisby');
 
+// Test setup - Login as default user
+frisby.create(this.description)
+    .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/login',
+    {
+        "email": "1234@data.com",
+        "password": "1234"
+    }, {json: true})
+    .addHeader('Cookie', 'sid=asdf;sid.sig=asdf')
+    .after(function (err, res, body) {
+        var sid = res.headers['set-cookie'][0];
+        var sidSig = res.headers['set-cookie'][1];
+
+        frisby.globalSetup({
+            request: {
+                headers: {
+                    cookie: sid.split(';')[0] + ';' + sidSig.split(';')[0]
+                }
+            }
+        });
+
+    })
+    .toss();
+
 describe("Get activities based on user interests", function () {
     it("should get activities related to the user interests", function () {
     frisby.create("Request activities based on user interest")

@@ -1,5 +1,14 @@
 var frisby = require('frisby');
 
+// Test setup - clear cookies
+frisby.globalSetup({
+    request: {
+        headers: {
+            cookie: ""
+        }
+    }
+});
+
 describe("Register User", function () {
     it("should register a new user", function () {
         frisby.create(this.description)
@@ -53,15 +62,13 @@ describe("Login", function () {
             .expectStatus(200)
             .toss();
     });
+});
 
-    it("should not login existing user", function () {
+describe("Logout", function () {
+    it("should logout user if logged in", function () {
         frisby.create(this.description)
-            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
-            {
-                email: "auser@auser.auser",
-                "password": "pAssw0rd"
-            }, {json: true})
-            .expectStatus(400)
+            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/logout', {})
+            .expectStatus(200)
             .toss();
     });
 });
