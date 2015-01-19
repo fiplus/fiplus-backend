@@ -1,5 +1,5 @@
 var foxx = require("org/arangodb/foxx");
-var auth = foxx.requireApp('/credential-auth').auth;
+var auth = foxx.requireApp('/_system/simple-auth').auth;
 var joi = require("joi");
 var db = require("org/arangodb").db;
 var error = require('error');
@@ -9,6 +9,7 @@ var location = require('db-interface/node/location');
 var is_available = require('db-interface/edge/is_available');
 var interested_in = require('db-interface/edge/interested_in');
 var model = require('model');
+var console = require('console');
 
 (function() {
     "use strict";
@@ -37,7 +38,7 @@ var model = require('model');
         });
 
     controller.activateSessions({
-        sessionStorageApp: '/sessions',
+        sessionStorageApp: '/_system/sessions',
         type: 'cookie',
         cookie: {
             name: 'sid',
@@ -76,7 +77,7 @@ var model = require('model');
 
         var user_auth = User.getAuthWithEmail(email);
         var valid = auth.verifyPassword(
-            user_auth ? user_auth : {},
+            user_auth,
             credentials.get('password')
         );
 

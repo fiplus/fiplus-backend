@@ -1,24 +1,7 @@
 var frisby = require('frisby');
+var console = require('console')
 
-frisby.create(this.description)
-    .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/login',
-    {
-        "email": "1234@data.com",
-        "password": "1234"
-    }, {json: true})
-    .inspectJSON()
-    .afterJSON(function(res) {
-        frisby.globalSetup({
-            request:{
-                session: res.session,
-                headers: {
-                    connection: res.headers.connection,
-                    Cookie: res.headers.Cookie
-                }
-            }
-        });
-    })
-    .toss();
+
 
 /*
 describe("Configure User Profile", function () {
@@ -146,20 +129,42 @@ describe('Get User Profile', function() {
 */
 describe('Who Am I', function() {
     it('should return the current user.', function() {
+
         frisby.create(this.description)
-            .get('http://localhost:8529/_db/fiplus/dev/extensions/userfi/whoami',{})
-            .expectStatus(200)
-            .expectJSON(
+            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/login',
             {
-                "user": {
-                    "location_proximity_setting": true,
-                    "age": 20,
-                    "profile_pic": "101",
-                    "gender": "female"
-                },
-                "username": "1234@data.com"
+                "email": "sean@data.com",
+                "password": "sean"
+            }, {json: true})
+            .addHeader('Cookie', 'sid=asdf;sid.sig=asdf')
+            .after(function(err, res, body){
+                console.log('response ' + res.headers['set-cookie']);
+                var sid = res.headers['set-cookie'][0];
+                var sidSig = res.headers['set-cookie'][1];
+                console.log(sid.split(';')[0] + ';' + sidSig.split(';')[0]);
+                frisby.globalSetup({
+                    request:{
+                        headers: {
+                            cookie: sid.split(';')[0] + ';' + sidSig.split(';')[0]
+                        }
+                    }
+                });
+
+                frisby.create(this.description)
+                    .get('http://localhost:8529/_db/fiplus/dev/extensions/userfi/whoami',{})
+                    .expectStatus(200)
+                    .inspectJSON()
+                    .expectJSON(
+                    {
+                        "user": {
+
+                        },
+                        "username": "sean@data.com"
+                    })
+                    .toss();
             })
             .toss();
+
+
     });
 });
-
