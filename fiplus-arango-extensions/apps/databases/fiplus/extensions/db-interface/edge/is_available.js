@@ -55,4 +55,18 @@ IsAvailable.prototype.getUserAvailabilities = function(user_id)
     return useravailabilities;
 };
 
+/**
+ * Delete user availabilities
+ */
+IsAvailable.prototype.deleteUserAvailabilities = function(user_id)
+{
+    var is_available_object = {};
+    is_available_object[this.FROM_FIELD] = user_id;
+    result = this.db.is_available.removeByExample(is_available_object);
+    if(result.error == true)
+    {
+        throw new error.GenericError('is_available edge removal for ' + user_id + ' failed.');
+    }
+};
+
 exports.IsAvailable = IsAvailable;

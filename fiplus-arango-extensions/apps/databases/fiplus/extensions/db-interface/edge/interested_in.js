@@ -35,7 +35,6 @@ InterestedIn.prototype.saveUserInterest = function(userHandle, interestText)
     return result;
 };
 
-
 InterestedIn.prototype.getUserInterests = function(userHandle)
 {
     var Interest = new interest.Interest();
@@ -44,6 +43,18 @@ InterestedIn.prototype.getUserInterests = function(userHandle)
         userinterests.push(Interest.getInterest(edge._to));
     });
     return userinterests;
+};
+
+
+InterestedIn.prototype.deleteUserInterests = function(userHandle)
+{
+    var interested_in_object = {};
+    interested_in_object[this.FROM_FIELD] = userHandle;
+    result = this.db.interested_in.removeByExample(interested_in_object);
+    if(result.error == true)
+    {
+        throw new error.GenericError('interested_in edge removal for ' + userHandle + ' failed.');
+    }
 };
 
 exports.InterestedIn = InterestedIn;
