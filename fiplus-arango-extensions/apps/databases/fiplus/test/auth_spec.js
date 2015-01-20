@@ -12,7 +12,7 @@ frisby.globalSetup({
 describe("Register User", function () {
     it("should register a new user", function () {
         frisby.create(this.description)
-            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
+            .post('http://localhost:8529/_db/fiplus/dev/extensions/user/register',
             {
                 "email": "auser@auser.auser",
                 "password": "Au$3r"
@@ -33,7 +33,7 @@ describe("Register User", function () {
 
     it("should not register existing user", function () {
         frisby.create(this.description)
-            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
+            .post('http://localhost:8529/_db/fiplus/dev/extensions/user/register',
             {
                 email: "auser@auser.auser",
                 "password": "pAssw0rd"
@@ -46,7 +46,7 @@ describe("Register User", function () {
 describe("Login", function () {
     it("should allow the login of a registered user", function () {
         frisby.create(this.description)
-            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/register',
+            .post('http://localhost:8529/_db/fiplus/dev/extensions/user/register',
             {
                 "email": "auser2@auser.auser",
                 "password": "Au$3r2"
@@ -54,7 +54,7 @@ describe("Login", function () {
             .toss();
 
         frisby.create(this.description)
-            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/login',
+            .post('http://localhost:8529/_db/fiplus/dev/extensions/user/login',
             {
                 "email": "auser2@auser.auser",
                 "password": "Au$3r2"
@@ -67,7 +67,7 @@ describe("Login", function () {
 describe("Logout", function () {
     it("should logout user if logged in", function () {
         frisby.create(this.description)
-            .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/logout', {})
+            .post('http://localhost:8529/_db/fiplus/dev/extensions/user/logout', {})
             .expectStatus(200)
             .toss();
     });
@@ -76,19 +76,19 @@ describe("Logout", function () {
 describe("User Requests", function () {
     it("should fail if not authenticated: ", function () {
         frisby.create(this.description + "get whoami")
-            .get('http://localhost:8529/_db/fiplus/dev/extensions/userfi/whoami',
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/user/whoami',
             {}, {json: true})
             .expectStatus(401)
             .toss();
 
         frisby.create(this.description + "put profile")
-            .put('http://localhost:8529/_db/fiplus/dev/extensions/userfi/profile',
+            .put('http://localhost:8529/_db/fiplus/dev/extensions/user/profile',
             {}, {json: true})
             .expectStatus(401)
             .toss();
 
         frisby.create(this.description + "get profile")
-            .get('http://localhost:8529/_db/fiplus/dev/extensions/userfi/profile/1234@data.com',
+            .get('http://localhost:8529/_db/fiplus/dev/extensions/user/profile/1234@data.com',
             {}, {json: true})
             .expectStatus(401)
             .toss();

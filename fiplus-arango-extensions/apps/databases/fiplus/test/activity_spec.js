@@ -2,7 +2,7 @@ var frisby = require('frisby');
 
 // Test setup - Login as default user
 frisby.create(this.description)
-    .post('http://localhost:8529/_db/fiplus/dev/extensions/userfi/login',
+    .post('http://localhost:8529/_db/fiplus/dev/extensions/user/login',
     {
         "email": "1234@data.com",
         "password": "1234"
