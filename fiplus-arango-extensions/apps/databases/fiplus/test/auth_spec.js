@@ -148,7 +148,7 @@ describe("Activity Requests", function () {
             .toss();
 
         frisby.create(this.description + "post voteForSuggestion")
-            .post('http://localhost:8529/_db/fiplus/dev/extensions/activity/suggestion/1/user/101',
+            .post('http://localhost:8529/_db/fiplus/dev/extensions/activity/suggestion/1/user',
             {}, {json: true})
             .expectStatus(401)
             .toss();
@@ -160,7 +160,7 @@ describe("Activity Requests", function () {
             .toss();
 
         frisby.create(this.description + "post join")
-            .put('http://localhost:8529/_db/fiplus/dev/extensions/activity/1/user/101',
+            .put('http://localhost:8529/_db/fiplus/dev/extensions/activity/1/user',
             {}, {json: true})
             .expectStatus(401)
             .toss();

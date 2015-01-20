@@ -53,6 +53,11 @@ var model = require('model');
         }
 
         var creator_id = 'user/' + activity.get('creator');
+        var uid = req.session.get('uid');
+        if (uid != creator_id) {
+            throw new error.UnauthorizedError(uid, "createActivity with creator " + creator_id)
+        }
+
         var Creator = new creator();
         var created_edge = db.created.document((Creator.saveCreatedEdge(creator_id ,activity.get('name'),
             activity.get('description'), max))._id);
@@ -207,11 +212,12 @@ var model = require('model');
     /*
      * voteForSuggestion
      */
-    controller.post('/suggestion/:suggestionId/user/:userId', function(request, response) {
+    controller.post('/suggestion/:suggestionId/user', function(request, response) {
         var suggestionId = 'suggestion/' + request.params('suggestionId');
-        var userId = 'user/' + request.params('userId');
 
-        (new voted()).saveUserVote(userId, suggestionId);
+        var uid = request.session.get('uid');
+
+        (new voted()).saveUserVote(uid, suggestionId);
 
     }).pathParam('suggestionId', {
         type: joi.string(),
@@ -268,11 +274,11 @@ var model = require('model');
     /*
      * joinActivity
      */
-    controller.put('/:activityid/user/:userid', function(req, res) {
+    controller.put('/:activityid/user', function(req, res) {
         var activity_id = 'activity/' + req.params('activityid');
-        var user_id = 'user/' + req.params('userid');
+        var uid = req.session.get('uid');
 
-        (new joiner()).setUserJoinedActivity(user_id, activity_id);
+        (new joiner()).setUserJoinedActivity(uid, activity_id);
     }).pathParam('activityid', {
         type: joi.string(),
         description: 'The activity to join'
