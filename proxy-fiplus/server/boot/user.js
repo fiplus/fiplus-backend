@@ -5,7 +5,6 @@ var fwd = require('./arango-fwd');
 
 var ds = app.dataSources.db;
 var user = ds.createModel ('User',{},{base:loopback.Model});
-module.exports=user;
 
 user.registerUser = function(creds, req, cb) {
 
@@ -35,7 +34,8 @@ user.registerUser.http = {verb: 'POST', path: '/register'};
 user.registerUser.description = 'Registers the user';
 user.afterRemote('registerUser', function(ctx, model, next) {
   fwd.forwardResponse(ctx.res);
-  next();
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
 });
 
 user.login = function(creds, req, cb) {
@@ -66,7 +66,8 @@ user.login.http = {verb: 'POST', path: '/login'};
 user.login.description = 'Logs in user';
 user.afterRemote('login', function(ctx, model, next) {
   fwd.forwardResponse(ctx.res);
-  next();
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
 });
 
 user.logout = function(req, cb) {
@@ -97,7 +98,8 @@ user.logout.http = {verb: 'POST', path: '/logout'};
 user.logout.description = 'Logout';
 user.afterRemote('logout', function(ctx, model, next) {
   fwd.forwardResponse(ctx.res);
-  next();
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
 });
 
 user.echo = function(req, cb) {
@@ -128,10 +130,11 @@ user.echo.http = {verb: 'GET', path: '/echo'};
 user.echo.description = 'Echos the sent response';
 user.afterRemote('echo', function(ctx, model, next) {
   fwd.forwardResponse(ctx.res);
-  next();
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
 });
 
-user.saveUserProfile = function(req, cb) {
+user.saveUserProfile = function(user, req, cb) {
 
   request({
     url: fwd.FIPLUS_BASE_URL+'/user/profile',
@@ -159,13 +162,14 @@ user.saveUserProfile.http = {verb: 'PUT', path: '/profile'};
 user.saveUserProfile.description = 'Saves/updates the users profile';
 user.afterRemote('saveUserProfile', function(ctx, model, next) {
   fwd.forwardResponse(ctx.res);
-  next();
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
 });
 
-user.getUserProfile = function(req, cb) {
+user.getUserProfile = function(email, req, cb) {
 
   request({
-    url: fwd.FIPLUS_BASE_URL+'/user/profile',
+    url: fwd.FIPLUS_BASE_URL+'/user/profile/' + email,
     method: 'GET',
     body: req.body,
     json: true
@@ -186,11 +190,13 @@ user.getUserProfile = function(req, cb) {
 
 user.getUserProfile.shared = true;
 user.getUserProfile.returns = {arg:'user', type:'UserProfile', root:true};
-user.getUserProfile.http = {verb: 'GET', path: '/profile'};
+user.getUserProfile.accepts = [{arg:'email', type:'string',http:{source:'path'}},{arg:'req', type:'object',http:{source:'req'}}];
+user.getUserProfile.http = {verb: 'GET', path: '/profile/:email'};
 user.getUserProfile.description = 'Retrieves the users profile';
 user.afterRemote('getUserProfile', function(ctx, model, next) {
   fwd.forwardResponse(ctx.res);
-  next();
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
 });
 
 app.model(user); 

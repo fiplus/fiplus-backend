@@ -11,5 +11,5 @@ exports.saveArangoResponse = function(response)
 exports.forwardResponse = function(proxyResponse) {
   proxyResponse.set('Set-Cookie', arangoResponse.headers['set-cookie']);
   proxyResponse.status(arangoResponse.statusCode);
-  proxyResponse.send(arangoResponse.body);
+  proxyResponse.body = arangoResponse.body;
 };
