@@ -1,10 +1,15 @@
 
-exports.FIPLUS_BASE_URL = 'http://localhost:8529/_db/fiplus/dev/extensions/';
+exports.FIPLUS_BASE_URL = 'http://localhost:8529/_db/fiplus/dev/extensions';
 
-var receivedHeaders = null;
-exports.receivedHeaders = receivedHeaders;
+var arangoResponse;
 
-exports.forwardResponse = function(response) {
-  // Save the headers so that the after method which has access to the loopback response object
-  receivedHeaders = response.headers;
+exports.saveArangoResponse = function(response)
+{
+  arangoResponse = response;
+};
+
+exports.forwardResponse = function(proxyResponse) {
+  proxyResponse.set('Set-Cookie', arangoResponse.headers['set-cookie']);
+  proxyResponse.status(arangoResponse.statusCode);
+  proxyResponse.send(arangoResponse.body);
 };

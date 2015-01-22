@@ -2,7 +2,7 @@ var frisby = require('frisby');
 
 // Test setup - Login as default user
 frisby.create(this.description)
-    .post('http://localhost:8529/_db/fiplus/dev/extensions/user/login',
+    .post('http://localhost:3001/Users/login',
     {
         "email": "1234@data.com",
         "password": "1234"
@@ -25,7 +25,7 @@ frisby.create(this.description)
 describe("Configure User Profile", function () {
     it("should add information to the user's profile", function () {
         frisby.create(this.description)
-            .put('http://localhost:8529/_db/fiplus/dev/extensions/user/profile',
+            .put('http://localhost:3001/Users/profile',
             {
                 "email": "1234@data.com",
                 username: '1234',
@@ -104,7 +104,7 @@ describe("Configure User Profile", function () {
 describe('Get User Profile', function () {
     it('should return this user\'s profile.', function () {
         frisby.create(this.description)
-            .get('http://localhost:8529/_db/fiplus/dev/extensions/user/profile/1234@data.com', {})
+            .get('http://localhost:3001/Users/profile/1234@data.com', {})
             .expectStatus(200)
             .expectJSON(
             {
@@ -148,7 +148,7 @@ describe('Get User Profile', function () {
 describe('Who Am I', function () {
     it('should return the current user.', function () {
         frisby.create(this.description)
-            .get('http://localhost:8529/_db/fiplus/dev/extensions/user/whoami', {})
+            .get('http://localhost:3001/Users/whoami', {})
             .expectStatus(200)
             .expectJSON(
             {
