@@ -11,6 +11,9 @@ activity.createActivity = function(activity, req, cb) {
   request({
     url: fwd.FIPLUS_BASE_URL+'/activity',
     method: 'POST',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {
@@ -44,6 +47,9 @@ activity.getActivity = function(id, req, cb) {
   request({
     url: fwd.FIPLUS_BASE_URL + '/activity/' + id,
     method: 'GET',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {
@@ -77,6 +83,9 @@ activity.getAttendees = function(id, req, cb) {
   request({
     url: fwd.FIPLUS_BASE_URL + '/activity/' + id + '/user',
     method: 'GET',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {
@@ -110,6 +119,9 @@ activity.suggestTimeForActivity = function(id, time, req, cb) {
   request({
     url: fwd.FIPLUS_BASE_URL + '/activity/' + id + '/time',
     method: 'PUT',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {
@@ -143,6 +155,9 @@ activity.suggestLocationForActivity = function(id, location, req, cb) {
   request({
     url: fwd.FIPLUS_BASE_URL + '/activity/' + id + '/location',
     method: 'PUT',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {
@@ -176,6 +191,9 @@ activity.voteForSuggestion = function(id, req, cb) {
   request({
     url: fwd.FIPLUS_BASE_URL + '/activity/suggestion/' + id + '/user',
     method: 'POST',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {
@@ -208,6 +226,9 @@ activity.tagActivityWithInterest = function(id, text, req, cb) {
   request({
     url: fwd.FIPLUS_BASE_URL + '/activity/' + id + '/interest/' + text,
     method: 'PUT',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {
@@ -241,6 +262,9 @@ activity.joinActivity = function(id, req, cb) {
   request({
     url: fwd.FIPLUS_BASE_URL + '/activity/' + id + '/user/',
     method: 'PUT',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {

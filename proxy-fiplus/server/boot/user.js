@@ -11,6 +11,9 @@ user.registerUser = function(creds, req, cb) {
   request({
     url: fwd.FIPLUS_BASE_URL+'/user/register',
     method: 'POST',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {
@@ -43,6 +46,9 @@ user.login = function(creds, req, cb) {
   request({
     url: fwd.FIPLUS_BASE_URL+'/user/login',
     method: 'POST',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {
@@ -75,6 +81,9 @@ user.logout = function(req, cb) {
   request({
     url: fwd.FIPLUS_BASE_URL+'/user/logout',
     method: 'POST',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {
@@ -102,11 +111,49 @@ user.afterRemote('logout', function(ctx, model, next) {
   ctx.res.end();
 });
 
+user.whoAmI = function(req, cb) {
+
+  request({
+    url: fwd.FIPLUS_BASE_URL+'/user/whoami',
+    method: 'GET',
+    headers: {
+      cookie: req.get('Cookie')
+    },
+    body: req.body,
+    json: true
+  }, function(e, response) {
+    if(e)
+    {
+      console.log(e);
+    }
+    else
+    {
+      fwd.saveArangoResponse(response);
+
+      // No error so 1st arg = null
+      cb(null, response.body);
+    }
+  });
+};
+
+user.whoAmI.shared = true;
+user.whoAmI.accepts = [{arg:'req', type:'object',http:{source:'req'}}];
+user.whoAmI.http = {verb: 'GET', path: '/whoami'};
+user.whoAmI.description = 'Responds with what your true essence is';
+user.afterRemote('whoAmI', function(ctx, model, next) {
+  fwd.forwardResponse(ctx.res);
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
+});
+
 user.echo = function(req, cb) {
 
   request({
     url: fwd.FIPLUS_BASE_URL+'/user/echo',
     method: 'GET',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {
@@ -139,6 +186,9 @@ user.saveUserProfile = function(user, req, cb) {
   request({
     url: fwd.FIPLUS_BASE_URL+'/user/profile',
     method: 'PUT',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {
@@ -171,6 +221,9 @@ user.getUserProfile = function(email, req, cb) {
   request({
     url: fwd.FIPLUS_BASE_URL+'/user/profile/' + email,
     method: 'GET',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {

@@ -2,7 +2,7 @@ var frisby = require('frisby');
 
 // Test setup - Login as default user
 frisby.create(this.description)
-    .post('http://localhost:8529/_db/fiplus/dev/extensions/user/login',
+    .post('http://localhost:3001/api/Users/login',
     {
         "email": "1234@data.com",
         "password": "1234"
@@ -26,7 +26,7 @@ frisby.create(this.description)
 describe("Get activities based on user interests", function () {
     it("should get activities related to the user interests", function () {
     frisby.create("Request activities based on user interest")
-        .get('http://localhost:8529/_db/fiplus/dev/extensions/match/activities?email=test2@data.com&num_activities=100&by_interest=true')
+        .get('http://localhost:3001/api/Matches/activities?email=test2@data.com&num_activities=100&by_interest=true')
         .expectJSONTypes(
         {
             activities: Array

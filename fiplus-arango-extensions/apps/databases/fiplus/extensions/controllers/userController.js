@@ -9,6 +9,7 @@ var location = require('db-interface/node/location');
 var is_available = require('db-interface/edge/is_available');
 var interested_in = require('db-interface/edge/interested_in');
 var model = require('model');
+var console = require('console');
 
 (function() {
     "use strict";
@@ -143,7 +144,7 @@ var model = require('model');
         User.updateUserGender(target_user._id, userprofile.get("gender"));
         User.updateUserLocationProximitySetting(target_user._id, userprofile.get("location_proximity_setting"));
 
-        (new in_location.InLocation()).saveInLocationEdge(target_user._id, userprofile.get("location").latitude, userprofile.get("location").latitude);
+        (new in_location.InLocation()).saveInLocationEdge(target_user._id, userprofile.get("location").latitude, userprofile.get("location").longitude);
 
         var start_time;
         var end_time;
@@ -204,7 +205,8 @@ var model = require('model');
             var locationModel = new model.LocationModel();
             locationModel.latitude = location_node[Location.LATITUDE_FIELD];
             locationModel.longitude = location_node[Location.LONGITUDE_FIELD];
-            userProfileDetail.location = locationModel.forClient();
+
+            userProfileDetail.location = locationModel;
             userProfileDetail.availabilities = (new is_available.IsAvailable()).getUserAvailabilities(user_node._id);
         }
 

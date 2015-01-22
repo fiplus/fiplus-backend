@@ -11,6 +11,9 @@ match.matchActivities = function(email, num, by_interest, offset, location, req,
   request({
     url: fwd.FIPLUS_BASE_URL+'/match/activities?' + req.originalUrl.split('?')[1],
     method: 'GET',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {

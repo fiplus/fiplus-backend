@@ -2,7 +2,7 @@ var frisby = require('frisby');
 
 // Test setup - Login as default user
 frisby.create(this.description)
-    .post('http://localhost:3001/Users/login',
+    .post('http://localhost:3001/api/Users/login',
     {
         "email": "1234@data.com",
         "password": "1234"
@@ -25,15 +25,17 @@ frisby.create(this.description)
 describe("Configure User Profile", function () {
     it("should add information to the user's profile", function () {
         frisby.create(this.description)
-            .put('http://localhost:3001/Users/profile',
+            .put('http://localhost:3001/api/Users/profile',
             {
                 "email": "1234@data.com",
                 username: '1234',
                 "profile_pic": "any",
                 "age": 21,
                 "gender": "male",
-                "latitude": 101,
-                "longitude": 201,
+                "location": {
+                    "latitude": 101,
+                    "longitude": 201
+                },
                 "location_proximity_setting": true,
                 "availabilities": [
                     {
@@ -104,7 +106,7 @@ describe("Configure User Profile", function () {
 describe('Get User Profile', function () {
     it('should return this user\'s profile.', function () {
         frisby.create(this.description)
-            .get('http://localhost:3001/Users/profile/1234@data.com', {})
+            .get('http://localhost:3001/api/Users/profile/1234@data.com', {})
             .expectStatus(200)
             .expectJSON(
             {
@@ -116,8 +118,10 @@ describe('Get User Profile', function () {
                 "profile_pic": "any",
                 "age": 21,
                 "gender": "male",
-                "latitude": 101,
-                "longitude": 201,
+                "location": {
+                    "latitude": 101,
+                    "longitude": 201
+                },
                 "location_proximity_setting": true,
                 "availabilities": [
                     {
@@ -148,7 +152,7 @@ describe('Get User Profile', function () {
 describe('Who Am I', function () {
     it('should return the current user.', function () {
         frisby.create(this.description)
-            .get('http://localhost:3001/Users/whoami', {})
+            .get('http://localhost:3001/api/Users/whoami', {})
             .expectStatus(200)
             .expectJSON(
             {

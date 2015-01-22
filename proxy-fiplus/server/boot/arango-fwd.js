@@ -10,6 +10,7 @@ exports.saveArangoResponse = function(response)
 
 exports.forwardResponse = function(proxyResponse) {
   proxyResponse.set('Set-Cookie', arangoResponse.headers['set-cookie']);
+  proxyResponse.set('Content-Type', 'application/json');
   proxyResponse.status(arangoResponse.statusCode);
   proxyResponse.body = arangoResponse.body;
 };

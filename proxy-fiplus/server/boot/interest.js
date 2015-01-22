@@ -11,6 +11,9 @@ interest.getInterestsWithInput = function(input, req, cb) {
   request({
     url: fwd.FIPLUS_BASE_URL+'/interest?' + req.originalUrl.split('?')[1],
     method: 'GET',
+    headers: {
+      cookie: req.get('Cookie')
+    },
     body: req.body,
     json: true
   }, function(e, response) {

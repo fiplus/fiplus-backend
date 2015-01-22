@@ -2,7 +2,7 @@ var frisby = require('frisby');
 
 // Test setup - Login as default user
 frisby.create(this.description)
-    .post('http://localhost:8529/_db/fiplus/dev/extensions/user/login',
+    .post('http://localhost:3001/api/Users/login',
     {
         "email": "1234@data.com",
         "password": "1234"
@@ -26,7 +26,7 @@ frisby.create(this.description)
 describe('Get Interests', function() {
     it('gives input', function() {
         frisby.create("Get interests based on input")
-            .get("http://localhost:8529/_db/fiplus/dev/extensions/interest?input=So")
+            .get("http://localhost:3001/api/Interests?input=So")
             .expectJSONTypes(
             {
                 interests: Array
@@ -38,7 +38,7 @@ describe('Get Interests', function() {
 
     it('no input; all interests', function() {
         frisby.create("Get all interests")
-            .get('http://localhost:8529/_db/fiplus/dev/extensions/interest')
+            .get('http://localhost:3001/api/Interests')
             .expectJSONTypes(
             {
                 interests: Array

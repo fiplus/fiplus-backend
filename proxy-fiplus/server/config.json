@@ -19,8 +19,7 @@
       "limit": "100kb"
     },
     "cors": {
-      "origin": true,
-      "credentials": true
+      "origin": true
     },
     "errorHandler": {
       "disableStackTrace": false
