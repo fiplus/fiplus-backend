@@ -63,11 +63,6 @@ User.prototype.createUser = function(email, userData, authData) {
     return result;
 };
 
-User.prototype.saveUserToDb = function(email, password)
-{
-    return this.createUser(email, {}, password);
-};
-
 User.prototype.getUserWithEmail = function(email)
 {
     var userObject = {};
@@ -88,7 +83,7 @@ User.prototype.resolve = function (username)
 {
     var user = users.firstExample({user: username});
     if (!user.get('_key')) {
-        return null;
+        throw new error.NotFoundError("User " + email);
     }
     return user;
 }

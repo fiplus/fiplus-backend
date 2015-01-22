@@ -152,13 +152,7 @@ describe('Who Am I', function () {
             .expectStatus(200)
             .expectJSON(
             {
-                "user": {
-                    "location_proximity_setting": true,
-                    "age": 20,
-                    "profile_pic": "101",
-                    "gender": "female"
-                },
-                "username": "1234@data.com"
+                "user_id": "101"
             })
             .toss();
     });

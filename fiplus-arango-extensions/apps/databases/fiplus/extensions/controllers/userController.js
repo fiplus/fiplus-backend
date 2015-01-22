@@ -54,13 +54,11 @@ var model = require('model');
             User = new user();
 
         var password = auth.hashPassword(credentials.get('password'));
-        User.saveUserToDb(email, password);
+        User.createUser(email, {}, password);
 
         req.session.get('sessionData').username = email;
         req.session.setUser(User.resolve(email));
         req.session.save();
-
-        res.json(req);
     }).bodyParam('registration', {
         type: model.CredentialModel,
         description: 'Email, and Password'
@@ -85,7 +83,6 @@ var model = require('model');
             req.session.setUser(User.resolve(email));
             req.session.save();
 
-            res.json(req);
         } else {
             throw new error.UnauthorizedError(email, 'login');
         }
@@ -98,15 +95,13 @@ var model = require('model');
      * logout
      */
     controller.destroySession('/logout', function(req, res) {
-        res.json({success: true});
     });
     
     controller.get('/whoami', function(req, res) {
-        if (!req.session.get('uid')) {
-            res.json({user: null, username: ''});
-        } else {
-            res.json({user: req.session.get('userData') || {}, username: req.session.get('sessionData').username});
-        }
+        var user_id = req.session.get('uid');
+        var ret = new model.WhoAmIModel();
+        ret.user_id = user_id.substr(user_id.indexOf("/") + 1, user_id.length);
+        res.json(ret);
     }).onlyIfAuthenticated();
 
     controller.get('/echo', function(req, res) {

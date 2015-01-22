@@ -143,3 +143,10 @@ var CredentialModel = foxx.Model.extend({
     }
 });
 exports.CredentialModel = CredentialModel;
+
+var WhoAmIModel = foxx.Model.extend({
+    schema: {
+        user_id: joi.string()
+    }
+});
+exports.WhoAmIModel = WhoAmIModel;
