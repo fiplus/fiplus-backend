@@ -1,5 +1,20 @@
 var db = require('org/arangodb').db;
 var error = require('error');
+var foxx = require("org/arangodb/foxx");
+var joi = require("joi");
+
+var UserModel = foxx.Model.extend({
+    schema: {
+        user: joi.string().required(),
+        authData: joi.object().required(),
+        userData: joi.object().required()
+    }
+});
+
+var users = new foxx.Repository(
+    db._collection('user'),
+    {model: User}
+);
 
 /**
  * Constructs a user db interface object
@@ -10,29 +25,32 @@ var User = function()
 {
     this.db = db;
     this.COLLECTION_NAME = 'user';
-    this.EMAIL_FIELD = 'email';
-    this.USERNAME_FIELD = 'username';
-    this.PROFILE_PIC_FIELD = 'profile_pic';
-    this.AGE_FIELD = 'age';
-    this.GENDER_FIELD = 'gender';
-    this.LOCATION_PROXIMITY_SETTING_FIELD = 'location_proximity_setting';
+    this.EMAIL_FIELD = 'user';
+    this.AUTH_FIELD = 'authData';
+    this.DATA_FIELD = 'userData';
+        this.DATA_USERNAME_FIELD = 'username';
+        this.DATA_PROFILE_PIC_FIELD = 'profile_pic';
+        this.DATA_AGE_FIELD = 'age';
+        this.DATA_GENDER_FIELD = 'gender';
+        this.DATA_LOCATION_PROXIMITY_SETTING_FIELD = 'location_proximity_setting';
 };
 
-User.prototype.getUserWithEmail = function(email)
-{
-    var userObject = {};
-    userObject[this.EMAIL_FIELD] = email;
-    return this.db.user.firstExample(userObject);
-};
-
-User.prototype.saveUserToDb = function(email)
-{
+User.prototype.createUser = function(email, userData, authData) {
     var userObject = {};
     userObject[this.EMAIL_FIELD] = email;
     var result;
+
+    authData.active = true;
+
     if(this.db.user.firstExample(userObject) == null)
     {
-        result = this.db.user.save(userObject);
+        var user = new UserModel({
+            user: email,
+            userData: userData,
+            authData: authData
+        });
+        result = users.save(user);
+
         if(result.error == true)
         {
             throw new error.GenericError('Saving ' + email + ' failed.');
@@ -45,11 +63,43 @@ User.prototype.saveUserToDb = function(email)
     return result;
 };
 
+User.prototype.getUserWithEmail = function(email)
+{
+    var userObject = {};
+    userObject[this.EMAIL_FIELD] = email;
+    var user_node = this.db.user.firstExample(userObject);
+    if(user_node == null) {
+        throw new error.NotFoundError("User " + email);
+    }
+    return user_node;
+};
+
+User.prototype.getAuthWithEmail = function(email)
+{
+    return this.getUserWithEmail(email)[this.AUTH_FIELD];
+};
+
+User.prototype.resolve = function (username)
+{
+    var user = users.firstExample({user: username});
+    if (!user.get('_key')) {
+        throw new error.NotFoundError("User " + email);
+    }
+    return user;
+}
+
+User.prototype.getDataObject = function(field, value){
+    var dataObject = {};
+    var updateObject = {};
+    updateObject[this.DATA_FIELD] = dataObject;
+    dataObject[field] = value;
+    return updateObject;
+};
+
 User.prototype.updateUsername = function(target_user_id, username)
 {
     var result;
-    var updateObject = {};
-    updateObject[this.USERNAME_FIELD] = username;
+    var updateObject = this.getDataObject(this.DATA_USERNAME_FIELD, username);
     result = this.db.user.update(target_user_id, updateObject);
     if(result.error == true)
     {
@@ -61,8 +111,7 @@ User.prototype.updateUsername = function(target_user_id, username)
 User.prototype.updateUserProfilePic = function(target_user_id, profile_pic)
 {
     var result;
-    var updateObject = {};
-    updateObject[this.PROFILE_PIC_FIELD] = profile_pic;
+    var updateObject = this.getDataObject(this.DATA_PROFILE_PIC_FIELD, profile_pic);
     result = this.db.user.update(target_user_id, updateObject);
     if(result.error == true)
     {
@@ -74,8 +123,7 @@ User.prototype.updateUserProfilePic = function(target_user_id, profile_pic)
 User.prototype.updateUserAge = function(target_user_id, age)
 {
     var result;
-    var updateObject = {};
-    updateObject[this.AGE_FIELD] = age;
+    var updateObject = this.getDataObject(this.DATA_AGE_FIELD, age);
     result = this.db.user.update(target_user_id, updateObject);
     if(result.error == true)
     {
@@ -87,8 +135,7 @@ User.prototype.updateUserAge = function(target_user_id, age)
 User.prototype.updateUserGender = function(target_user_id, gender)
 {
     var result;
-    var updateObject = {};
-    updateObject[this.GENDER_FIELD] = gender;
+    var updateObject = this.getDataObject(this.DATA_GENDER_FIELD, gender);
     result = this.db.user.update(target_user_id, updateObject);
     if(result.error == true)
     {
@@ -100,8 +147,7 @@ User.prototype.updateUserGender = function(target_user_id, gender)
 User.prototype.updateUserLocationProximitySetting = function(target_user_id, location_proximity_setting)
 {
     var result;
-    var updateObject = {};
-    updateObject[this.LOCATION_PROXIMITY_SETTING_FIELD] = location_proximity_setting;
+    var updateObject = this.getDataObject(this.DATA_LOCATION_PROXIMITY_SETTING_FIELD, location_proximity_setting);
     result = this.db.user.update(target_user_id, updateObject);
     if(result.error == true)
     {

@@ -127,7 +127,6 @@ var ActivityArrayModel = foxx.Model.extend({
 });
 exports.ActivityArrayModel = ActivityArrayModel;
 
-
 var AttendeeModel = foxx.Model.extend({
     schema: {
         num_attendees: joi.number().integer(),
@@ -136,3 +135,18 @@ var AttendeeModel = foxx.Model.extend({
     }
 });
 exports.AttendeeModel = AttendeeModel;
+
+var CredentialModel = foxx.Model.extend({
+    schema: {
+        email: joi.string(),
+        password: joi.string()
+    }
+});
+exports.CredentialModel = CredentialModel;
+
+var WhoAmIModel = foxx.Model.extend({
+    schema: {
+        user_id: joi.string()
+    }
+});
+exports.WhoAmIModel = WhoAmIModel;

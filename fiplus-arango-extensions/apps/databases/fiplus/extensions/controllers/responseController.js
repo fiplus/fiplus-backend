@@ -20,5 +20,7 @@ var model = require("model");
         type: model.ActivityModel
     }).bodyParam('UserProfileDetailResponse', {
         type: model.UserProfileModel
+    }).bodyParam('WhoAmIResponse', {
+        type: model.WhoAmIModel
     });
 }());

@@ -1,26 +1,52 @@
 // User test data
+
+var defaultUser = db.user.save({ // password 1234
+    "_key": "101",
+    "userData": {
+        "profile_pic": "101",
+        "age": 20,
+        "gender": "female",
+        "location_proximity_setting": true
+    },
+    "user": "1234@data.com",
+    "authData": {
+        "active": true,
+        "keyLength": 66,
+        "workUnits": 60,
+        "hashMethod": "pbkdf2",
+        "hash": "1hmVAqCM7PMmpUnA8RzjqUfQqLn0iRNs4R394RFZrfeknnn+JPCW9jQWF+lu/61DcWMJZryD/PrAWmW7vNxeccfA",
+        "salt": "p9LsaCy8G0JQubalJvzLsttjmcrm0qsq6y6aqVSDc03IhWoLqyxRlwM89OtXZG3XYT"
+    }
+});
+
 var user1 = db.user.save({
     "_key": "1",
-    "email": "test@data.com",
-    "profile_pic": "any",
-    "age": 20,
-    "gender": "male",
-    "location_proximity_setting": true
+    "user": "test@data.com",
+    "userData" :
+    {
+        "profile_pic": "any",
+        "age": 20,
+        "gender": "male",
+        "location_proximity_setting": true
+    }
 });
 
 var user2 = db.user.save({
     "_key": "2",
-    "email": "test2@data.com",
-    "profile_pic": "any",
-    "age": 20,
-    "gender": "female",
-    "location_proximity_setting": true
+    "user": "test2@data.com",
+    "userData" :
+    {
+        "profile_pic": "any",
+        "age": 20,
+        "gender": "female",
+        "location_proximity_setting": true
+    }
 });
 
 // A newly registered user used in user profile tests
 var user3 = db.user.save({
     _key: "3",
-    email: "test3@data.com"
+    user: "test3@data.com"
 });
 
 // Location test data
