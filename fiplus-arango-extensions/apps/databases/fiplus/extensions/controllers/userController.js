@@ -125,12 +125,6 @@ var model = require('model');
         //stub
     }).onlyIfAuthenticated();
 
-    controller.put("/", function (req, res) {
-        //stub
-    }).bodyParam("ConfigUser", {
-        type: model.ConfigUserModel
-    }).onlyIfAuthenticated();
-
     /*
      * saveUserProfile
      */
@@ -154,7 +148,7 @@ var model = require('model');
         User.updateUserGender(target_user._id, userprofile.get("gender"));
         User.updateUserLocationProximitySetting(target_user._id, userprofile.get("location_proximity_setting"));
 
-        (new in_location.InLocation()).saveInLocationEdge(target_user._id, userprofile.get("latitude"), userprofile.get("longitude"));
+        (new in_location.InLocation()).saveInLocationEdge(target_user._id, userprofile.get("location").latitude, userprofile.get("location").latitude);
 
         var start_time;
         var end_time;
@@ -203,8 +197,11 @@ var model = require('model');
 
             var Location = new location.Location();
             var location_node = (new in_location.InLocation()).getUserLocation(user_node._id);
-            userProfileDetail.latitude = location_node[Location.LATITUDE_FIELD];
-            userProfileDetail.longitude = location_node[Location.LONGITUDE_FIELD];
+
+            var locationModel = new model.LocationModel();
+            locationModel.latitude = location_node[Location.LATITUDE_FIELD];
+            locationModel.longitude = location_node[Location.LONGITUDE_FIELD];
+            userProfileDetail.location = locationModel.forClient();
             userProfileDetail.availabilities = (new is_available.IsAvailable()).getUserAvailabilities(user_node._id);
         }
 
