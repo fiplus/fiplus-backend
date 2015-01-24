@@ -104,8 +104,7 @@ var UserProfileModel = foxx.Model.extend({
         profile_pic: joi.string(),
         age: joi.number().integer(),
         gender: joi.string(),
-        latitude: joi.number(),
-        longitude: joi.number(),
+        location: joi.object(),
         location_proximity_setting: joi.boolean(),
         availabilities: joi.array(), // item type TimeModel
         tagged_interests: joi.array() // type String

@@ -222,9 +222,6 @@ var model = require('model');
     }).pathParam('suggestionId', {
         type: joi.string(),
         description: 'The suggestion id being voted for'
-    }).pathParam('userId', {
-        type: joi.string(),
-        description: 'The user that is voting'
     }).bodyParam('Undocumented', {
         type: model.EmptyBody
     }).onlyIfAuthenticated();
