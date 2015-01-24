@@ -200,10 +200,12 @@ var model = require('model');
 
             var Location = new location.Location();
             var location_node = (new in_location.InLocation()).getUserLocation(user_node._id);
-
             var locationModel = new model.LocationModel();
-            locationModel.latitude = location_node[Location.LATITUDE_FIELD];
-            locationModel.longitude = location_node[Location.LONGITUDE_FIELD];
+
+            if(location_node != null) {
+                locationModel.latitude = location_node[Location.LATITUDE_FIELD];
+                locationModel.longitude = location_node[Location.LONGITUDE_FIELD];
+            }
 
             userProfileDetail.location = locationModel;
             userProfileDetail.availabilities = (new is_available.IsAvailable()).getUserAvailabilities(user_node._id);
