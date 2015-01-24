@@ -4,6 +4,7 @@ var db = require("org/arangodb").db;
 var model = require("model");
 var error = require('error');
 var user = require('db-interface/node/user');
+var underscore = require('underscore');
 
 var UserModel = foxx.Model.extend({
     schema: {
@@ -63,8 +64,11 @@ var UserModel = foxx.Model.extend({
             //Get available activities associated with the given interests
             db.tagged.inEdges(interest_id).forEach(function (edge) {
                 //Only push to user_activities_array if we didn't meet the num_activities requirement yet
-                if (activities.length < num_activities_requested) {
-                    activities.push(db.activity.document(edge._from));
+                var addActivity = db.activity.document(edge._from);
+                if (activities.length < num_activities_requested && underscore.findWhere(activities, addActivity) == null) {
+                    // Mobile apps needs the _key to be retrievable by the sdk
+                    addActivity.activity_id = addActivity._key;
+                    activities.push(addActivity);
                 }
             });
         }

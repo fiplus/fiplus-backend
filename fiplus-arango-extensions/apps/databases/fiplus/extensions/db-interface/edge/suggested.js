@@ -103,6 +103,7 @@ Suggested.prototype.getSuggestedTimes = function(activity_id)
             var start = db.start.outEdges(timePeriod_id)[0]._to;
             var end = db.end.outEdges(timePeriod_id)[0]._to;
             var Stamp = new stamp();
+            time.suggestion_id = db.suggestion.document(edge._to)._key;
             time.start = db.time_stamp.document(start)[Stamp.VALUE_FIELD];
             time.end = db.time_stamp.document(end)[Stamp.VALUE_FIELD];
             times.push(time);
@@ -120,6 +121,7 @@ Suggested.prototype.getSuggestedLocations = function(activity_id)
             var loc_model = new model.LocationModel();
             var Location = new location();
             var loc_node = Location.get(location_id);
+            loc_model.suggestion_id = db.suggestion.document(edge._to)._key;
             loc_model.longitude = loc_node[Location.LONGITUDE_FIELD];
             loc_model.latitude = loc_node[Location.LATITUDE_FIELD];
             locations.push(loc_model);
