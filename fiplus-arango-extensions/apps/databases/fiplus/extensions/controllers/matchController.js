@@ -49,7 +49,7 @@ var UserModel = foxx.Model.extend({
 	}
     });
 
-    function matchEventsWithUserInterests(user_object, num_activities_requested){
+    function matchActivitiesWithUserInterests(user_object, num_activities_requested){
         var user_interests_array = [];
         //Get all interests of given user
         db.interested_in.outEdges(user_object._id).forEach(function(edge) {
@@ -75,6 +75,23 @@ var UserModel = foxx.Model.extend({
         return activities;
     };
 
+    function matchDefaultActivities(num_activities_requested){
+        var activities = [];
+        var activity_list = db.activity.all().limit(num_activities_requested).toArray();
+        var activity_list_length = activity_list.length;
+
+        for (var i = 0; i < activity_list_length; i++) {
+            var addActivity = activity_list[i];
+            if (underscore.findWhere(activities, addActivity) == null) {
+                // Mobile apps needs the _key to be retrievable by the sdk
+                addActivity.activity_id = addActivity._key;
+                activities.push(addActivity);
+            }
+
+        }
+        return activities;
+    };
+
     /*
      * matchActivities
      */
@@ -82,7 +99,16 @@ var UserModel = foxx.Model.extend({
         var user_email = request.params('email');
         var num_activities_requested = request.params('num_activities');
         var user_object = (new user.User()).getUserWithEmail(user_email);
-        var activities = matchEventsWithUserInterests(user_object, num_activities_requested);
+        var activities = [];
+        if (request.session.get('uid') == user_object._id) {
+            activities = matchActivitiesWithUserInterests(user_object, num_activities_requested);
+
+            //If activities is null(i.e. there are no matches at all, just grab 'num_activities' amount
+            //of activities from activities collection.
+            if (activities.length == 0) {
+                activities = matchDefaultActivities(num_activities_requested);
+            }
+        }
 
         var jsonactivities = {};
         jsonactivities["activities"] = activities;
