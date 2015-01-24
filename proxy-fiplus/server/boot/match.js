@@ -33,9 +33,9 @@ match.matchActivities = function(email, num, by_interest, offset, location, req,
 
 match.matchActivities.shared = true;
 match.matchActivities.accepts = [{arg:'email', type: 'string', http:{source:'query'}},
-  {arg:'num', type: 'number', http:{source:'query'}},
+  {arg:'num_activities', type: 'number', http:{source:'query'}},
   {arg:'by_interest', type: 'boolean', http:{source:'query'}},
-  {arg:'offset', type: 'number', http:{source:'query'}},
+  {arg:'priority_offset', type: 'number', http:{source:'query'}},
   {arg:'location', type: 'Location', http:{source:'body'}},
   {arg:'req', type:'object',http:{source:'req'}}];
 match.matchActivities.returns = {arg:'activities',type:['Activity']};

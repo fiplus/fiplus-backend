@@ -78,10 +78,10 @@ activity.afterRemote('getActivity', function(ctx, model, next) {
   ctx.res.end();
 });
 
-activity.getAttendees = function(id, req, cb) {
+activity.getAttendees = function(id, limit, req, cb) {
 
   request({
-    url: fwd.FIPLUS_BASE_URL + '/activity/' + id + '/user',
+    url: fwd.FIPLUS_BASE_URL + '/activity/' + id + '/user?' + req.originalUrl.split('?')[1],
     method: 'GET',
     headers: {
       cookie: req.get('Cookie')
@@ -104,7 +104,9 @@ activity.getAttendees = function(id, req, cb) {
 };
 
 activity.getAttendees.shared = true;
-activity.getAttendees.accepts = [{arg:'id', type: 'string', http:{source:'path'}},{arg:'req', type:'object',http:{source:'req'}}];
+activity.getAttendees.accepts = [{arg:'id', type: 'string', http:{source:'path'}},
+  {arg:'Limit', type: 'number', http:{source:'query'}},
+  {arg:'req', type:'object',http:{source:'req'}}];
 activity.getAttendees.returns = {arg: 'attendees', type: 'Attendee', root:true};
 activity.getAttendees.http = {verb: 'GET', path: '/:id/user'};
 activity.getAttendees.description = 'Retrieves the activity attendees';

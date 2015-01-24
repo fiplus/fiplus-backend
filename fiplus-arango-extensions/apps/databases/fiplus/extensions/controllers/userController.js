@@ -9,7 +9,6 @@ var location = require('db-interface/node/location');
 var is_available = require('db-interface/edge/is_available');
 var interested_in = require('db-interface/edge/interested_in');
 var model = require('model');
-var console = require('console');
 
 (function() {
     "use strict";
