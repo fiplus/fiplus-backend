@@ -88,3 +88,9 @@ var Attendee = {
     joiners: [String]
 };
 ds.define('Attendee', Attendee);
+
+var SetDeviceId = {
+  current_device_id: String,
+  new_device_id: String
+};
+ds.define('SetDeviceId', SetDeviceId);

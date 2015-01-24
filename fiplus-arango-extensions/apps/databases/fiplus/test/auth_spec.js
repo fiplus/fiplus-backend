@@ -92,6 +92,11 @@ describe("User Requests", function () {
             {}, {json: true})
             .expectStatus(401)
             .toss();
+
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Users/device', {})
+            .expectStatus(401)
+            .toss();
     });
 });
 

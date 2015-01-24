@@ -6,7 +6,11 @@ var defaultUser = db.user.save({ // password 1234
         "profile_pic": "101",
         "age": 20,
         "gender": "female",
-        "location_proximity_setting": true
+        "location_proximity_setting": true,
+        device_ids: [
+            '1',
+            '2'
+        ]
     },
     "user": "1234@data.com",
     "authData": {

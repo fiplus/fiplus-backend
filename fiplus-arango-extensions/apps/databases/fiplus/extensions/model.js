@@ -149,3 +149,7 @@ var WhoAmIModel = foxx.Model.extend({
     }
 });
 exports.WhoAmIModel = WhoAmIModel;
+
+var SetDeviceIds = foxx.Model.extend({
+});
+exports.SetDeviceIds = SetDeviceIds;

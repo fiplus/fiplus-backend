@@ -33,6 +33,7 @@ var User = function()
         this.DATA_AGE_FIELD = 'age';
         this.DATA_GENDER_FIELD = 'gender';
         this.DATA_LOCATION_PROXIMITY_SETTING_FIELD = 'location_proximity_setting';
+        this.DATA_DEVICE_IDS = 'device_ids';
 };
 
 User.prototype.createUser = function(email, userData, authData) {
@@ -86,7 +87,7 @@ User.prototype.resolve = function (username)
         throw new error.NotFoundError("User " + email);
     }
     return user;
-}
+};
 
 User.prototype.getDataObject = function(field, value){
     var dataObject = {};
@@ -155,6 +156,34 @@ User.prototype.updateUserLocationProximitySetting = function(target_user_id, loc
     }
     return result;
 };
+
+User.prototype.updateDeviceId = function(target_user_id, currentDeviceId, newDeviceId) {
+    var result;
+
+    // If currentDeviceId exists it means that a device is updating an existing device id rather
+    // than adding a new device to the user.
+    var user = db.user.document(target_user_id);
+    var devicesIds = [];
+    var deviceIds = user[this.DATA_FIELD][this.DATA_DEVICE_IDS];
+
+    var devIndex = deviceIds.indexOf(currentDeviceId);
+    if(devIndex != -1)
+    {
+        deviceIds[devIndex] = newDeviceId;
+    }
+    else
+    {
+        deviceIds.push(newDeviceId);
+    }
+
+    var updateObject = this.getDataObject(this.DATA_DEVICE_IDS, deviceIds);
+    result = this.db.user.update(target_user_id, updateObject);
+    if(result.error == true)
+    {
+        throw new error.GenericError('Device Id update for ' + target_user_id + ' failed.');
+    }
+    return result;
+}
 
 User.prototype.exists = function(user_id) {
     if(!this.db.user.exists(user_id)) {
