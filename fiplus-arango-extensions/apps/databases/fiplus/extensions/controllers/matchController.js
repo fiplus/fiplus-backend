@@ -96,28 +96,21 @@ var UserModel = foxx.Model.extend({
      * matchActivities
      */
     controller.get('/activities', function (request, response) {
-        var user_email = request.params('email');
         var num_activities_requested = request.params('num_activities');
-        var user_object = (new user.User()).getUserWithEmail(user_email);
+        var user_object = db.user.document(request.session.get('uid'));
         var activities = [];
-        if (request.session.get('uid') == user_object._id) {
-            activities = matchActivitiesWithUserInterests(user_object, num_activities_requested);
+        activities = matchActivitiesWithUserInterests(user_object, num_activities_requested);
 
-            //If activities is null(i.e. there are no matches at all, just grab 'num_activities' amount
-            //of activities from activities collection.
-            if (activities.length == 0) {
-                activities = matchDefaultActivities(num_activities_requested);
-            }
+        //If activities is null(i.e. there are no matches at all, just grab 'num_activities' amount
+        //of activities from activities collection.
+        if (activities.length == 0) {
+            activities = matchDefaultActivities(num_activities_requested);
         }
 
         var jsonactivities = {};
         jsonactivities["activities"] = activities;
         response.json(jsonactivities);
 
-    }).queryParam("email", {
-      type: joi.string(),
-      required: true,
-      description: 'The user email for which we are retrieving activities'
     }).queryParam("num_activities", {
       type: joi.number().integer(),
       required: true,
