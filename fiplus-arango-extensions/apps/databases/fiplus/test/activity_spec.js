@@ -289,9 +289,6 @@ describe('Get Activity', function() {
             .expectStatus(200)
             .expectJSON(
             {
-                "attributes": {},
-                "isValid": true,
-                "errors": {},
                 "name": "A2",
                 "description": "activity 2",
                 "max_attendees": 0,
@@ -302,25 +299,16 @@ describe('Get Activity', function() {
                 ],
                 "suggested_times": [
                     {
-                        "attributes": {},
-                        "isValid": true,
-                        "errors": {},
                         "start": 4102513200000,
                         "end": 4102516800000
                     }
                 ],
                 "suggested_locations": [
                     {
-                        "attributes": {},
-                        "isValid": true,
-                        "errors": {},
                         "longitude": 150,
                         "latitude": 150
                     },
                     {
-                        "attributes": {},
-                        "isValid": true,
-                        "errors": {},
                         "longitude": 100,
                         "latitude": 50
                     }
@@ -345,9 +333,6 @@ describe('Get Attendees', function() {
             .expectStatus(200)
             .expectJSON(
             {
-                "attributes": {},
-                "isValid": true,
-                "errors": {},
                 "num_attendees": 3,
                 "joiners": [
                     "2",
@@ -371,9 +356,6 @@ describe('Get Attendees', function() {
             .expectStatus(200)
             .expectJSON(
             {
-                "attributes": {},
-                "isValid": true,
-                "errors": {},
                 "num_attendees": 3,
                 "joiners": [
                     "2",
@@ -389,9 +371,6 @@ describe('Get Attendees', function() {
             .expectStatus(200)
             .expectJSON(
             {
-                "attributes": {},
-                "isValid": true,
-                "errors": {},
                 "num_attendees": 3,
                 "joiners": [
                     "2",

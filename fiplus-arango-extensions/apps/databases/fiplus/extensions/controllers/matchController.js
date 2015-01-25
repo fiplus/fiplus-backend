@@ -1,16 +1,9 @@
 var foxx = require("org/arangodb/foxx");
 var joi = require("joi");
 var db = require("org/arangodb").db;
-var model = require("model");
 var error = require('error');
 var user = require('db-interface/node/user');
 var underscore = require('underscore');
-
-var UserModel = foxx.Model.extend({
-    schema: {
-        email: joi.string().email()
-    }
-});
 
 (function() {
     "use strict";
@@ -40,13 +33,6 @@ var UserModel = foxx.Model.extend({
             name: 'sid',
             secret: 'Answ3rK3y?B33nz!J0ck.'
         }
-    });
-
-    var locationModel = foxx.Model.extend({
-	schema: {
-	    lat: joi.number(),
-	    lon: joi.number()
-	}
     });
 
     function matchActivitiesWithUserInterests(user_object, num_activities_requested){
@@ -124,7 +110,7 @@ var UserModel = foxx.Model.extend({
       required: false,
       description: 'NOT USABLE YET! The priority level to start at (zero by default). To be used when updating activity list with new activities and the first priority_offset number of activities should be skipped.'
     }).bodyParam('location', {
-      type: model.LocationModel,
+      type: foxx.Model,
 	  required: false,
       description: 'NOT USABLE YET! Location near which to search for activities'
     }).onlyIfAuthenticated();

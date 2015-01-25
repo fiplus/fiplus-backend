@@ -2,7 +2,7 @@ var db = require('org/arangodb').db;
 var error = require('error');
 var time_period = require('db-interface/node/time_period');
 var time_stamp = require('db-interface/node/time_stamp');
-var model = require('model');
+var model_common = require('model-common');
 
 /**
  * Constructs an is_available db interface object
@@ -32,7 +32,7 @@ IsAvailable.prototype.saveIsAvailableEdge = function(user_id, start_time, end_ti
     }
 
     return result;
-}
+};
 
 /**
  * Get user availabilities
@@ -43,7 +43,7 @@ IsAvailable.prototype.getUserAvailabilities = function(user_id)
     this.db.is_available.outEdges(user_id).forEach(function(edge) {
         var timePeriod_id = edge._to;
         if (timePeriod_id.indexOf("time_period") > -1) {
-            var time = new model.TimeModel();
+            var time = new model_common.Time();
             var start = db.start.outEdges(timePeriod_id)[0]._to;
             var end = db.end.outEdges(timePeriod_id)[0]._to;
             var Stamp = new time_stamp.TimeStamp();

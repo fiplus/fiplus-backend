@@ -8,7 +8,7 @@ var joiner = require('db-interface/edge/joined').Joined;
 var voted = require('db-interface/edge/voted').Voted;
 var actor = require('db-interface/node/activity').Activity;
 var error = require('error');
-var model = require('model');
+var model_common = require('model-common');
 
 
 (function() {
@@ -87,7 +87,7 @@ var model = require('model');
 
         res.body = "Success";
     }).bodyParam('Activity', {
-        type: model.ActivityModel
+        type: foxx.Model
     }).onlyIfAuthenticated();
 
    /*
@@ -95,20 +95,22 @@ var model = require('model');
     */
     controller.get('/:activityid', function(req, res) {
         var activity_id = 'activity/' + req.params('activityid');
-        var activityDetail = new model.ActivityModel();
+
         var Actor = new actor();
         var activity_node = Actor.get(activity_id);
-        activityDetail.name = activity_node[Actor.NAME_FIELD];
-        activityDetail.description = activity_node[Actor.DESCRIPTION_FIELD];
-        activityDetail.max_attendees = activity_node[Actor.MAXIMUM_ATTENDANCE_FIELD];
-        activityDetail.creator = (new creator()).getCreator(activity_id);
-        activityDetail.tagged_interests = (new tagger()).getTags(activity_id);
+
+        var activity = new model_common.Activity();
+        activity.name = activity_node[Actor.NAME_FIELD];
+        activity.description = activity_node[Actor.DESCRIPTION_FIELD];
+        activity.max_attendees = activity_node[Actor.MAXIMUM_ATTENDANCE_FIELD];
+        activity.creator = (new creator()).getCreator(activity_id);
+        activity.tagged_interests = (new tagger()).getTags(activity_id);
         // TODO if there is a confirmed time/location, return an array of 1 with only the confirmed suggestion
         var Suggester = new suggester();
-        activityDetail.suggested_times = Suggester.getSuggestedTimes(activity_id);
-        activityDetail.suggested_locations = Suggester.getSuggestedLocations(activity_id);
+        activity.suggested_times = Suggester.getSuggestedTimes(activity_id);
+        activity.suggested_locations = Suggester.getSuggestedLocations(activity_id);
 
-        res.json(activityDetail);
+        res.json(activity);
     }).pathParam('activityid', {
         type: joi.string(),
         description: 'The activity more information is requested for'
@@ -120,15 +122,15 @@ var model = require('model');
     controller.get('/:activityid/user', function(req, res) {
         var activity_id = 'activity/' + req.params('activityid');
         var lim = req.params('Limit');
-        var attendeeDetail = new model.AttendeeModel();
         (new actor()).exists(activity_id);
 
         var Joiner = new joiner();
-        attendeeDetail.num_attendees = Joiner.getNumJoiners(activity_id);
+        var attendees = new model_common.Attendee();
+        attendees.num_attendees = Joiner.getNumJoiners(activity_id);
         // TODO attendeeDetail.participants
-        attendeeDetail.joiners =  Joiner.getJoiners(activity_id, lim);
+        attendees.joiners =  Joiner.getJoiners(activity_id, lim);
 
-        res.json(attendeeDetail);
+        res.json(attendees);
     }).pathParam('activityid', {
         type: joi.string(),
         description: 'The activity more information is requested for'
@@ -140,13 +142,13 @@ var model = require('model');
     controller.post('/icebreaker/answer', function(req, res) {
 
     }).bodyParam('Answer', {
-        type: model.IcebreakerAnswerModel
+        type: foxx.Model
     }).onlyIfAuthenticated();
 
     controller.put('/icebreaker', function(req, res) {
 
     }).bodyParam('Icebreaker', {
-        type: model.IcebreakerModel
+        type: foxx.Model
     }).onlyIfAuthenticated();
 
     controller.delete('/:activity_id/user/:user_id', function(req, res) {
@@ -170,8 +172,6 @@ var model = require('model');
     }).pathParam('user_id', {
         type: joi.string(),
         description: 'The user that is confirming'
-    }).bodyParam('Undocumented', {
-        type: model.EmptyBody
     }).onlyIfAuthenticated();
 
     /*
@@ -188,7 +188,7 @@ var model = require('model');
         type: joi.string(),
         description: 'Activity suggestion will be linked to'
     }).bodyParam('Time', {
-        type: model.TimeModel,
+        type: foxx.Model,
         description: 'The suggested start and end time'
     }).onlyIfAuthenticated();
 
@@ -205,7 +205,7 @@ var model = require('model');
         type: joi.string(),
         description: 'Activity to be linked to location'
     }).bodyParam('Location', {
-        type: model.LocationModel,
+        type: foxx.Model,
         description: 'The latitude and longitude of the location'
     }).onlyIfAuthenticated();
 
@@ -222,8 +222,6 @@ var model = require('model');
     }).pathParam('suggestionId', {
         type: joi.string(),
         description: 'The suggestion id being voted for'
-    }).bodyParam('Undocumented', {
-        type: model.EmptyBody
     }).onlyIfAuthenticated();
 
     controller.post('/:activity_id/location/:location_id', function(req, res) {
@@ -234,20 +232,18 @@ var model = require('model');
     }).pathParam('location_id', {
         type: joi.string(),
         description: 'The location to confirm for'
-    }).bodyParam('Undocumented', {
-        type: model.EmptyBody
     }).onlyIfAuthenticated();
 
     controller.put('/comment', function(req, res) {
 
     }).bodyParam('Comment', {
-        type: model.CommentModel
+        type: foxx.Model
     }).onlyIfAuthenticated();
 
     controller.put('/report', function(req, res) {
 
     }).bodyParam('Report', {
-        type: model.ReportModel
+        type: foxx.Model
     }).onlyIfAuthenticated();
 
     /*
@@ -264,8 +260,6 @@ var model = require('model');
     }).pathParam('interest', {
         type: joi.string(),
         description: 'The interest text'
-    }).bodyParam('Undocumented', {
-        type: model.EmptyBody
     }).onlyIfAuthenticated();
 
     /*
@@ -282,7 +276,5 @@ var model = require('model');
     }).pathParam('userid', {
         type: joi.string(),
         description: 'User id to add to activity'
-    }).bodyParam('Undocumented', {
-        type: model.EmptyBody
     }).onlyIfAuthenticated();
 }());
