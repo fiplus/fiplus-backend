@@ -149,6 +149,46 @@ describe('Get User Profile', function () {
     });
 });
 
+describe('Set User device ids', function() {
+    it('add device id', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Users/device', {
+                current_device_id: '',
+                new_device_id: '3'
+            }, {json:true})
+            .expectStatus(200)
+            .toss();
+
+        frisby.create('checking if added correctly')
+            .get('http://localhost:8529/_db/fiplus/_api/document/user/101', {})
+            .expectStatus(200)
+            .expectJSON('userData',
+            {
+                device_ids: ['1','2','3']
+            })
+            .toss();
+    });
+
+    it('update device id', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Users/device', {
+                current_device_id: '3',
+                new_device_id: '4'
+            }, {json:true})
+            .expectStatus(200)
+            .toss();
+
+        frisby.create('checking if added correctly')
+            .get('http://localhost:8529/_db/fiplus/_api/document/user/101', {})
+            .expectStatus(200)
+            .expectJSON('userData',
+            {
+                device_ids: ['1','2','4']
+            })
+            .toss();
+    });
+});
+
 describe('Who Am I', function () {
     it('should return the current user.', function () {
         frisby.create(this.description)

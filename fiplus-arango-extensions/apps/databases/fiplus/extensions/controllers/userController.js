@@ -108,6 +108,16 @@ var model = require('model');
         res.json(req);
     });
 
+    controller.post('/device', function(request, response) {
+        var user_id = request.session.get('uid');
+        var deviceIds = request.params('device_ids');
+
+        var User = new user();
+        User.updateDeviceId(user_id, deviceIds.get('current_device_id'), deviceIds.get('new_device_id'));
+    }).bodyParam('device_ids', {
+        type: model.SetDeviceIds
+    }).onlyIfAuthenticated();
+
     //User can view recently attended activities
     controller.get("/users/history", function (req, res) {
         //stub

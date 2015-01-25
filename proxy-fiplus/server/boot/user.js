@@ -252,4 +252,39 @@ user.afterRemote('getUserProfile', function(ctx, model, next) {
   ctx.res.end();
 });
 
+user.setDeviceId = function(device_ids, req, cb) {
+
+  request({
+    url: fwd.FIPLUS_BASE_URL+'/user/device',
+    method: 'POST',
+    headers: {
+      cookie: req.get('Cookie')
+    },
+    body: req.body,
+    json: true
+  }, function(e, response) {
+    if(e)
+    {
+      console.log(e);
+    }
+    else
+    {
+      fwd.saveArangoResponse(response);
+
+      // No error so 1st arg = null
+      cb(null, response.body);
+    }
+  });
+};
+
+user.setDeviceId.shared = true;
+user.setDeviceId.accepts = [{arg:'device_ids', type:'SetDeviceId',http:{source:'body'}},{arg:'req', type:'object',http:{source:'req'}}];
+user.setDeviceId.http = {verb: 'POST', path: '/device'};
+user.setDeviceId.description = 'Maps user with device for push notifications';
+user.afterRemote('setDeviceId', function(ctx, model, next) {
+  fwd.forwardResponse(ctx.res);
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
+});
+
 app.model(user); 
