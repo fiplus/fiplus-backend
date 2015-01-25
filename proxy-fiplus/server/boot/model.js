@@ -94,3 +94,8 @@ var SetDeviceId = {
   new_device_id: String
 };
 ds.define('SetDeviceId', SetDeviceId);
+
+var WhoAmI = {
+  user_id: String
+};
+ds.define('WhoAmI', WhoAmI);

@@ -138,6 +138,7 @@ user.whoAmI = function(req, cb) {
 
 user.whoAmI.shared = true;
 user.whoAmI.accepts = [{arg:'req', type:'object',http:{source:'req'}}];
+user.whoAmI.returns = {arg:'who', type:'WhoAmI', http:{source:'body'}, root:true};
 user.whoAmI.http = {verb: 'GET', path: '/whoami'};
 user.whoAmI.description = 'Responds with what your true essence is';
 user.afterRemote('whoAmI', function(ctx, model, next) {
