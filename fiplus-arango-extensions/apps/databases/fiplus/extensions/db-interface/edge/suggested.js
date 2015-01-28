@@ -4,7 +4,7 @@ var period = require('db-interface/node/time_period').TimePeriod;
 var location = require('db-interface/node/location').Location;
 var stamp = require('db-interface/node/time_stamp').TimeStamp;
 var sug = require('db-interface/node/suggestion').Suggestion;
-var model = require('model');
+var model_common = require('model-common');
 
 /**
 * Constructs a suggested db interface object
@@ -99,7 +99,7 @@ Suggested.prototype.getSuggestedTimes = function(activity_id)
     db.suggested.outEdges(activity_id).forEach(function(edge) {
         var timePeriod_id = db.is.outEdges(edge._to)[0]._to;
         if (timePeriod_id.indexOf("time_period") > -1) {
-            var time = new model.TimeModel();
+            var time = new model_common.Time();
             var start = db.start.outEdges(timePeriod_id)[0]._to;
             var end = db.end.outEdges(timePeriod_id)[0]._to;
             var Stamp = new stamp();
@@ -118,7 +118,7 @@ Suggested.prototype.getSuggestedLocations = function(activity_id)
     db.suggested.outEdges(activity_id).forEach(function(edge) {
         var location_id = db.is.outEdges(edge._to)[0]._to;
         if (location_id.indexOf("location") > -1) {
-            var loc_model = new model.LocationModel();
+            var loc_model = new model_common.Location();
             var Location = new location();
             var loc_node = Location.get(location_id);
             loc_model.suggestion_id = db.suggestion.document(edge._to)._key;

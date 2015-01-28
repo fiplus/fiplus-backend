@@ -8,7 +8,7 @@ var in_location = require('db-interface/edge/in_location');
 var location = require('db-interface/node/location');
 var is_available = require('db-interface/edge/is_available');
 var interested_in = require('db-interface/edge/interested_in');
-var model = require('model');
+var model_common = require('model-common');
 
 (function() {
     "use strict";
@@ -60,7 +60,7 @@ var model = require('model');
         req.session.setUser(User.resolve(email));
         req.session.save();
     }).bodyParam('registration', {
-        type: model.CredentialModel,
+        type: foxx.Model,
         description: 'Email, and Password'
     });
 
@@ -87,7 +87,7 @@ var model = require('model');
             throw new error.UnauthorizedError(email, 'login');
         }
     }).bodyParam('credentials', {
-        type: model.CredentialModel,
+        type: foxx.Model,
         description: 'Email and Password'
     });
 
@@ -99,7 +99,7 @@ var model = require('model');
     
     controller.get('/whoami', function(req, res) {
         var user_id = req.session.get('uid');
-        var ret = new model.WhoAmIModel();
+        var ret = new model_common.WhoAmI();
         ret.user_id = user_id.substr(user_id.indexOf("/") + 1, user_id.length);
         res.json(ret);
     }).onlyIfAuthenticated();
@@ -115,14 +115,14 @@ var model = require('model');
         var User = new user();
         User.updateDeviceId(user_id, deviceIds.get('current_device_id'), deviceIds.get('new_device_id'));
     }).bodyParam('device_ids', {
-        type: model.SetDeviceIds
+        type: foxx.Model
     }).onlyIfAuthenticated();
 
     //User can view recently attended activities
     controller.get("/users/history", function (req, res) {
         //stub
     }).bodyParam("HistoryRequest", {
-        type: model.HistoryRequestModel
+        type: foxx.Model
     }).onlyIfAuthenticated();
 
     //Delete user
@@ -180,7 +180,7 @@ var model = require('model');
             }
         }
     }).bodyParam("UserProfile", {
-        type: model.UserProfileModel
+        type: foxx.Model
     }).onlyIfAuthenticated();
 
     /*
@@ -188,40 +188,41 @@ var model = require('model');
      */
     controller.get('/profile/:useremail', function(req, res) {
         var useremail = req.params('useremail');
-        var userProfileDetail = new model.UserProfileModel();
         var User = new user();
 
         var user_node = User.getUserWithEmail(useremail);
-        userProfileDetail.email = useremail;
+
+        var profile = new model_common.UserProfile();
+        profile.email = useremail;
 
         var user_data = user_node[User.DATA_FIELD];
 
         // Public information
-        userProfileDetail.username = user_data[User.DATA_USERNAME_FIELD];
-        userProfileDetail.profile_pic = user_data[User.DATA_PROFILE_PIC_FIELD];
-        userProfileDetail.tagged_interests = (new interested_in.InterestedIn()).getUserInterests(user_node._id);
+        profile.username = user_data[User.DATA_USERNAME_FIELD];
+        profile.profile_pic = user_data[User.DATA_PROFILE_PIC_FIELD];
+        profile.tagged_interests = (new interested_in.InterestedIn()).getUserInterests(user_node._id);
 
         // Private information
         if (req.session.get('uid') == user_node._id) {
 
-            userProfileDetail.age = user_data[User.DATA_AGE_FIELD];
-            userProfileDetail.gender = user_data[User.DATA_GENDER_FIELD];
-            userProfileDetail.location_proximity_setting = user_data[User.DATA_LOCATION_PROXIMITY_SETTING_FIELD];
+            profile.age = user_data[User.DATA_AGE_FIELD];
+            profile.gender = user_data[User.DATA_GENDER_FIELD];
+            profile.location_proximity_setting = user_data[User.DATA_LOCATION_PROXIMITY_SETTING_FIELD];
 
             var Location = new location.Location();
             var location_node = (new in_location.InLocation()).getUserLocation(user_node._id);
-            var locationModel = new model.LocationModel();
 
+            var loc = new model_common.Location();
             if(location_node != null) {
-                locationModel.latitude = location_node[Location.LATITUDE_FIELD];
-                locationModel.longitude = location_node[Location.LONGITUDE_FIELD];
+                loc.latitude = location_node[Location.LATITUDE_FIELD];
+                loc.longitude = location_node[Location.LONGITUDE_FIELD];
             }
 
-            userProfileDetail.location = locationModel;
-            userProfileDetail.availabilities = (new is_available.IsAvailable()).getUserAvailabilities(user_node._id);
+            profile.location = loc;
+            profile.availabilities = (new is_available.IsAvailable()).getUserAvailabilities(user_node._id);
         }
 
-        res.json(userProfileDetail);
+        res.json(profile);
     }).pathParam('useremail', {
         type: joi.string(),
         description: 'The email of user to get profile for'
@@ -233,8 +234,6 @@ var model = require('model');
     }).pathParam('user_name', {
         type: joi.string(),
         description: 'The user to add to favourites'
-    }).bodyParam("Undocumented",{
-        type: model.EmptyBody
     }).onlyIfAuthenticated();
 
     //Delete Favourite

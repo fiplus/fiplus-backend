@@ -110,9 +110,6 @@ describe('Get User Profile', function () {
             .expectStatus(200)
             .expectJSON(
             {
-                "attributes": {},
-                "isValid": true,
-                "errors": {},
                 "email": "1234@data.com",
                 "username": '1234',
                 "profile_pic": "any",
@@ -125,16 +122,10 @@ describe('Get User Profile', function () {
                 "location_proximity_setting": true,
                 "availabilities": [
                     {
-                        "attributes": {},
-                        "isValid": true,
-                        "errors": {},
                         "start": 4102513200000,
                         "end": 4102516800000
                     },
                     {
-                        "attributes": {},
-                        "isValid": true,
-                        "errors": {},
                         "start": 4105191600000,
                         "end": 4105195200000
                     }
