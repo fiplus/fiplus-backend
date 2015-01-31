@@ -106,7 +106,7 @@ describe("Configure User Profile", function () {
 describe('Get User Profile', function () {
     it('should return this user\'s profile.', function () {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Users/profile/1234@data.com', {})
+            .get('http://localhost:3001/api/Users/profile/101', {})
             .expectStatus(200)
             .expectJSON(
             {
@@ -134,6 +134,20 @@ describe('Get User Profile', function () {
                     'soccer',
                     'basketball',
                     'hockey'
+                ]
+            })
+            .toss();
+    });
+    it('should return another user\'s profile.', function () {
+        frisby.create(this.description)
+            .get('http://localhost:3001/api/Users/profile/2', {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "profile_pic": "any",
+                "tagged_interests": [
+                    "hockey",
+                    "basketball"
                 ]
             })
             .toss();

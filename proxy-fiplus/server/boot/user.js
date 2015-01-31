@@ -217,10 +217,10 @@ user.afterRemote('saveUserProfile', function(ctx, model, next) {
   ctx.res.end();
 });
 
-user.getUserProfile = function(email, req, cb) {
+user.getUserProfile = function(userId, req, cb) {
 
   request({
-    url: fwd.FIPLUS_BASE_URL+'/user/profile/' + email,
+    url: fwd.FIPLUS_BASE_URL+'/user/profile/' + userId,
     method: 'GET',
     headers: {
       cookie: req.get('Cookie')
@@ -244,8 +244,8 @@ user.getUserProfile = function(email, req, cb) {
 
 user.getUserProfile.shared = true;
 user.getUserProfile.returns = {arg:'user', type:'UserProfile', root:true};
-user.getUserProfile.accepts = [{arg:'email', type:'string',http:{source:'path'}},{arg:'req', type:'object',http:{source:'req'}}];
-user.getUserProfile.http = {verb: 'GET', path: '/profile/:email'};
+user.getUserProfile.accepts = [{arg:'userId', type:'string',http:{source:'path'}},{arg:'req', type:'object',http:{source:'req'}}];
+user.getUserProfile.http = {verb: 'GET', path: '/profile/:userId'};
 user.getUserProfile.description = 'Retrieves the users profile';
 user.afterRemote('getUserProfile', function(ctx, model, next) {
   fwd.forwardResponse(ctx.res);
