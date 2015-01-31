@@ -62,6 +62,26 @@ describe("Login", function () {
             .expectStatus(200)
             .toss();
     });
+    it("should disallow login of unregistered user", function () {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Users/login',
+            {
+                "email": "bad",
+                "password": "Au$3r2"
+            }, {json: true})
+            .expectStatus(401)
+            .toss();
+    });
+    it("should disallow login with bad password", function () {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Users/login',
+            {
+                "email": "auser2@auser.auser",
+                "password": "bad"
+            }, {json: true})
+            .expectStatus(401)
+            .toss();
+    });
 });
 
 describe("Logout", function () {
