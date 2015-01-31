@@ -18,10 +18,10 @@ var InLocation = function()
 /**
  * Creating an in_location edge between a user and location.
  */
-InLocation.prototype.saveInLocationEdge = function(user_id, latitude, longitude)
+InLocation.prototype.saveInLocationEdge = function(user_id, latitude, longitude, address)
 {
     var locationApi = new location.Location();
-    var location_node = locationApi.saveLocation(latitude, longitude);
+    var location_node = locationApi.saveLocation(latitude, longitude, address);
     var result;
 
     //Only allow one in_location edge per user.
@@ -32,7 +32,7 @@ InLocation.prototype.saveInLocationEdge = function(user_id, latitude, longitude)
     //delete the older location and save the new one
     if(user_in_location_edge != null)
     {
-        this.updateInLocationEdge(user_in_location_edge._id, user_id, latitude, longitude);
+        this.updateInLocationEdge(user_in_location_edge._id, user_id, latitude, longitude, address);
     }
     else
     {
@@ -47,11 +47,11 @@ InLocation.prototype.saveInLocationEdge = function(user_id, latitude, longitude)
 /**
  * Updating the location of a user.
  */
-InLocation.prototype.updateInLocationEdge = function(in_location_id, user_id, latitude, longitude)
+InLocation.prototype.updateInLocationEdge = function(in_location_id, user_id, latitude, longitude, address)
 {
     var result;
 
-    var location_object = (new location.Location()).saveLocation(latitude, longitude);
+    var location_object = (new location.Location()).saveLocation(latitude, longitude, address);
     var in_location_object = {};
     in_location_object[this.FROM_FIELD] = user_id;
     // _from and _to are immutable once saved, so need to delete and save

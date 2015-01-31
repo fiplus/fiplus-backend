@@ -350,7 +350,7 @@ var defines = require('db-interface/util/defines');
         description: 'Activity to be linked to location'
     }).bodyParam('Location', {
         type: foxx.Model,
-        description: 'The latitude and longitude of the location'
+        description: 'The latitude, longitude, address of the location'
     }).onlyIfAuthenticated();
 
     function checkIfAllowedToSuggest(activityId, userId) {

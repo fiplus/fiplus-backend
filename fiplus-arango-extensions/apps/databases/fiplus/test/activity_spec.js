@@ -41,8 +41,11 @@ describe("Create activity", function () {
                         "end" : "253416429000000" } // 12/6/10000, 10:30 - 12:30
                 ],
                 "locations": [
-                    {"latitude" : 56,
-                        "longitude" : -96} // Canada
+                    {
+                        "latitude" : 56,
+                        "longitude" : -96,
+                        "address" : "Canada"
+                    }
                 ]
             }, {json: true})
             .expectStatus(200)
@@ -570,9 +573,9 @@ describe('Suggest Location', function(){
         frisby.create('Suggest Valid Location for activity')
             .put('https://localhost:3001/api/Acts/1/location',
             {
-                // jan. 1, 2050 12 - 1pm
                 latitude:70,
-                longitude:23
+                longitude:23,
+                address:"nowhere"
             },{json:true})
             .expectStatus(200)
             .toss();
@@ -587,7 +590,8 @@ describe('Suggest Location', function(){
             .expectJSON('result.visited.vertices.?',
             {
                 latitude:70,
-                longitude:23
+                longitude:23,
+                address:"nowhere"
             })
             .toss();
         frisby.create('Check if vote got properly added')
@@ -612,7 +616,8 @@ describe('Suggest Location', function(){
             {
                 // jan. 1, 2050 12 - 1pm
                 latitude:70,
-                longitude:23
+                longitude:23,
+                address: "nowhere"
             },{json:true})
             .expectStatus(400)
             .toss();
@@ -762,6 +767,7 @@ describe('Get Activity', function() {
                 ]
             })
             .expectJSON('locations.?',
+                        "latitude": 150,
             {
                 "longitude": 70,
                 "latitude": 50

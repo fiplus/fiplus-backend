@@ -89,10 +89,10 @@ Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, 
         }
     });
 
-    var suggestion_node = (new sug()).saveLocationSuggestion(latitude, longitude);
+    var suggestion_node = (new sug()).saveLocationSuggestion(latitude, longitude, address);
     result = this.db.suggested.save(activity_id, suggestion_node, {});
     if(result.error == true) {
-        throw new error.GenericError('Saving suggested location ' + latitude + ', ' + longitude + ' failed.');
+        throw new error.GenericError('Saving suggested location ' + address + ' failed.');
     }
     //If suggestion didn't fail. Vote for it.
     (new voted()).saveUserVote(user_id, suggestion_node._id);
@@ -136,6 +136,7 @@ Suggested.prototype.getSuggestedLocations = function(activity_id)
             loc_model.suggestion_voters = Voted.getVotersId(db.suggestion.document(edge._to));
             loc_model.longitude = loc_node[Location.LONGITUDE_FIELD];
             loc_model.latitude = loc_node[Location.LATITUDE_FIELD];
+            loc_model.address = loc_node[Location.ADDRESS_FIELD];
             locations.push(loc_model);
         }
     });

@@ -248,6 +248,7 @@ var defines = require('db-interface/util/defines');
 
         var user_node = User.getUserWithId(userId);
         var current_userId = req.session.get('uid');
+                loc.address = location_node[Location.ADDRESS_FIELD];
 
         var profile = helper.getProfile(user_node, current_userId);
 
