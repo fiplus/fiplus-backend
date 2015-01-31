@@ -186,14 +186,13 @@ var model_common = require('model-common');
     /*
      * GetUserProfile
      */
-    controller.get('/profile/:useremail', function(req, res) {
-        var useremail = req.params('useremail');
+    controller.get('/profile/:userId', function(req, res) {
+        var userId = 'user/' + req.params('userId');
         var User = new user();
 
-        var user_node = User.getUserWithEmail(useremail);
+        var user_node = User.getUserWithId(userId);
 
         var profile = new model_common.UserProfile();
-        profile.email = useremail;
 
         var user_data = user_node[User.DATA_FIELD];
 
@@ -205,6 +204,7 @@ var model_common = require('model-common');
         // Private information
         if (req.session.get('uid') == user_node._id) {
 
+            profile.email = user_node[User.EMAIL_FIELD];
             profile.age = user_data[User.DATA_AGE_FIELD];
             profile.gender = user_data[User.DATA_GENDER_FIELD];
             profile.location_proximity_setting = user_data[User.DATA_LOCATION_PROXIMITY_SETTING_FIELD];
@@ -223,9 +223,9 @@ var model_common = require('model-common');
         }
 
         res.json(profile);
-    }).pathParam('useremail', {
+    }).pathParam('userId', {
         type: joi.string(),
-        description: 'The email of user to get profile for'
+        description: 'The userId to get profile for'
     }).onlyIfAuthenticated();
 
     //Add Favourite

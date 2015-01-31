@@ -75,6 +75,13 @@ User.prototype.getUserWithEmail = function(email)
     return user_node;
 };
 
+User.prototype.getUserWithId = function(id)
+{
+    this.exists(id);
+    return this.db.user.document(id);
+};
+
+
 User.prototype.getAuthWithEmail = function(email)
 {
     return this.getUserWithEmail(email)[this.AUTH_FIELD];
