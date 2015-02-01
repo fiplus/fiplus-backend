@@ -38,6 +38,7 @@ activity.createActivity.description = 'Creates the activity';
 activity.afterRemote('createActivity', function(ctx, model, next) {
   fwd.forwardResponse(ctx.res);
   ctx.res.send(ctx.res.body);
+  SendNotification(ctx.res.body);
   ctx.res.end();
 });
 

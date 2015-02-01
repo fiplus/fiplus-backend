@@ -86,7 +86,7 @@ var helper = require('db-interface/util/helper');
             Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude);
         }
 
-        res.body = "Success";
+        res.body = activity_id;//"Success";
     }).bodyParam('Activity', {
         type: foxx.Model
     }).onlyIfAuthenticated();
