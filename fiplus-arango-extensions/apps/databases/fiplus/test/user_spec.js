@@ -207,3 +207,55 @@ describe('Who Am I', function () {
     });
 });
 
+describe("Get Joined Activities", function() {
+    it('should return past activities', function() {
+        frisby.create(this.description)
+            .get('http://localhost:3001/api/Users/activities?past=true')
+            .expectStatus(200)
+            .expectJSON('activities.?',
+            {
+                activity_id: '4'
+            })
+            .toss();
+    });
+
+    it('should return future activities', function() {
+        frisby.create(this.description)
+            .get('http://localhost:3001/api/Users/activities?future=true')
+            .expectStatus(200)
+            .expectJSON('activities.?',
+            {
+                activity_id: '3'
+            })
+            .toss();
+    });
+
+    it('should return all activities', function() {
+        frisby.create(this.description)
+            .get('http://localhost:3001/api/Users/activities?future=true&past=true')
+            .expectStatus(200)
+            .expectJSON('activities.?',
+            {
+                activity_id: '3'
+            })
+            .expectJSON('activities.?',
+            {
+                activity_id: '4'
+            })
+            .toss();
+
+        frisby.create(this.description)
+            .get('http://localhost:3001/api/Users/activities?future=false&past=false')
+            .expectStatus(200)
+            .expectJSON('activities.?',
+            {
+                activity_id: '3'
+            })
+            .expectJSON('activities.?',
+            {
+                activity_id: '4'
+            })
+            .toss();
+    });
+});
+

@@ -136,6 +136,13 @@ var act3 = db.activity.save({
     maximum_attendance:3
 });
 
+var act4 = db.activity.save({
+    _key:'4',
+    name:'A4',
+    description:'activity 4',
+    maximum_attendance:5
+});
+
 var activity1 = db.activity.save({name:'BasketballNW'});
 var activity2 = db.activity.save({name:'BasketballSW'});
 var activity3 = db.activity.save({name:'BasketballNE'});
@@ -173,9 +180,13 @@ db.joined.save(user2, act2, {});
 db.created.save(user3, act3, {});
 db.joined.save(user3, act3, {});
 
+
 // Joiners
 db.joined.save(user1, act2, {});
 db.joined.save(user3, act2, {});
+db.joined.save(defaultUser, act3, {});
+db.joined.save(defaultUser, act4, {});
+
 // Tagged
 db.tagged.save(act1, int1, {});
 db.tagged.save(act2, int2, {});
@@ -195,3 +206,10 @@ db.suggested.save(act3, sug1, {});
 var sug2 = db.suggestion.save({_key:'2'});
 db.is.save(sug2, loc4, {});
 db.suggested.save(act3, sug2, {});
+
+var sug3 = db.suggestion.save({_key:'3'});
+db.is.save(sug3, tp1, {});
+
+// One activity in past, one activity in future
+db.suggested.save(act3, sug1, {});
+db.suggested.save(act4, sug3, {});

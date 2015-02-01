@@ -9,6 +9,7 @@ var location = require('db-interface/node/location');
 var is_available = require('db-interface/edge/is_available');
 var interested_in = require('db-interface/edge/interested_in');
 var model_common = require('model-common');
+var query = require('db-interface/util/query');
 
 (function() {
     "use strict";
@@ -232,6 +233,19 @@ var model_common = require('model-common');
     }).pathParam('userId', {
         type: joi.string(),
         description: 'The userId to get profile for'
+    }).onlyIfAuthenticated();
+
+    controller.get('/activities', function(request, response) {
+
+        var activitiesArray = query.getJoinedActivities(request.session.get('uid'), request.params('future'), request.params('past'));
+        activitiesArray.forEach(function(activity) {
+            activity.activity_id = activity._key;
+        });
+        response.json({activities: activitiesArray});
+    }).queryParam('future', {
+        type: joi.boolean()
+    }).queryParam('past', {
+        type: joi.boolean()
     }).onlyIfAuthenticated();
 
     //Add Favourite
