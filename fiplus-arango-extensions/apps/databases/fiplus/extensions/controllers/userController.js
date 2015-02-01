@@ -72,12 +72,16 @@ var model_common = require('model-common');
             email = credentials.get('email'),
             User = new user();
 
-        var user_auth = User.getAuthWithEmail(email);
+        try {
+            var user_auth = User.getAuthWithEmail(email);
+        } catch(err) {
+            // obfuscate to avoid account discovery
+            throw new error.UnauthorizedError(email, 'login');
+        }
         var valid = auth.verifyPassword(
             user_auth ? user_auth : {},
             credentials.get('password')
         );
-
         if (valid) {
             req.session.get('sessionData').username = email;
             req.session.setUser(User.resolve(email));

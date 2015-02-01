@@ -91,7 +91,7 @@ User.prototype.resolve = function (username)
 {
     var user = users.firstExample({user: username});
     if (!user.get('_key')) {
-        throw new error.NotFoundError("User " + email);
+        throw new error.UnauthorizedError(username, "login");
     }
     return user;
 };
