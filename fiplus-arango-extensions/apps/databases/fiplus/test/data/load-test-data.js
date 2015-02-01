@@ -113,6 +113,8 @@ db.interested_in.save(user1,int1,{});
 db.interested_in.save(user1,int2,{});
 db.interested_in.save(user2,int2,{});
 db.interested_in.save(user2,int3,{});
+db.interested_in.save(defaultUser,int1,{});
+db.interested_in.save(defaultUser,int2,{});
 db.interested_in.save(defaultUser,int3,{});
 
 // Activity
