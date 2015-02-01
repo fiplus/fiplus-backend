@@ -170,8 +170,8 @@ User.prototype.updateDeviceId = function(target_user_id, currentDeviceId, newDev
     // If currentDeviceId exists it means that a device is updating an existing device id rather
     // than adding a new device to the user.
     var user = db.user.document(target_user_id);
-    var devicesIds = [];
     var deviceIds = user[this.DATA_FIELD][this.DATA_DEVICE_IDS];
+    deviceIds = deviceIds ? deviceIds : [];
 
     var devIndex = deviceIds.indexOf(currentDeviceId);
     if(devIndex != -1)
