@@ -157,8 +157,10 @@ var model_common = require('model-common');
         User.updateUserGender(target_user._id, userprofile.get("gender"));
         User.updateUserLocationProximitySetting(target_user._id, userprofile.get("location_proximity_setting"));
 
-        (new in_location.InLocation()).saveInLocationEdge(target_user._id, userprofile.get("location").latitude, userprofile.get("location").longitude);
-
+        var location = userprofile.get("location");
+        if(location != null) {
+            (new in_location.InLocation()).saveInLocationEdge(target_user._id, location.latitude, location.longitude);
+        }
         var start_time;
         var end_time;
         var availabilities = userprofile.get('availabilities');
