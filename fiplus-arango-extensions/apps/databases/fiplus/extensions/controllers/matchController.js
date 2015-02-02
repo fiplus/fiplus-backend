@@ -93,9 +93,7 @@ var underscore = require('underscore');
             activities = matchDefaultActivities(num_activities_requested);
         }
 
-        var jsonactivities = {};
-        jsonactivities["activities"] = activities;
-        response.json(jsonactivities);
+        response.json(activities);
 
     }).queryParam("num_activities", {
       type: joi.number().integer(),

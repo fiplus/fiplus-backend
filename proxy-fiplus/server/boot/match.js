@@ -38,7 +38,7 @@ match.matchActivities.accepts = [{arg:'email', type: 'string', http:{source:'que
   {arg:'priority_offset', type: 'number', http:{source:'query'}},
   {arg:'location', type: 'Location', http:{source:'body'}},
   {arg:'req', type:'object',http:{source:'req'}}];
-match.matchActivities.returns = {arg:'activities',type:['Activity']};
+match.matchActivities.returns = {arg:'activities',type:['Activity'], root:true};
 match.matchActivities.http = {verb: 'GET', path: '/activities'};
 match.matchActivities.description = 'Match activities';
 match.afterRemote('matchActivities', function(ctx, model, next) {
