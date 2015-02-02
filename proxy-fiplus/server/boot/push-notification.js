@@ -8,7 +8,7 @@ exports.SendNotificationOnActivityCreate = function(activity_id)
     gcmSender.setAPIKey("AIzaSyDwbfeTyVbI1GvMh0JLNyweaNhSbqbgMzI");
     var gcmMessage = new gcm.Message({
       data: {
-        message: "Test Message for Allan"
+        message: "A new event related to one of your interests has been created. Check it out!"
       },
       dry_run: false
     });
