@@ -26,21 +26,17 @@ frisby.create(this.description)
 describe("Get activities based on user interests", function () {
     it("should get activities related to the user interests", function () {
     frisby.create("Request activities based on user interest")
-        .get('http://localhost:3001/api/Matches/activities?email=test2@data.com&num_activities=100&by_interest=true')
-        .expectJSONTypes(
-        {
-            activities: Array
-        })
-        .expectJSON('activities.?', {
+        .get('http://localhost:3001/api/Matches/activities?num_activities=100&by_interest=true')
+        .expectJSON('?', {
             name: 'BasketballNW'
         })
-        .expectJSON('activities.?', {
+        .expectJSON('?', {
             name: 'BasketballSE'
         })
-        .expectJSON('activities.?', {
+        .expectJSON('?', {
             name: 'BasketballNE'
         })
-        .expectJSON('activities.?', {
+        .expectJSON('?', {
             name: 'BasketballSW'
         })
         .toss();
