@@ -288,4 +288,40 @@ user.afterRemote('setDeviceId', function(ctx, model, next) {
   ctx.res.end();
 });
 
+user.getActivities = function(past, future, req, cb) {
+
+  request({
+    url: fwd.FIPLUS_BASE_URL+'/user/activities?' + req.originalUrl.split('?')[1],
+    method: 'GET',
+    headers: {
+      cookie: req.get('Cookie')
+    },
+    body: req.body,
+    json: true
+  }, function(e, response) {
+    if(e)
+    {
+      console.log(e);
+    }
+    else
+    {
+      fwd.saveArangoResponse(response);
+
+      // No error so 1st arg = null
+      cb(null, response.body);
+    }
+  });
+};
+
+user.getActivities.shared = true;
+user.getActivities.accepts = [{arg:'past', type:'boolean',http:{source:'query'}},{arg:'future', type:'boolean',http:{source:'query'}},{arg:'req', type:'object',http:{source:'req'}}];
+user.getActivities.returns = {arg:'activities', type:['Activity'],http:{source:'body'}};
+user.getActivities.http = {verb: 'GET', path: '/activities'};
+user.getActivities.description = 'Gets activities joined by user, returns all if both options set to false';
+user.afterRemote('getActivities', function(ctx, model, next) {
+  fwd.forwardResponse(ctx.res);
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
+});
+
 app.model(user); 
