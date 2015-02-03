@@ -129,6 +129,13 @@ var act2 = db.activity.save({
     maximum_attendance:0
 });
 
+var act3 = db.activity.save({
+    _key:'3',
+    name:'A3',
+    description:'activity 3',
+    maximum_attendance:3
+});
+
 var activity1 = db.activity.save({name:'BasketballNW'});
 var activity2 = db.activity.save({name:'BasketballSW'});
 var activity3 = db.activity.save({name:'BasketballNE'});
@@ -163,6 +170,8 @@ db.created.save(user1, act1, {});
 db.joined.save(user1, act1, {});
 db.created.save(user2, act2, {});
 db.joined.save(user2, act2, {});
+db.created.save(user3, act3, {});
+db.joined.save(user3, act3, {});
 
 // Joiners
 db.joined.save(user1, act2, {});
@@ -171,6 +180,7 @@ db.joined.save(user3, act2, {});
 db.tagged.save(act1, int1, {});
 db.tagged.save(act2, int2, {});
 db.tagged.save(act2, int3, {});
+db.tagged.save(act3, int1, {});
 db.tagged.save(activity1,int3,{});
 db.tagged.save(activity2,int3,{});
 db.tagged.save(activity3,int3,{});
@@ -180,8 +190,8 @@ db.tagged.save(activity5,int1,{});
 //Suggestions
 var sug1 = db.suggestion.save({_key:'1'});
 db.is.save(sug1, tp3, {});
-db.suggested.save(act1, sug1, {});
+db.suggested.save(act3, sug1, {});
 
 var sug2 = db.suggestion.save({_key:'2'});
 db.is.save(sug2, loc4, {});
-db.suggested.save(act1, sug2, {});
+db.suggested.save(act3, sug2, {});
