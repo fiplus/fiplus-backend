@@ -28,16 +28,16 @@ describe("Get activities based on user interests", function () {
     frisby.create("Request activities based on user interest")
         .get('http://localhost:3001/api/Matches/activities?num_activities=100&by_interest=true')
         .expectJSON('?', {
-            name: 'BasketballNW'
+            Name: 'BasketballNW'
         })
         .expectJSON('?', {
-            name: 'BasketballSE'
+            Name: 'BasketballSE'
         })
         .expectJSON('?', {
-            name: 'BasketballNE'
+            Name: 'BasketballNE'
         })
         .expectJSON('?', {
-            name: 'BasketballSW'
+            Name: 'BasketballSW'
         })
         .toss();
     });

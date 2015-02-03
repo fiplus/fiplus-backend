@@ -35,7 +35,7 @@ exports.Time = Time;
 
 var Activity = function(){};
 Activity.activity_id = String;
-Activity.name = String;
+Activity.Name = String;
 Activity.description = String;
 Activity.max_attendees = Number;
 Activity.creator = String;

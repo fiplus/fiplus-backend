@@ -117,37 +117,37 @@ db.interested_in.save(user2,int3,{});
 // Activity
 var act1 = db.activity.save({
     _key:'1',
-    name:'A1',
+    Name:'A1',
     description:'activity 1',
     maximum_attendance:5
 });
 
 var act2 = db.activity.save({
     _key:'2',
-    name:'A2',
+    Name:'A2',
     description:'activity 2',
     maximum_attendance:0
 });
 
 var act3 = db.activity.save({
     _key:'3',
-    name:'A3',
+    Name:'A3',
     description:'activity 3',
     maximum_attendance:3
 });
 
 var act4 = db.activity.save({
     _key:'4',
-    name:'A4',
+    Name:'A4',
     description:'activity 4',
     maximum_attendance:5
 });
 
-var activity1 = db.activity.save({name:'BasketballNW'});
-var activity2 = db.activity.save({name:'BasketballSW'});
-var activity3 = db.activity.save({name:'BasketballNE'});
-var activity4 = db.activity.save({name:'BasketballSE'});
-var activity5 = db.activity.save({name:'SoccerSE'});
+var activity1 = db.activity.save({Name:'BasketballNW'});
+var activity2 = db.activity.save({Name:'BasketballSW'});
+var activity3 = db.activity.save({Name:'BasketballNE'});
+var activity4 = db.activity.save({Name:'BasketballSE'});
+var activity5 = db.activity.save({Name:'SoccerSE'});
 
 
 // Time Suggestions

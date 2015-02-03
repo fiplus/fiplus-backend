@@ -12,7 +12,7 @@ var Activity = function()
 {
     this.db = db;
     this.COLLECTION_NAME = 'activity';
-    this.NAME_FIELD = 'name';
+    this.NAME_FIELD = 'Name';
     this.DESCRIPTION_FIELD = 'description';
     this.MAXIMUM_ATTENDANCE_FIELD = 'maximum_attendance';
 };

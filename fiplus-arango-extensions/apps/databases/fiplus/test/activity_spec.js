@@ -28,7 +28,7 @@ describe("Create activity", function () {
         frisby.create(this.description)
             .post('http://localhost:3001/api/Acts',
             {
-                "name" : "The Event",
+                "Name" : "The Event",
                 "description" : "My first event",
                 "max_attendees" : "1000",
                 "creator" : "101",
@@ -289,7 +289,7 @@ describe('Get Activity', function() {
             .expectStatus(200)
             .expectJSON(
             {
-                "name": "A2",
+                "Name": "A2",
                 "description": "activity 2",
                 "max_attendees": 0,
                 "creator": "2",
@@ -323,7 +323,7 @@ describe('Get Activity', function() {
             .expectStatus(200)
             .expectJSON(
             {
-                "name": "A3",
+                "Name": "A3",
                 "description": "activity 3",
                 "max_attendees": 3,
                 "creator": "3",
