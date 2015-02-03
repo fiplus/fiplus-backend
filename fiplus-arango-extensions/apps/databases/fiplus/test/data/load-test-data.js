@@ -119,28 +119,28 @@ var act1 = db.activity.save({
     _key:'1',
     name:'A1',
     description:'activity 1',
-    maximum_attendance:5
+    max_attendees:5
 });
 
 var act2 = db.activity.save({
     _key:'2',
     name:'A2',
     description:'activity 2',
-    maximum_attendance:0
+    max_attendees:0
 });
 
 var act3 = db.activity.save({
     _key:'3',
     name:'A3',
     description:'activity 3',
-    maximum_attendance:3
+    max_attendees:3
 });
 
 var act4 = db.activity.save({
     _key:'4',
     name:'A4',
     description:'activity 4',
-    maximum_attendance:5
+    max_attendees:5
 });
 
 var activity1 = db.activity.save({name:'BasketballNW'});
