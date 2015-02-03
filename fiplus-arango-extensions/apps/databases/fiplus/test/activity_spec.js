@@ -316,6 +316,39 @@ describe('Get Activity', function() {
             })
             .toss();
     });
+    it('should return activity information with updated vote counts for suggested time and location and corresponding suggestion id.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:3001/api/Acts/3',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "name": "A3",
+                "description": "activity 3",
+                "max_attendees": 3,
+                "creator": "3",
+                "tagged_interests": [
+                    "soccer"
+                ],
+                "suggested_times": [
+                    {
+                        "suggestion_id": "1",
+                        "suggestion_votes": 1,
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    }
+                ],
+                "suggested_locations": [
+                    {
+                        "suggestion_id": "2",
+                        "suggestion_votes": 1,
+                        "longitude": 150,
+                        "latitude": 150
+                    }
+                ]
+            })
+            .toss();
+    });
     it('should fail to get non-existent activity.', function() {
         frisby.create(this.description)
             .get('http://localhost:3001/api/Acts/activity/0',

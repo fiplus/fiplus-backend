@@ -40,4 +40,15 @@ Voted.prototype.saveUserVote = function(userId, suggestionId)
     return result;
 };
 
+Voted.prototype.getNumberOfUserVotes = function(suggestionId)
+{
+    var vote_count = 0;
+    var votes = db.voted.inEdges(suggestionId);
+    if(votes != null)
+    {
+        vote_count = votes.length;
+    }
+    return vote_count;
+};
+
 exports.Voted = Voted;
