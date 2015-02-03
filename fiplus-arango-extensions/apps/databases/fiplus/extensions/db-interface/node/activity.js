@@ -14,7 +14,7 @@ var Activity = function()
     this.COLLECTION_NAME = 'activity';
     this.NAME_FIELD = 'name';
     this.DESCRIPTION_FIELD = 'description';
-    this.MAXIMUM_ATTENDANCE_FIELD = 'maximum_attendance';
+    this.MAXIMUM_ATTENDANCE_FIELD = 'max_attendees';
 };
 
 Activity.prototype.saveActivityToDb = function(name, description, maximum_attendance)
