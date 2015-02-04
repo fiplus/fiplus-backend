@@ -241,7 +241,7 @@ var query = require('db-interface/util/query');
         activitiesArray.forEach(function(activity) {
             activity.activity_id = activity._key;
         });
-        response.json({activities: activitiesArray});
+        response.json(activitiesArray);
     }).queryParam('future', {
         type: joi.boolean()
     }).queryParam('past', {

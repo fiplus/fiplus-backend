@@ -54,10 +54,7 @@ var interest = require('db-interface/node/interest');
         {
             interests.push(results[i]["name"]);
         }
-
-        var jsoninterests = {};
-        jsoninterests["interests"] = interests;
-        response.json(jsoninterests);
+        response.json(interests);
 
     }).queryParam("input", {
         type: joi.string(),

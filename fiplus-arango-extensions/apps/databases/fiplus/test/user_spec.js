@@ -212,7 +212,7 @@ describe("Get Joined Activities", function() {
         frisby.create(this.description)
             .get('http://localhost:3001/api/Users/activities?past=true')
             .expectStatus(200)
-            .expectJSON('activities.?',
+            .expectJSON('?',
             {
                 activity_id: '4'
             })
@@ -223,7 +223,7 @@ describe("Get Joined Activities", function() {
         frisby.create(this.description)
             .get('http://localhost:3001/api/Users/activities?future=true')
             .expectStatus(200)
-            .expectJSON('activities.?',
+            .expectJSON('?',
             {
                 activity_id: '3'
             })
@@ -234,11 +234,11 @@ describe("Get Joined Activities", function() {
         frisby.create(this.description)
             .get('http://localhost:3001/api/Users/activities?future=true&past=true')
             .expectStatus(200)
-            .expectJSON('activities.?',
+            .expectJSON('?',
             {
                 activity_id: '3'
             })
-            .expectJSON('activities.?',
+            .expectJSON('?',
             {
                 activity_id: '4'
             })
@@ -247,11 +247,11 @@ describe("Get Joined Activities", function() {
         frisby.create(this.description)
             .get('http://localhost:3001/api/Users/activities?future=false&past=false')
             .expectStatus(200)
-            .expectJSON('activities.?',
+            .expectJSON('?',
             {
                 activity_id: '3'
             })
-            .expectJSON('activities.?',
+            .expectJSON('?',
             {
                 activity_id: '4'
             })

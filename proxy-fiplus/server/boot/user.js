@@ -315,7 +315,7 @@ user.getActivities = function(past, future, req, cb) {
 
 user.getActivities.shared = true;
 user.getActivities.accepts = [{arg:'past', type:'boolean',http:{source:'query'}},{arg:'future', type:'boolean',http:{source:'query'}},{arg:'req', type:'object',http:{source:'req'}}];
-user.getActivities.returns = {arg:'activities', type:['Activity'],http:{source:'body'}};
+user.getActivities.returns = {arg:'activities', type:['Activity'],http:{source:'body'}, root:true};
 user.getActivities.http = {verb: 'GET', path: '/activities'};
 user.getActivities.description = 'Gets activities joined by user, returns all if both options set to false';
 user.afterRemote('getActivities', function(ctx, model, next) {
