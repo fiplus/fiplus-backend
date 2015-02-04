@@ -204,6 +204,7 @@ var query = require('db-interface/util/query');
         var user_data = user_node[User.DATA_FIELD];
 
         // Public information
+        profile.user_id = user_node._key;
         profile.username = user_data[User.DATA_USERNAME_FIELD];
         profile.profile_pic = user_data[User.DATA_PROFILE_PIC_FIELD];
         profile.tagged_interests = (new interested_in.InterestedIn()).getUserInterests(user_node._id);
