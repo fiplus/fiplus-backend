@@ -27,10 +27,6 @@ describe('Get Interests', function() {
     it('gives input', function() {
         frisby.create("Get interests based on input")
             .get("http://localhost:3001/api/Interests?input=So")
-            .expectJSONTypes(
-            {
-                interests: Array
-            })
             // For simplicity and to guard against new test data being added in the future, just test if 'soccer' appears
             .expectBodyContains('soccer')
             .toss();
@@ -39,10 +35,6 @@ describe('Get Interests', function() {
     it('no input; all interests', function() {
         frisby.create("Get all interests")
             .get('http://localhost:3001/api/Interests')
-            .expectJSONTypes(
-            {
-                interests: Array
-            })
             .expectBodyContains('soccer')
             .expectBodyContains('hockey')
             .expectBodyContains('basketball')

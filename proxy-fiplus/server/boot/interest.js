@@ -34,7 +34,7 @@ interest.getInterestsWithInput = function(input, req, cb) {
 interest.getInterestsWithInput.shared = true;
 interest.getInterestsWithInput.accepts = [{arg:'input', type: 'string', http:{source:'query'}},
   {arg:'req', type:'object',http:{source:'req'}}];
-interest.getInterestsWithInput.returns = {arg:'interests',type:['string']};
+interest.getInterestsWithInput.returns = {arg:'interests',type:['string'], root:true};
 interest.getInterestsWithInput.http = {verb: 'GET', path: '/'};
 interest.getInterestsWithInput.description = 'Get interests with input';
 interest.afterRemote('getInterestsWithInput', function(ctx, model, next) {
