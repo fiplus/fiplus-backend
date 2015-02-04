@@ -59,7 +59,7 @@ var model_common = require('model-common');
         }
 
         var Creator = new creator();
-        var created_edge = db.created.document((Creator.saveCreatedEdge(creator_id ,activity.get('name'),
+        var created_edge = db.created.document((Creator.saveCreatedEdge(creator_id ,activity.get('Name'),
             activity.get('description'), max))._id);
         var activity_id = created_edge._to;
 
@@ -100,7 +100,7 @@ var model_common = require('model-common');
         var activity_node = Actor.get(activity_id);
 
         var activity = new model_common.Activity();
-        activity.name = activity_node[Actor.NAME_FIELD];
+        activity.Name = activity_node[Actor.NAME_FIELD];
         activity.description = activity_node[Actor.DESCRIPTION_FIELD];
         activity.max_attendees = activity_node[Actor.MAXIMUM_ATTENDANCE_FIELD];
         activity.creator = (new creator()).getCreator(activity_id);
