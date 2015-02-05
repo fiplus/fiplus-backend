@@ -214,7 +214,21 @@ describe("Get Joined Activities", function() {
             .expectStatus(200)
             .expectJSON('?',
             {
-                activity_id: '4'
+                "activity_id": "activity/4",
+                "Name": "A4",
+                "description": "activity 4",
+                "max_attendees": 5,
+                "creator": "101",
+                "tagged_interests": [],
+                "suggested_times": [
+                    {
+                        "suggestion_id": "3",
+                        "suggestion_votes": 0,
+                        "start": 1417453200000,
+                        "end": 1417460400000
+                    }
+                ],
+                "suggested_locations": []
             })
             .toss();
     });
@@ -225,7 +239,36 @@ describe("Get Joined Activities", function() {
             .expectStatus(200)
             .expectJSON('?',
             {
-                activity_id: '3'
+                "activity_id": "activity/3",
+                "Name": "A3",
+                "description": "activity 3",
+                "max_attendees": 3,
+                "creator": "3",
+                "tagged_interests": [
+                    "soccer"
+                ],
+                "suggested_times": [
+                    {
+                        "suggestion_id": "1",
+                        "suggestion_votes": 1,
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    },
+                    {
+                        "suggestion_id": "1",
+                        "suggestion_votes": 1,
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    }
+                ],
+                "suggested_locations": [
+                    {
+                        "suggestion_id": "2",
+                        "suggestion_votes": 1,
+                        "longitude": 150,
+                        "latitude": 150
+                    }
+                ]
             })
             .toss();
     });
@@ -236,11 +279,54 @@ describe("Get Joined Activities", function() {
             .expectStatus(200)
             .expectJSON('?',
             {
-                activity_id: '3'
+                "activity_id": "activity/3",
+                "Name": "A3",
+                "description": "activity 3",
+                "max_attendees": 3,
+                "creator": "3",
+                "tagged_interests": [
+                    "soccer"
+                ],
+                "suggested_times": [
+                    {
+                        "suggestion_id": "1",
+                        "suggestion_votes": 1,
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    },
+                    {
+                        "suggestion_id": "1",
+                        "suggestion_votes": 1,
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    }
+                ],
+                "suggested_locations": [
+                    {
+                        "suggestion_id": "2",
+                        "suggestion_votes": 1,
+                        "longitude": 150,
+                        "latitude": 150
+                    }
+                ]
             })
             .expectJSON('?',
             {
-                activity_id: '4'
+                "activity_id": "activity/4",
+                "Name": "A4",
+                "description": "activity 4",
+                "max_attendees": 5,
+                "creator": "101",
+                "tagged_interests": [],
+                "suggested_times": [
+                    {
+                        "suggestion_id": "3",
+                        "suggestion_votes": 0,
+                        "start": 1417453200000,
+                        "end": 1417460400000
+                    }
+                ],
+                "suggested_locations": []
             })
             .toss();
 
@@ -249,11 +335,54 @@ describe("Get Joined Activities", function() {
             .expectStatus(200)
             .expectJSON('?',
             {
-                activity_id: '3'
+                "activity_id": "activity/3",
+                "Name": "A3",
+                "description": "activity 3",
+                "max_attendees": 3,
+                "creator": "3",
+                "tagged_interests": [
+                    "soccer"
+                ],
+                "suggested_times": [
+                    {
+                        "suggestion_id": "1",
+                        "suggestion_votes": 1,
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    },
+                    {
+                        "suggestion_id": "1",
+                        "suggestion_votes": 1,
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    }
+                ],
+                "suggested_locations": [
+                    {
+                        "suggestion_id": "2",
+                        "suggestion_votes": 1,
+                        "longitude": 150,
+                        "latitude": 150
+                    }
+                ]
             })
             .expectJSON('?',
             {
-                activity_id: '4'
+                "activity_id": "activity/4",
+                "Name": "A4",
+                "description": "activity 4",
+                "max_attendees": 5,
+                "creator": "101",
+                "tagged_interests": [],
+                "suggested_times": [
+                    {
+                        "suggestion_id": "3",
+                        "suggestion_votes": 0,
+                        "start": 1417453200000,
+                        "end": 1417460400000
+                    }
+                ],
+                "suggested_locations": []
             })
             .toss();
     });

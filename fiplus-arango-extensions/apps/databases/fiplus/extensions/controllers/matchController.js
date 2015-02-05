@@ -4,6 +4,7 @@ var db = require("org/arangodb").db;
 var error = require('error');
 var user = require('db-interface/node/user');
 var underscore = require('underscore');
+var helper = require('db-interface/util/helper');
 
 (function() {
     "use strict";
@@ -50,11 +51,12 @@ var underscore = require('underscore');
             //Get available activities associated with the given interests
             db.tagged.inEdges(interest_id).forEach(function (edge) {
                 //Only push to user_activities_array if we didn't meet the num_activities requirement yet
-                var addActivity = db.activity.document(edge._from);
-                if (activities.length < num_activities_requested && underscore.findWhere(activities, addActivity) == null) {
-                    // Mobile apps needs the _key to be retrievable by the sdk
-                    addActivity.activity_id = addActivity._key;
-                    activities.push(addActivity);
+                var activity_node = db.activity.document(edge._from);
+                if (activities.length < num_activities_requested) {
+                    var act = helper.getActivity(activity_node);
+                    if(underscore.findWhere(activities, activity_node) == null) {
+                        activities.push(act);
+                    }
                 }
             });
         }
@@ -67,13 +69,11 @@ var underscore = require('underscore');
         var activity_list_length = activity_list.length;
 
         for (var i = 0; i < activity_list_length; i++) {
-            var addActivity = activity_list[i];
-            if (underscore.findWhere(activities, addActivity) == null) {
-                // Mobile apps needs the _key to be retrievable by the sdk
-                addActivity.activity_id = addActivity._key;
-                activities.push(addActivity);
+            var activity_node = activity_list[i];
+            var act = helper.getActivity(activity_node);
+            if (underscore.findWhere(activities, activity_node) == null) {
+                activities.push(act);
             }
-
         }
         return activities;
     };

@@ -27,17 +27,62 @@ describe("Get activities based on user interests", function () {
     it("should get activities related to the user interests", function () {
     frisby.create("Request activities based on user interest")
         .get('http://localhost:3001/api/Matches/activities?num_activities=100&by_interest=true')
-        .expectJSON('?', {
-            Name: 'BasketballNW'
+        .expectJSON('?',    {
+            "Name": "A2",
+            "description": "activity 2",
+            "max_attendees": 0,
+            "creator": "2",
+            "tagged_interests": [
+                "hockey",
+                "basketball"
+            ],
+            "suggested_times": [
+                {
+                    "suggestion_votes": 0,
+                    "start": 4102513200000,
+                    "end": 4102516800000
+                }
+            ],
+            "suggested_locations": [
+                {
+                    "suggestion_votes": 0,
+                    "longitude": 150,
+                    "latitude": 150
+                },
+                {
+                    "suggestion_votes": 0,
+                    "longitude": 100,
+                    "latitude": 50
+                }
+            ]
+        })
+        .expectJSON('?',   {
+            "Name": "BasketballNW",
+            "creator": "101",
+            "tagged_interests": [
+                "basketball"
+            ]
         })
         .expectJSON('?', {
-            Name: 'BasketballSE'
+            "Name": "BasketballSW",
+            "creator": "101",
+            "tagged_interests": [
+                "basketball"
+            ]
         })
         .expectJSON('?', {
-            Name: 'BasketballNE'
+            "Name": "BasketballNE",
+            "creator": "101",
+            "tagged_interests": [
+                "basketball"
+            ]
         })
         .expectJSON('?', {
-            Name: 'BasketballSW'
+            "Name": "BasketballSE",
+            "creator": "101",
+            "tagged_interests": [
+                "basketball"
+            ]
         })
         .toss();
     });

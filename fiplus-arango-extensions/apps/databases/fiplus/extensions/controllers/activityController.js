@@ -9,6 +9,7 @@ var voted = require('db-interface/edge/voted').Voted;
 var actor = require('db-interface/node/activity').Activity;
 var error = require('error');
 var model_common = require('model-common');
+var helper = require('db-interface/util/helper');
 
 
 (function() {
@@ -96,20 +97,8 @@ var model_common = require('model-common');
     controller.get('/:activityid', function(req, res) {
         var activity_id = 'activity/' + req.params('activityid');
 
-        var Actor = new actor();
-        var activity_node = Actor.get(activity_id);
-
-        var activity = new model_common.Activity();
-        activity.Name = activity_node[Actor.NAME_FIELD];
-        activity.description = activity_node[Actor.DESCRIPTION_FIELD];
-        activity.max_attendees = activity_node[Actor.MAXIMUM_ATTENDANCE_FIELD];
-        activity.creator = (new creator()).getCreator(activity_id);
-        activity.tagged_interests = (new tagger()).getTags(activity_id);
-        // TODO if there is a confirmed time/location, return an array of 1 with only the confirmed suggestion
-        var Suggester = new suggester();
-        activity.suggested_times = Suggester.getSuggestedTimes(activity_id);
-        activity.suggested_locations = Suggester.getSuggestedLocations(activity_id);
-
+        var activity_node = (new actor()).get(activity_id);
+        var activity = helper.getActivity(activity_node);
         res.json(activity);
     }).pathParam('activityid', {
         type: joi.string(),

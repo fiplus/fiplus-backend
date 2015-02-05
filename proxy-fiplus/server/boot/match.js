@@ -6,7 +6,7 @@ var fwd = require('./arango-fwd');
 var ds = app.dataSources.db;
 var match = ds.createModel ('Match',{},{base:loopback.Model});
 
-match.matchActivities = function(email, num, by_interest, offset, location, req, cb) {
+match.matchActivities = function( num, by_interest, offset, location, req, cb) {
 
   request({
     url: fwd.FIPLUS_BASE_URL+'/match/activities?' + req.originalUrl.split('?')[1],
@@ -14,7 +14,6 @@ match.matchActivities = function(email, num, by_interest, offset, location, req,
     headers: {
       cookie: req.get('Cookie')
     },
-    body: req.body,
     json: true
   }, function(e, response) {
     if(e)
@@ -32,7 +31,7 @@ match.matchActivities = function(email, num, by_interest, offset, location, req,
 };
 
 match.matchActivities.shared = true;
-match.matchActivities.accepts = [{arg:'email', type: 'string', http:{source:'query'}},
+match.matchActivities.accepts = [
   {arg:'num_activities', type: 'number', http:{source:'query'}},
   {arg:'by_interest', type: 'boolean', http:{source:'query'}},
   {arg:'priority_offset', type: 'number', http:{source:'query'}},
