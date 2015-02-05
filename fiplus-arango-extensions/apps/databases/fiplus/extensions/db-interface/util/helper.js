@@ -3,6 +3,7 @@ var tagger = require('db-interface/edge/tagged').Tagged;
 var suggester = require('db-interface/edge/suggested').Suggested;
 var voted = require('db-interface/edge/voted').Voted;
 var actor = require('db-interface/node/activity').Activity;
+var joiner = require('db-interface/edge/joined').Joined;
 var model_common = require('model-common');
 
 exports.getActivity = function(activity_node)
@@ -14,6 +15,7 @@ exports.getActivity = function(activity_node)
     activity.Name = activity_node[Actor.NAME_FIELD];
     activity.description = activity_node[Actor.DESCRIPTION_FIELD];
     activity.max_attendees = activity_node[Actor.MAXIMUM_ATTENDANCE_FIELD];
+    activity.num_attendees = (new joiner()).getNumJoiners(activity_node._id);
     activity.creator = (new creator()).getCreator(activity_node._id);
     activity.tagged_interests = (new tagger()).getTags(activity_node._id);
     // TODO if there is a confirmed time/location, return an array of 1 with only the confirmed suggestion

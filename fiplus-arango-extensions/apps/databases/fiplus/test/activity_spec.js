@@ -293,6 +293,7 @@ describe('Get Activity', function() {
                 "Name": "A2",
                 "description": "activity 2",
                 "max_attendees": 0,
+                "num_attendees": 3,
                 "creator": "2",
                 "tagged_interests": [
                     "Hockey",
@@ -328,6 +329,7 @@ describe('Get Activity', function() {
                 "Name": "A3",
                 "description": "activity 3",
                 "max_attendees": 3,
+                "num_attendees": 2,
                 "creator": "3",
                 "tagged_interests": [
                     "Soccer"
