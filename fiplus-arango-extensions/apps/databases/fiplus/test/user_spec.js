@@ -215,7 +215,7 @@ describe("Get Joined Activities", function() {
             .expectStatus(200)
             .expectJSON('?',
             {
-                "activity_id": "activity/4",
+                "activity_id": "4",
                 "Name": "A4",
                 "description": "activity 4",
                 "max_attendees": 5,
@@ -240,7 +240,7 @@ describe("Get Joined Activities", function() {
             .expectStatus(200)
             .expectJSON('?',
             {
-                "activity_id": "activity/3",
+                "activity_id": "3",
                 "Name": "A3",
                 "description": "activity 3",
                 "max_attendees": 3,
@@ -280,7 +280,7 @@ describe("Get Joined Activities", function() {
             .expectStatus(200)
             .expectJSON('?',
             {
-                "activity_id": "activity/3",
+                "activity_id": "3",
                 "Name": "A3",
                 "description": "activity 3",
                 "max_attendees": 3,
@@ -313,7 +313,7 @@ describe("Get Joined Activities", function() {
             })
             .expectJSON('?',
             {
-                "activity_id": "activity/4",
+                "activity_id": "4",
                 "Name": "A4",
                 "description": "activity 4",
                 "max_attendees": 5,
@@ -336,7 +336,7 @@ describe("Get Joined Activities", function() {
             .expectStatus(200)
             .expectJSON('?',
             {
-                "activity_id": "activity/3",
+                "activity_id": "3",
                 "Name": "A3",
                 "description": "activity 3",
                 "max_attendees": 3,
@@ -369,7 +369,7 @@ describe("Get Joined Activities", function() {
             })
             .expectJSON('?',
             {
-                "activity_id": "activity/4",
+                "activity_id": "4",
                 "Name": "A4",
                 "description": "activity 4",
                 "max_attendees": 5,
