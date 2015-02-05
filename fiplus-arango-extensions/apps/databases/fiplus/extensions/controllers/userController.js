@@ -10,6 +10,7 @@ var is_available = require('db-interface/edge/is_available');
 var interested_in = require('db-interface/edge/interested_in');
 var model_common = require('model-common');
 var query = require('db-interface/util/query');
+var helper = require('db-interface/util/helper');
 
 (function() {
     "use strict";
@@ -123,13 +124,6 @@ var query = require('db-interface/util/query');
         type: foxx.Model
     }).onlyIfAuthenticated();
 
-    //User can view recently attended activities
-    controller.get("/users/history", function (req, res) {
-        //stub
-    }).bodyParam("HistoryRequest", {
-        type: foxx.Model
-    }).onlyIfAuthenticated();
-
     //Delete user
     controller.delete("/", function (req, res) {
         //stub
@@ -237,12 +231,13 @@ var query = require('db-interface/util/query');
     }).onlyIfAuthenticated();
 
     controller.get('/activities', function(request, response) {
-
-        var activitiesArray = query.getJoinedActivities(request.session.get('uid'), request.params('future'), request.params('past'));
-        activitiesArray.forEach(function(activity) {
-            activity.activity_id = activity._key;
+        var activities = [];
+        var activity_nodes = query.getJoinedActivities(request.session.get('uid'), request.params('future'), request.params('past'));
+        activity_nodes.forEach(function(activity_node) {
+            var act = helper.getActivity(activity_node);
+            activities.push(act);
         });
-        response.json(activitiesArray);
+        response.json(activities);
     }).queryParam('future', {
         type: joi.boolean()
     }).queryParam('past', {

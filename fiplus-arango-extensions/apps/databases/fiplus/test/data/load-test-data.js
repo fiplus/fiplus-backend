@@ -190,13 +190,14 @@ db.created.save(user2, act2, {});
 db.joined.save(user2, act2, {});
 db.created.save(user3, act3, {});
 db.joined.save(user3, act3, {});
+db.created.save(defaultUser, act4, {});
+db.joined.save(defaultUser, act4, {});
 
 
 // Joiners
 db.joined.save(user1, act2, {});
 db.joined.save(user3, act2, {});
 db.joined.save(defaultUser, act3, {});
-db.joined.save(defaultUser, act4, {});
 
 // Tagged
 db.tagged.save(act1, int1, {});
