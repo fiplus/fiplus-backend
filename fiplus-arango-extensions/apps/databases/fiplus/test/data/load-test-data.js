@@ -113,6 +113,7 @@ db.interested_in.save(user1,int1,{});
 db.interested_in.save(user1,int2,{});
 db.interested_in.save(user2,int2,{});
 db.interested_in.save(user2,int3,{});
+db.interested_in.save(defaultUser,int3,{});
 
 // Activity
 var act1 = db.activity.save({
@@ -173,6 +174,16 @@ var locSug4 = db.suggestion.save({});
  db.is.save(locSug6, loc4, {});
 
 // Creators
+db.created.save(defaultUser, activity1, {});
+db.joined.save(defaultUser, activity1, {});
+db.created.save(defaultUser, activity2, {});
+db.joined.save(defaultUser, activity2, {});
+db.created.save(defaultUser, activity3, {});
+db.joined.save(defaultUser, activity3, {});
+db.created.save(defaultUser, activity4, {});
+db.joined.save(defaultUser, activity4, {});
+db.created.save(defaultUser, activity5, {});
+db.joined.save(defaultUser, activity5, {});
 db.created.save(user1, act1, {});
 db.joined.save(user1, act1, {});
 db.created.save(user2, act2, {});
