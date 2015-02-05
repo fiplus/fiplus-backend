@@ -28,6 +28,7 @@ describe("Get activities based on user interests", function () {
     frisby.create("Request activities based on user interest")
         .get('http://localhost:3001/api/Matches/activities?num_activities=100&by_interest=true')
         .expectJSON('?',    {
+            "activity_id": "2",
             "Name": "A2",
             "description": "activity 2",
             "max_attendees": 0,

@@ -289,6 +289,7 @@ describe('Get Activity', function() {
             .expectStatus(200)
             .expectJSON(
             {
+                "activity_id": "2",
                 "Name": "A2",
                 "description": "activity 2",
                 "max_attendees": 0,
@@ -323,6 +324,7 @@ describe('Get Activity', function() {
             .expectStatus(200)
             .expectJSON(
             {
+                "activity_id": "3",
                 "Name": "A3",
                 "description": "activity 3",
                 "max_attendees": 3,

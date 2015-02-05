@@ -10,7 +10,7 @@ exports.getActivity = function(activity_node)
     var Actor = new actor();
 
     var activity = new model_common.Activity();
-    activity.activity_id = activity_node._id;
+    activity.activity_id = activity_node._key;
     activity.Name = activity_node[Actor.NAME_FIELD];
     activity.description = activity_node[Actor.DESCRIPTION_FIELD];
     activity.max_attendees = activity_node[Actor.MAXIMUM_ATTENDANCE_FIELD];
