@@ -46,9 +46,12 @@ Interest.prototype.getAllInterests = function()
 Interest.prototype.saveInterestToDb = function(name)
 {
     var interestObject = {};
-    interestObject[this.NAME_FIELD] = name;
 
-    var result = this.db.interest.firstExample(interestObject);
+    // Desired format for interest is first letter capitalized
+    interestObject[this.NAME_FIELD] = name.charAt(0).toUpperCase() + name.substring(1).toLowerCase();;
+
+    // Returns the existing (case-insensitive) interest if any; If no matches then this line returns null
+    var result = this.db.interest.fulltext(this.NAME_FIELD, "complete:" + name).toArray()[0];
     if(result == null)
     {
         result = this.db.interest.save(interestObject);
