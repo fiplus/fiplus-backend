@@ -33,8 +33,8 @@ describe("Get activities based on user interests", function () {
             "max_attendees": 0,
             "creator": "2",
             "tagged_interests": [
-                "hockey",
-                "basketball"
+                "Hockey",
+                "Basketball"
             ],
             "suggested_times": [
                 {
@@ -60,28 +60,28 @@ describe("Get activities based on user interests", function () {
             "Name": "BasketballNW",
             "creator": "101",
             "tagged_interests": [
-                "basketball"
+                "Basketball"
             ]
         })
         .expectJSON('?', {
             "Name": "BasketballSW",
             "creator": "101",
             "tagged_interests": [
-                "basketball"
+                "Basketball"
             ]
         })
         .expectJSON('?', {
             "Name": "BasketballNE",
             "creator": "101",
             "tagged_interests": [
-                "basketball"
+                "Basketball"
             ]
         })
         .expectJSON('?', {
             "Name": "BasketballSE",
             "creator": "101",
             "tagged_interests": [
-                "basketball"
+                "Basketball"
             ]
         })
         .toss();

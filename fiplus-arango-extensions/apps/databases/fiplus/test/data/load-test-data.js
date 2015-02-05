@@ -60,9 +60,9 @@ var loc3 = db.location.save({"latitude": 100,"longitude": 50});
 var loc4 = db.location.save({"latitude": 150,"longitude": 150});
 
 // Interest test data
-var int1 = db.interest.save({name:"soccer"});
-var int2 = db.interest.save({name:"hockey"});
-var int3 = db.interest.save({name:"basketball"});
+var int1 = db.interest.save({name:"Soccer"});
+var int2 = db.interest.save({name:"Hockey"});
+var int3 = db.interest.save({name:"Basketball"});
 
 // Date test data
 // Dec 1, 2014 10am

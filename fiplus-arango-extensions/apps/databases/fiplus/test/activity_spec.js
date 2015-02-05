@@ -78,11 +78,11 @@ describe("Tag activity", function () {
             }, {json: true})
             .expectJSON('result.visited.vertices.?',
             {
-                name: 'soccer'
+                name: 'Soccer'
             })
             .expectJSON('result.visited.vertices.?',
             {
-                name: 'newinterest'
+                name: 'Newinterest'
             })
             .toss();
     });
@@ -294,8 +294,8 @@ describe('Get Activity', function() {
                 "max_attendees": 0,
                 "creator": "2",
                 "tagged_interests": [
-                    "hockey",
-                    "basketball"
+                    "Hockey",
+                    "Basketball"
                 ],
                 "suggested_times": [
                     {
@@ -328,7 +328,7 @@ describe('Get Activity', function() {
                 "max_attendees": 3,
                 "creator": "3",
                 "tagged_interests": [
-                    "soccer"
+                    "Soccer"
                 ],
                 "suggested_times": [
                     {

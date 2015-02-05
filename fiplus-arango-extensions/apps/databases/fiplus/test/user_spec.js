@@ -50,6 +50,7 @@ describe("Configure User Profile", function () {
                     }
                 ],
                 "tagged_interests": [
+                    // Adding as lowercase to test correctly storing them in the db
                     'soccer',
                     'hockey',
                     'basketball'
@@ -73,15 +74,15 @@ describe("Configure User Profile", function () {
             })
             .expectJSON('result.visited.vertices.?',
             {
-                name: 'soccer'
+                name: 'Soccer'
             })
             .expectJSON('result.visited.vertices.?',
             {
-                name: 'hockey'
+                name: 'Hockey'
             })
             .expectJSON('result.visited.vertices.?',
             {
-                name: 'basketball'
+                name: 'Basketball'
             })
             .expectJSON('result.visited.vertices.?',
             {
@@ -131,9 +132,9 @@ describe('Get User Profile', function () {
                     }
                 ],
                 "tagged_interests": [
-                    'soccer',
-                    'basketball',
-                    'hockey'
+                    'Soccer',
+                    'Basketball',
+                    'Hockey'
                 ]
             })
             .toss();
@@ -146,8 +147,8 @@ describe('Get User Profile', function () {
             {
                 "profile_pic": "any",
                 "tagged_interests": [
-                    "hockey",
-                    "basketball"
+                    "Hockey",
+                    "Basketball"
                 ]
             })
             .toss();
@@ -245,7 +246,7 @@ describe("Get Joined Activities", function() {
                 "max_attendees": 3,
                 "creator": "3",
                 "tagged_interests": [
-                    "soccer"
+                    "Soccer"
                 ],
                 "suggested_times": [
                     {
@@ -285,7 +286,7 @@ describe("Get Joined Activities", function() {
                 "max_attendees": 3,
                 "creator": "3",
                 "tagged_interests": [
-                    "soccer"
+                    "Soccer"
                 ],
                 "suggested_times": [
                     {
@@ -341,7 +342,7 @@ describe("Get Joined Activities", function() {
                 "max_attendees": 3,
                 "creator": "3",
                 "tagged_interests": [
-                    "soccer"
+                    "Soccer"
                 ],
                 "suggested_times": [
                     {

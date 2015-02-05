@@ -27,17 +27,17 @@ describe('Get Interests', function() {
     it('gives input', function() {
         frisby.create("Get interests based on input")
             .get("http://localhost:3001/api/Interests?input=So")
-            // For simplicity and to guard against new test data being added in the future, just test if 'soccer' appears
-            .expectBodyContains('soccer')
+            // For simplicity and to guard against new test data being added in the future, just test if 'Soccer' appears
+            .expectBodyContains('Soccer')
             .toss();
     });
 
     it('no input; all interests', function() {
         frisby.create("Get all interests")
             .get('http://localhost:3001/api/Interests')
-            .expectBodyContains('soccer')
-            .expectBodyContains('hockey')
-            .expectBodyContains('basketball')
+            .expectBodyContains('Soccer')
+            .expectBodyContains('Hockey')
+            .expectBodyContains('Basketball')
             .toss();
     });
 });
