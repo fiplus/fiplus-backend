@@ -32,6 +32,7 @@ describe("Get activities based on user interests", function () {
             "Name": "A2",
             "description": "activity 2",
             "max_attendees": 0,
+            "num_attendees": 3,
             "creator": "2",
             "tagged_interests": [
                 "Hockey",
