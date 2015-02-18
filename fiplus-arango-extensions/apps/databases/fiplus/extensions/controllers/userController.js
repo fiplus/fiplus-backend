@@ -12,7 +12,6 @@ var favourited = require('db-interface/edge/favourited');
 var model_common = require('model-common');
 var query = require('db-interface/util/query');
 var helper = require('db-interface/util/helper');
-var console = require('console');
 
 (function() {
     "use strict";
@@ -248,7 +247,6 @@ var console = require('console');
 
     //addFavourite
     controller.post("/favourites/:userId", function (req, res) {
-        console.log("Favourite add");
         var targetUserId = 'user/' + req.params('userId');
         var currentUserId = req.session.get('uid');
         (new favourited.Favourited()).addFavourite(currentUserId, targetUserId);
