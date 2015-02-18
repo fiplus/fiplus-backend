@@ -8,9 +8,11 @@ var in_location = require('db-interface/edge/in_location');
 var location = require('db-interface/node/location');
 var is_available = require('db-interface/edge/is_available');
 var interested_in = require('db-interface/edge/interested_in');
+var favourited = require('db-interface/edge/favourited');
 var model_common = require('model-common');
 var query = require('db-interface/util/query');
 var helper = require('db-interface/util/helper');
+var console = require('console');
 
 (function() {
     "use strict";
@@ -244,24 +246,38 @@ var helper = require('db-interface/util/helper');
         type: joi.boolean()
     }).onlyIfAuthenticated();
 
-    //Add Favourite
-    controller.post("/favourites/:user_name", function (req, res) {
-        //stub
-    }).pathParam('user_name', {
+    //addFavourite
+    controller.post("/favourites/:userId", function (req, res) {
+        console.log("Favourite add");
+        var targetUserId = 'user/' + req.params('userId');
+        var currentUserId = req.session.get('uid');
+        (new favourited.Favourited()).addFavourite(currentUserId, targetUserId);
+    }).pathParam('userId', {
         type: joi.string(),
-        description: 'The user to add to favourites'
+        description: 'The userId to add to favourites'
     }).onlyIfAuthenticated();
 
-    //Delete Favourite
-    controller.delete("/favourites/:user_name", function (req, res) {
-        //stub
-    }).pathParam('user_name', {
+    //deleteFavourite
+    controller.delete("/favourites/:userId", function (req, res) {
+        var targetUserId = 'user/' + req.params('userId');
+        var currentUserId = req.session.get('uid');
+        (new favourited.Favourited()).deleteFavourite(currentUserId, targetUserId);
+    }).pathParam('userId', {
         type: joi.string(),
-        description: 'The user to remove from favourites'
+        description: 'The userId to remove from favourites'
     }).onlyIfAuthenticated();
 
-    //Get Favourite
+    //getFavourites
     controller.get("/favourites", function (req, res) {
-        //stub
+        var currentUserId = req.session.get('uid');
+        var lim = req.params('Limit');
+
+        var favourites = new model_common.Favourites();
+        favourites.favourite_users = (new favourited.Favourited()).getUserFavourites(currentUserId, lim);
+
+        res.json(favourites);
+    }).queryParam('Limit', {
+        type: joi.number().integer(),
+        description: 'The maximum number of favourited users to return'
     }).onlyIfAuthenticated();
 }());

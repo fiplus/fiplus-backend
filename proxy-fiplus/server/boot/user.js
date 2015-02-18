@@ -253,6 +253,115 @@ user.afterRemote('getUserProfile', function(ctx, model, next) {
   ctx.res.end();
 });
 
+user.addFavourite = function(userId, req, cb) {
+
+  request({
+    url: fwd.FIPLUS_BASE_URL+'/user/favourites/' + userId,
+    method: 'POST',
+    headers: {
+      cookie: req.get('Cookie')
+    },
+    body: req.body,
+    json: true
+  }, function(e, response) {
+    if(e)
+    {
+      console.log(e);
+    }
+    else
+    {
+      fwd.saveArangoResponse(response);
+
+      // No error so 1st arg = null
+      cb(null, response.body);
+    }
+  });
+};
+
+user.addFavourite.shared = true;
+user.addFavourite.accepts = [{arg:'userId', type:'string',http:{source:'path'}},{arg:'req', type:'object',http:{source:'req'}}];
+user.addFavourite.http = {verb: 'POST', path: '/favourites/:userId'};
+user.addFavourite.description = 'Adds a user to the favourite list';
+user.afterRemote('addFavourite', function(ctx, model, next) {
+  fwd.forwardResponse(ctx.res);
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
+});
+
+user.getFavourites = function(Limit, req, cb) {
+
+  request({
+    url: fwd.FIPLUS_BASE_URL + '/user/favourites?' + req.originalUrl.split('?')[1],
+    method: 'GET',
+    headers: {
+      cookie: req.get('Cookie')
+    },
+    body: req.body,
+    json: true
+  }, function(e, response) {
+    if(e)
+    {
+      console.log(e);
+    }
+    else
+    {
+      fwd.saveArangoResponse(response);
+
+      // No error so 1st arg = null
+      cb(null, response.body);
+    }
+  });
+};
+
+user.getFavourites.shared = true;
+user.getFavourites.accepts = [{arg:'Limit', type: 'number', http:{source:'query'}},
+  {arg:'req', type:'object',http:{source:'req'}}];
+user.getFavourites.returns = {arg: 'favourites', type: 'Favourites', root:true};
+user.getFavourites.http = {verb: 'GET', path: '/favourites'};
+user.getFavourites.description = 'Retrieves favourited users';
+user.afterRemote('getFavourites', function(ctx, model, next) {
+  fwd.forwardResponse(ctx.res);
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
+});
+
+
+user.deleteFavourites = function(userId, req, cb) {
+
+  request({
+    url: fwd.FIPLUS_BASE_URL + '/user/favourites/' + userId,
+    method: 'DELETE',
+    headers: {
+      cookie: req.get('Cookie')
+    },
+    body: req.body,
+    json: true
+  }, function(e, response) {
+    if(e)
+    {
+      console.log(e);
+    }
+    else
+    {
+      fwd.saveArangoResponse(response);
+
+      // No error so 1st arg = null
+      cb(null, response.body);
+    }
+  });
+};
+
+user.deleteFavourites.shared = true;
+user.deleteFavourites.accepts = [{arg:'userId', type:'string',http:{source:'path'}},
+  {arg:'req', type:'object',http:{source:'req'}}];
+user.deleteFavourites.http = {verb: 'DELETE', path: '/favourites/:userId'};
+user.deleteFavourites.description = 'Deletes a favourited user';
+user.afterRemote('deleteFavourites', function(ctx, model, next) {
+  fwd.forwardResponse(ctx.res);
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
+});
+
 user.setDeviceId = function(device_ids, req, cb) {
 
   request({

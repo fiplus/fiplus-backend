@@ -389,3 +389,52 @@ describe("Get Joined Activities", function() {
     });
 });
 
+describe('Test user favourites', function() {
+    it('add user to favourites', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Users/favourites/1', {json:true})
+            .expectStatus(200)
+            .toss();
+    });
+
+    it('add user to favourites', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Users/favourites/3', {json:true})
+            .expectStatus(200)
+            .toss();
+    });
+
+    it('get favourites of logged in user with limit', function() {
+        frisby.create(this.description)
+            .get('http://localhost:3001/api/Users/favourites?Limit=2', {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "favourite_users": [
+                    "1",
+                    "3"
+                ]
+            })
+            .toss();
+    });
+
+    it('delete user from favourites', function() {
+        frisby.create(this.description)
+            .delete('http://localhost:3001/api/Users/favourites/3', {json:true})
+            .expectStatus(200)
+            .toss();
+    });
+
+    it('get favourites of logged in user without putting a limit. Also confirms that delete worked.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:3001/api/Users/favourites?', {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "favourite_users": [
+                    "1"
+                ]
+            })
+            .toss();
+    });
+});
