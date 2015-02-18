@@ -1,26 +1,31 @@
 var gcm = require('node-gcm-service');
 var query = require('./query');
+var push_message = require("./push-message");
 
-exports.SendNotificationOnActivityCreate = function(activity_id)
+exports.SendNotificationOnActivityCreate = function(activity)
 {
-  query.getDeviceIdsInterestedInActivity(activity_id, function(err, devices) {
+  var createActivityResponse = JSON.parse(activity);
+  query.getDeviceIdsInterestedInActivity(createActivityResponse.activity_id, function(err, devices) {
     var gcmSender = new gcm.Sender();
     gcmSender.setAPIKey("AIzaSyDwbfeTyVbI1GvMh0JLNyweaNhSbqbgMzI");
+    var message = new push_message.NewActivityMessage(createActivityResponse.activity_id, createActivityResponse.Name + ' event created!');
+    console.log(JSON.stringify(message));
     var gcmMessage = new gcm.Message({
-      data: {
-        message: "A new event related to one of your interests has been created. Check it out!"
-      },
+      data: message,
       dry_run: false
     });
 
-    gcmSender.sendMessage(gcmMessage.toString(), devices, true, function (err, data) {
-      if (!err) {
-        // do something
-        console.info("data", JSON.stringify(data));
-      } else {
-        // handle error
-        console.info("error " + err);
-      }
+    devices.forEach(function(id) {
+      gcmSender.sendMessage(gcmMessage.toString(), id, true, function (err, data) {
+        // TODO More robust error/gcm result handling, i.e deleting invalid reg ids
+        if (!err) {
+          // do something
+          console.info("data", JSON.stringify(data));
+        } else {
+          // handle error
+          console.info("error " + err);
+        }
+      });
     });
   });
 

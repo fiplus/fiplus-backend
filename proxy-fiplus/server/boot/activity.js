@@ -39,7 +39,10 @@ activity.createActivity.description = 'Creates the activity';
 activity.afterRemote('createActivity', function(ctx, model, next) {
   fwd.forwardResponse(ctx.res);
   ctx.res.send(ctx.res.body);
-  push.SendNotificationOnActivityCreate(ctx.res.body);
+  if(ctx.res.statusCode == 200)
+  {
+    push.SendNotificationOnActivityCreate(ctx.res.body);
+  }
   ctx.res.end();
 });
 

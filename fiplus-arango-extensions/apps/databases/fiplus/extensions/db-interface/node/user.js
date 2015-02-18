@@ -2,6 +2,7 @@ var db = require('org/arangodb').db;
 var error = require('error');
 var foxx = require("org/arangodb/foxx");
 var joi = require("joi");
+var query = require("db-interface/util/query");
 
 var UserModel = foxx.Model.extend({
     schema: {
@@ -167,13 +168,23 @@ User.prototype.updateUserLocationProximitySetting = function(target_user_id, loc
 User.prototype.updateDeviceId = function(target_user_id, currentDeviceId, newDeviceId) {
     var result;
 
+    // Enforce a 1 to many relationship between users and devices so that notifications are for the currently or
+    // last logged in user; deleting all instances everywhere of the device id before adding
+    query.removeExistingDeviceIds(newDeviceId);
+
     // If currentDeviceId exists it means that a device is updating an existing device id rather
     // than adding a new device to the user.
     var user = db.user.document(target_user_id);
     var deviceIds = user[this.DATA_FIELD][this.DATA_DEVICE_IDS];
     deviceIds = deviceIds ? deviceIds : [];
 
-    var devIndex = deviceIds.indexOf(currentDeviceId);
+    var devIndex = -1;
+    if(currentDeviceId != null)
+    {
+        // Replace the id if given the current
+        devIndex = deviceIds.indexOf(currentDeviceId);
+    }
+
     if(devIndex != -1)
     {
         deviceIds[devIndex] = newDeviceId;
@@ -190,7 +201,7 @@ User.prototype.updateDeviceId = function(target_user_id, currentDeviceId, newDev
         throw new error.GenericError('Device Id update for ' + target_user_id + ' failed.');
     }
     return result;
-}
+};
 
 User.prototype.exists = function(user_id) {
     if(!this.db.user.exists(user_id)) {

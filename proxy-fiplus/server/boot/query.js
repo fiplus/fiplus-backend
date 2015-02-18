@@ -10,9 +10,16 @@ exports.getDeviceIdsInterestedInActivity = function(activity_id, cb)
   var deviceIds = [];
   var qCallback = function(err, cursor)
   {
-    cursor.all(function(err, results) {
-      cb(err, results[0]);
-    })
+    if(!err)
+    {
+      cursor.all(function(err, results) {
+        cb(err, results[0]);
+      });
+    }
+    else
+    {
+      console.log(err);
+    }
   };
 
   dbconn.query("let devices = (" +
@@ -21,7 +28,7 @@ exports.getDeviceIdsInterestedInActivity = function(activity_id, cb)
               "for u in user " +
               "filter u._id == i._from and u.userData.device_ids != null " +
               "return u.userData.device_ids) " +
-            "return unique(flatten(devices))", {activity: activity_id}, qCallback);
+            "return unique(flatten(devices))", {activity: 'activity/' + activity_id}, qCallback);
   return deviceIds;
 };
 
