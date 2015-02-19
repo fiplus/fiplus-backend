@@ -61,7 +61,7 @@ var helper = require('db-interface/util/helper');
 
         var Creator = new creator();
         var created_edge = db.created.document((Creator.saveCreatedEdge(creator_id ,activity.get('Name'),
-            activity.get('description'), max))._id);
+            activity.get('description'), max, activity.get('is_open')))._id);
         var activity_id = created_edge._to;
 
         var Joiner = new joiner();
@@ -171,6 +171,7 @@ var helper = require('db-interface/util/helper');
         var times = request.params('Time');
 
         var suggest = new suggester();
+        checkIfAllowedToSuggest(activityId, request.session.get('uid'));
         suggest.saveSuggestedTimeEdge(activityId, times.get('start'), times.get('end'));
 
     }).pathParam('activityId', {
@@ -189,6 +190,7 @@ var helper = require('db-interface/util/helper');
         var times = request.params('Location');
 
         var suggest = new suggester();
+        checkIfAllowedToSuggest(activityId, request.session.get('uid'));
         suggest.saveSuggestedLocationEdge(activityId, times.get('latitude'), times.get('longitude'));
     }).pathParam('activityId', {
         type: joi.string(),
@@ -197,6 +199,25 @@ var helper = require('db-interface/util/helper');
         type: foxx.Model,
         description: 'The latitude and longitude of the location'
     }).onlyIfAuthenticated();
+
+    function checkIfAllowedToSuggest(activityId, userId) {
+        var Activity = new actor();
+        var activity = Activity.get(activityId);
+
+
+        var Joined = new joiner();
+        // Only joined users are allowed to suggest, and if a joiner then continue to check if activity is open
+        if(Joined.getJoiners(activityId, null).indexOf(userId.split('/')[1]) == -1)
+        {
+            throw new error.NotAllowedError('Suggestions from non-joiners');
+        }
+
+        var Created = new creator();
+        if(!activity[Activity.IS_OPEN_FIELD] && userId != Created.getCreator(activityId))
+        {
+            throw new error.NotAllowedError('Suggestions from joiners');
+        }
+    }
 
     /*
      * voteForSuggestion

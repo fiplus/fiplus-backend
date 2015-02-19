@@ -31,6 +31,7 @@ describe("Create activity", function () {
                 "Name" : "The Event",
                 "description" : "My first event",
                 "max_attendees" : "1000",
+                "is_open" : false,
                 "creator" : "101",
                 "tagged_interests": ["Basketball"],
                 "suggested_times" : [
@@ -122,6 +123,147 @@ describe("Join activity", function () {
         .put("http://localhost:3001/api/Acts/2/user")
         .expectStatus(400)
         .toss();
+    });
+});
+
+describe('Joiner Suggest time/location tests', function() {
+    it('should allow suggestions from joiner', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Users/login',
+            {
+                "email": "test@data.com",
+                "password": "test"
+            }, {json: true})
+            .addHeader('Cookie', 'sid=test;sid.sig=test')
+            .after(function (err, res, body) {
+                var sid = res.headers['set-cookie'][0];
+                var sidSig = res.headers['set-cookie'][1];
+
+                frisby.globalSetup({
+                    request: {
+                        headers: {
+                            cookie: sid.split(';')[0] + ';' + sidSig.split(';')[0]
+                        }
+                    }
+                });
+
+            })
+            .toss();
+
+        frisby.create('Suggest Valid Time for activity from joiner')
+            .put('http://localhost:3001/api/Acts/1/time',
+            {
+                // jan. 1, 2050 12 - 1pm
+                start:222222222222222222,
+                end:333333333333333333
+            },{json:true})
+            .expectStatus(200)
+            .toss();
+
+        frisby.create('Check if suggestion got properly added')
+            .post("http://localhost:8529/_db/fiplus/_api/traversal",
+            {
+                startVertex:'activity/1',
+                graphName:'fiplus',
+                direction:'outbound'
+            }, {json:true})
+            .expectJSON('result.visited.vertices.?',
+            {
+                value:222222222222222222
+            })
+            .expectJSON('result.visited.vertices.?',
+            {
+                value:333333333333333333
+            })
+            .toss();
+
+        frisby.create('Suggest Valid Location for activity from joiner')
+            .put('http://localhost:3001/api/Acts/1/location',
+            {
+                // jan. 1, 2050 12 - 1pm
+                latitude:89,
+                longitude:89
+            },{json:true})
+            .expectStatus(200)
+            .toss();
+
+        frisby.create('Check if suggestion got properly added')
+            .post("http://localhost:8529/_db/fiplus/_api/traversal",
+            {
+                startVertex:'activity/1',
+                graphName:'fiplus',
+                direction:'outbound'
+            }, {json:true})
+            .expectJSON('result.visited.vertices.?',
+            {
+                latitude:89,
+                longitude:89
+            })
+            .toss();
+    });
+
+    it('should disallow suggestions from joiner', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Users/login',
+            {
+                "email": "test@data.com",
+                "password": "test"
+            }, {json: true})
+            .addHeader('Cookie', 'sid=test;sid.sig=test')
+            .after(function (err, res, body) {
+                var sid = res.headers['set-cookie'][0];
+                var sidSig = res.headers['set-cookie'][1];
+
+                frisby.globalSetup({
+                    request: {
+                        headers: {
+                            cookie: sid.split(';')[0] + ';' + sidSig.split(';')[0]
+                        }
+                    }
+                });
+
+            })
+            .toss();
+
+        frisby.create('Suggest Valid Time for activity from joiner')
+            .put('http://localhost:3001/api/Acts/3/time',
+            {
+                // jan. 1, 2050 12 - 1pm
+                start:222222222222222222,
+                end:333333333333333333
+            },{json:true})
+            .expectStatus(400)
+            .toss();
+
+        frisby.create('Suggest Valid Location for activity from joiner')
+            .put('http://localhost:3001/api/Acts/3/location',
+            {
+                // jan. 1, 2050 12 - 1pm
+                latitude:89,
+                longitude:89
+            },{json:true})
+            .expectStatus(400)
+            .toss();
+
+        frisby.create('Suggest Valid Time for activity not joined')
+            .put('http://localhost:3001/api/Acts/4/time',
+            {
+                // jan. 1, 2050 12 - 1pm
+                start:222222222222222222,
+                end:333333333333333333
+            },{json:true})
+            .expectStatus(400)
+            .toss();
+
+        frisby.create('Suggest Valid Time for activity not joined')
+            .put('http://localhost:3001/api/Acts/4/location',
+            {
+                // jan. 1, 2050 12 - 1pm
+                latitude:89,
+                longitude:89
+            },{json:true})
+            .expectStatus(400)
+            .toss();
     });
 });
 
@@ -293,6 +435,7 @@ describe('Get Activity', function() {
                 "Name": "A2",
                 "description": "activity 2",
                 "max_attendees": 0,
+                is_open: false,
                 "num_attendees": 3,
                 "creator": "2",
                 "tagged_interests": [
@@ -329,7 +472,8 @@ describe('Get Activity', function() {
                 "Name": "A3",
                 "description": "activity 3",
                 "max_attendees": 3,
-                "num_attendees": 2,
+                is_open: false,
+                "num_attendees": 3,
                 "creator": "3",
                 "tagged_interests": [
                     "Soccer"

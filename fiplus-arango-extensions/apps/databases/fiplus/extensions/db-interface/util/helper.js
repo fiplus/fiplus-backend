@@ -15,6 +15,7 @@ exports.getActivity = function(activity_node)
     activity.Name = activity_node[Actor.NAME_FIELD];
     activity.description = activity_node[Actor.DESCRIPTION_FIELD];
     activity.max_attendees = activity_node[Actor.MAXIMUM_ATTENDANCE_FIELD];
+    activity.is_open = activity_node[Actor.IS_OPEN_FIELD];
     activity.num_attendees = (new joiner()).getNumJoiners(activity_node._id);
     activity.creator = (new creator()).getCreator(activity_node._id);
     activity.tagged_interests = (new tagger()).getTags(activity_node._id);

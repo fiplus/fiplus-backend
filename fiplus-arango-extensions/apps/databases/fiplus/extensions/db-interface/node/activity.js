@@ -15,14 +15,16 @@ var Activity = function()
     this.NAME_FIELD = 'Name';
     this.DESCRIPTION_FIELD = 'description';
     this.MAXIMUM_ATTENDANCE_FIELD = 'max_attendees';
+    this.IS_OPEN_FIELD = 'is_open'
 };
 
-Activity.prototype.saveActivityToDb = function(name, description, maximum_attendance)
+Activity.prototype.saveActivityToDb = function(name, description, maximum_attendance, is_open)
 {
     var activityObject = {};
     activityObject[this.NAME_FIELD] = name;
     activityObject[this.DESCRIPTION_FIELD] = description;
     activityObject[this.MAXIMUM_ATTENDANCE_FIELD] = maximum_attendance;
+    activityObject[this.IS_OPEN_FIELD] = is_open;
 
     var result = this.db.activity.save(activityObject);
     if(result.error == true)
