@@ -225,3 +225,5 @@ db.is.save(sug3, tp1, {});
 // One activity in past, one activity in future
 db.suggested.save(act3, sug1, {});
 db.suggested.save(act4, sug3, {});
+
+// Favourite users

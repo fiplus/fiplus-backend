@@ -45,6 +45,10 @@ Activity.suggested_times = ['Time'];
 Activity.suggested_locations = ['Location'];
 exports.Activity = Activity;
 
+var Favourites = function(){};
+Favourites.favourite_users = [String];
+exports.Favourites = Favourites;
+
 var Icebreaker = function(){};
 Icebreaker.activity_id = String;
 Icebreaker.question = String;
