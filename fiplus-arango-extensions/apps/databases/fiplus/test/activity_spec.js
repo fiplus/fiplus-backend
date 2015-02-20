@@ -31,7 +31,7 @@ describe("Create activity", function () {
                 "Name" : "The Event",
                 "description" : "My first event",
                 "max_attendees" : "1000",
-                "is_open" : false,
+                "allow_joiner_input" : false,
                 "creator" : "101",
                 "tagged_interests": ["Basketball"],
                 "suggested_times" : [
@@ -153,7 +153,6 @@ describe('Joiner Suggest time/location tests', function() {
         frisby.create('Suggest Valid Time for activity from joiner')
             .put('http://localhost:3001/api/Acts/1/time',
             {
-                // jan. 1, 2050 12 - 1pm
                 start:222222222222222222,
                 end:333333333333333333
             },{json:true})
@@ -180,7 +179,6 @@ describe('Joiner Suggest time/location tests', function() {
         frisby.create('Suggest Valid Location for activity from joiner')
             .put('http://localhost:3001/api/Acts/1/location',
             {
-                // jan. 1, 2050 12 - 1pm
                 latitude:89,
                 longitude:89
             },{json:true})
@@ -435,7 +433,7 @@ describe('Get Activity', function() {
                 "Name": "A2",
                 "description": "activity 2",
                 "max_attendees": 0,
-                is_open: false,
+                allow_joiner_input: false,
                 "num_attendees": 3,
                 "creator": "2",
                 "tagged_interests": [
@@ -472,7 +470,7 @@ describe('Get Activity', function() {
                 "Name": "A3",
                 "description": "activity 3",
                 "max_attendees": 3,
-                is_open: false,
+                allow_joiner_input: false,
                 "num_attendees": 3,
                 "creator": "3",
                 "tagged_interests": [

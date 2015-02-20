@@ -130,7 +130,7 @@ var act1 = db.activity.save({
     Name:'A1',
     description:'activity 1',
     max_attendees:5,
-    is_open: true
+    allow_joiner_input: true
 });
 
 var act2 = db.activity.save({
@@ -138,7 +138,7 @@ var act2 = db.activity.save({
     Name:'A2',
     description:'activity 2',
     max_attendees:0,
-    is_open: false
+    allow_joiner_input: false
 });
 
 var act3 = db.activity.save({
@@ -146,7 +146,7 @@ var act3 = db.activity.save({
     Name:'A3',
     description:'activity 3',
     max_attendees:3,
-    is_open: false
+    allow_joiner_input: false
 });
 
 var act4 = db.activity.save({
@@ -154,7 +154,7 @@ var act4 = db.activity.save({
     Name:'A4',
     description:'activity 4',
     max_attendees:5,
-    is_open: false
+    allow_joiner_input: false
 });
 
 var activity1 = db.activity.save({Name:'BasketballNW'});

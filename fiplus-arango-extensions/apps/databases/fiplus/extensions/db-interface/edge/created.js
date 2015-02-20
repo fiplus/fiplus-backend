@@ -18,10 +18,10 @@ var Created = function()
 /**
  * Creating a created edge. Links user to the activity they create.
  */
-Created.prototype.saveCreatedEdge = function(user_id, activity_name, description, maximum_attendance, is_open)
+Created.prototype.saveCreatedEdge = function(user_id, activity_name, description, maximum_attendance, allow_joiner_input)
 {
     var result;
-    var activity_node = (new act.Activity()).saveActivityToDb(activity_name, description, maximum_attendance, is_open);
+    var activity_node = (new act.Activity()).saveActivityToDb(activity_name, description, maximum_attendance, allow_joiner_input);
 
     var result = this.db.created.save(user_id, activity_node._id, {});
     if(result.error == true) {

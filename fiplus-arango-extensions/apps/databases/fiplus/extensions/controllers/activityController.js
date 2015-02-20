@@ -61,7 +61,7 @@ var helper = require('db-interface/util/helper');
 
         var Creator = new creator();
         var created_edge = db.created.document((Creator.saveCreatedEdge(creator_id ,activity.get('Name'),
-            activity.get('description'), max, activity.get('is_open')))._id);
+            activity.get('description'), max, activity.get('allow_joiner_input')))._id);
         var activity_id = created_edge._to;
 
         var Joiner = new joiner();
@@ -213,7 +213,7 @@ var helper = require('db-interface/util/helper');
         }
 
         var Created = new creator();
-        if(!activity[Activity.IS_OPEN_FIELD] && userId != Created.getCreator(activityId))
+        if(!activity[Activity.ALLOW_JOINER_INPUT] && userId != Created.getCreator(activityId))
         {
             throw new error.NotAllowedError('Suggestions from joiners');
         }
