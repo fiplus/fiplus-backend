@@ -15,14 +15,16 @@ var Activity = function()
     this.NAME_FIELD = 'Name';
     this.DESCRIPTION_FIELD = 'description';
     this.MAXIMUM_ATTENDANCE_FIELD = 'max_attendees';
+    this.ALLOW_JOINER_INPUT = 'allow_joiner_input'
 };
 
-Activity.prototype.saveActivityToDb = function(name, description, maximum_attendance)
+Activity.prototype.saveActivityToDb = function(name, description, maximum_attendance, allow_joiner_input)
 {
     var activityObject = {};
     activityObject[this.NAME_FIELD] = name;
     activityObject[this.DESCRIPTION_FIELD] = description;
     activityObject[this.MAXIMUM_ATTENDANCE_FIELD] = maximum_attendance;
+    activityObject[this.ALLOW_JOINER_INPUT] = allow_joiner_input;
 
     var result = this.db.activity.save(activityObject);
     if(result.error == true)

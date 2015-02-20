@@ -32,6 +32,15 @@ var user1 = db.user.save({
         "age": 20,
         "gender": "male",
         "location_proximity_setting": true
+    },
+    authData: {
+        active: true,
+        keyLength: 66,
+        workUnits: 60,
+        hashMethod: "pbkdf2",
+        hash: "YCmjkxFdh7uzEdAuKRBITd6C68vEfSiSh4zY46acdB9z5xngvyuvO2qEuESxRPZ2klJI4e8hGiV3FXIrHcAUKdFr",
+        salt: "okf9IJGcn5AyJ8YWsveYInmWDhC4aH65nBiE4DIbX5S8Lp7FeFVR8lSbiV2GUT04Bg"
+
     }
 });
 
@@ -120,28 +129,32 @@ var act1 = db.activity.save({
     _key:'1',
     Name:'A1',
     description:'activity 1',
-    max_attendees:5
+    max_attendees:5,
+    allow_joiner_input: true
 });
 
 var act2 = db.activity.save({
     _key:'2',
     Name:'A2',
     description:'activity 2',
-    max_attendees:0
+    max_attendees:0,
+    allow_joiner_input: false
 });
 
 var act3 = db.activity.save({
     _key:'3',
     Name:'A3',
     description:'activity 3',
-    max_attendees:3
+    max_attendees:3,
+    allow_joiner_input: false
 });
 
 var act4 = db.activity.save({
     _key:'4',
     Name:'A4',
     description:'activity 4',
-    max_attendees:5
+    max_attendees:5,
+    allow_joiner_input: false
 });
 
 var activity1 = db.activity.save({Name:'BasketballNW'});
@@ -195,6 +208,8 @@ db.joined.save(defaultUser, act4, {});
 
 
 // Joiners
+db.joined.save(user2, act1, {});
+db.joined.save(user2, act3, {});
 db.joined.save(user1, act2, {});
 db.joined.save(user3, act2, {});
 db.joined.save(defaultUser, act3, {});

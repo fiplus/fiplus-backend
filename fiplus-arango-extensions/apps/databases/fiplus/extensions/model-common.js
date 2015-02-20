@@ -38,6 +38,7 @@ Activity.activity_id = String;
 Activity.Name = String;
 Activity.description = String;
 Activity.max_attendees = Number;
+Activity.allow_joiner_input = Boolean;
 Activity.num_attendees = Number;
 Activity.creator = String;
 Activity.tagged_interests = [String];
