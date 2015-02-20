@@ -10,8 +10,6 @@ var actor = require('db-interface/node/activity').Activity;
 var error = require('error');
 var model_common = require('model-common');
 var helper = require('db-interface/util/helper');
-var console = require('console');
-
 
 (function() {
     "use strict";
