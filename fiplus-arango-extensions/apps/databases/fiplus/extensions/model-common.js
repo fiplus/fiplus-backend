@@ -92,3 +92,8 @@ exports.SetDeviceId = SetDeviceId;
 var WhoAmI = function(){};
 WhoAmI.user_id = String;
 exports.WhoAmI = WhoAmI;
+
+var CreateActivityResponse = function(){};
+CreateActivityResponse.activity_id = String;
+CreateActivityResponse.Name = String;
+exports.CreateActivityResponse = CreateActivityResponse;

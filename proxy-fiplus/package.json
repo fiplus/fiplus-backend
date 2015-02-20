@@ -6,11 +6,13 @@
     "pretest": "jshint ."
   },
   "dependencies": {
+    "arangojs": "^3.0.0",
     "compression": "^1.0.3",
     "errorhandler": "^1.1.1",
     "loopback": "^2.8.0",
     "loopback-boot": "^2.4.0",
     "loopback-datasource-juggler": "^2.7.0",
+    "node-gcm-service": "^0.2.8",
     "request": "^2.51.0",
     "serve-favicon": "^2.0.1"
   },

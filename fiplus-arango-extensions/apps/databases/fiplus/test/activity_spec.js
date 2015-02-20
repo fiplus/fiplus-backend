@@ -43,7 +43,12 @@ describe("Create activity", function () {
                         "longitude" : -96} // Canada
                 ]
             }, {json: true})
-            .expectBodyContains('Success')
+            .expectStatus(200)
+            .expectJSONTypes(
+            {
+                activity_id: String,
+                Name: String
+            })
             .toss();
     });
 });

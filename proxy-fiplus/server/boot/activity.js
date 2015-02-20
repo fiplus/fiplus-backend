@@ -2,6 +2,7 @@ var loopback = require("loopback");
 var app = require('../server');
 var request = require('request');
 var fwd = require('./arango-fwd');
+var push = require('./push-notification');
 
 var ds = app.dataSources.db;
 var activity = ds.createModel ('Act',{},{base:loopback.Model});
@@ -38,6 +39,10 @@ activity.createActivity.description = 'Creates the activity';
 activity.afterRemote('createActivity', function(ctx, model, next) {
   fwd.forwardResponse(ctx.res);
   ctx.res.send(ctx.res.body);
+  if(ctx.res.statusCode == 200)
+  {
+    push.SendNotificationOnActivityCreate(ctx.res.body);
+  }
   ctx.res.end();
 });
 

@@ -11,7 +11,6 @@ var error = require('error');
 var model_common = require('model-common');
 var helper = require('db-interface/util/helper');
 
-
 (function() {
     "use strict";
 
@@ -86,7 +85,11 @@ var helper = require('db-interface/util/helper');
             Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude);
         }
 
-        res.body = "Success";
+        // Return the activity key and name value so that push notifications can be sent for activity
+        var createActivityResponse = new model_common.CreateActivityResponse();
+        createActivityResponse.activity_id = activity_id.split('/')[1];
+        createActivityResponse.Name = activity.get('Name');
+        res.json(JSON.stringify(createActivityResponse));
     }).bodyParam('Activity', {
         type: foxx.Model
     }).onlyIfAuthenticated();

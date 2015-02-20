@@ -23,3 +23,9 @@ exports.getJoinedActivities = function(userId, future, past)
                 filter +
                 "return document(joined._to)))", {userId:userId}).toArray()[0];
 };
+
+exports.removeExistingDeviceIds = function(deviceId) {
+    db._query("for u in user " +
+    "filter @deviceId in u.userData.device_ids " +
+    "update {_key: u._key, userData:{device_ids:remove_value(u.userData.device_ids,@deviceId,1)}} in user", {deviceId:deviceId});
+};
