@@ -77,9 +77,9 @@ Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, 
 
         // if node found is location and not time
         if (location_id.indexOf("location") > -1) {
-            location = db.location.document(location_id);
-            if (location != null) {
-                if (location.latitude == latitude && location.longitude == longitude) {
+            var location_doc = db.location.document(location_id);
+            if (location_doc != null) {
+                if (location_doc.latitude == latitude && location_doc.longitude == longitude) {
                     throw new error.NotAllowedError("Location suggestion already exists for this activity. Duplicate suggestions");
                 }
             }
