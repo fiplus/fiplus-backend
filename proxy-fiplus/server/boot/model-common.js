@@ -81,7 +81,7 @@ exports.HistoryRequest = HistoryRequest;
 var Attendee = function(){};
 Attendee.num_attendees = Number;
 Attendee.participants = ['UserProfile'];
-Attendee.joiners = ['UserProfile'];
+Attendee.joiners = [String];
 exports.Attendee = Attendee;
 
 var SetDeviceId = function(){};

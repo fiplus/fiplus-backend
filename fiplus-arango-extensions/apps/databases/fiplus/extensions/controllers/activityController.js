@@ -122,7 +122,10 @@ var helper = require('db-interface/util/helper');
         var attendees = new model_common.Attendee();
         attendees.num_attendees = Joiner.getNumJoiners(activity_id);
         // TODO attendeeDetail.participants
-        attendees.joiners =  Joiner.getJoinersProfile(activity_id, lim, current_userId);
+        //Will be reverted to this in the future
+        //attendees.joiners =  Joiner.getJoinersProfile(activity_id, lim, current_userId);
+        //Temporary code for alpha
+        attendees.joiners =  Joiner.getJoinersId(activity_id, lim);
 
         res.json(attendees);
     }).pathParam('activityid', {

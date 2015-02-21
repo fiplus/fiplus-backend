@@ -519,30 +519,9 @@ describe('Get Attendees', function() {
             {
                 "num_attendees": 3,
                 "joiners": [
-                    {
-                        "user_id": "2",
-                        "username": "two",
-                        "profile_pic": "any",
-                        "tagged_interests": [
-                            "Hockey",
-                            "Basketball"
-                        ]
-                    },
-                    {
-                        "user_id": "3",
-                        "username": "three",
-                        "profile_pic": "any",
-                        "tagged_interests": []
-                    },
-                    {
-                        "user_id": "1",
-                        "username": "one",
-                        "profile_pic": "any",
-                        "tagged_interests": [
-                            "Soccer",
-                            "Hockey"
-                        ]
-                    }
+                    "2",
+                    "3",
+                    "1"
                 ]
             })
             .toss();
@@ -563,21 +542,8 @@ describe('Get Attendees', function() {
             {
                 "num_attendees": 3,
                 "joiners": [
-                    {
-                        "user_id": "2",
-                        "username": "two",
-                        "profile_pic": "any",
-                        "tagged_interests": [
-                            "Hockey",
-                            "Basketball"
-                        ]
-                    },
-                    {
-                        "user_id": "3",
-                        "username": "three",
-                        "profile_pic": "any",
-                        "tagged_interests": []
-                    }
+                    "2",
+                    "3"
                 ]
             })
             .toss();
@@ -591,30 +557,9 @@ describe('Get Attendees', function() {
             {
                 "num_attendees": 3,
                 "joiners": [
-                    {
-                        "user_id": "2",
-                        "username": "two",
-                        "profile_pic": "any",
-                        "tagged_interests": [
-                            "Hockey",
-                            "Basketball"
-                        ]
-                    },
-                    {
-                        "user_id": "3",
-                        "username": "three",
-                        "profile_pic": "any",
-                        "tagged_interests": []
-                    },
-                    {
-                        "user_id": "1",
-                        "username": "one",
-                        "profile_pic": "any",
-                        "tagged_interests": [
-                            "Soccer",
-                            "Hockey"
-                        ]
-                    }
+                    "2",
+                    "3",
+                    "1"
                 ]
             })
             .toss();
