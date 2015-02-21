@@ -83,14 +83,18 @@ var helper = require('db-interface/util/helper');
      */
     controller.get('/activities', function (request, response) {
         var num_activities_requested = request.params('num_activities');
+        var by_interest = request.params('by_interest');
         var user_object = db.user.document(request.session.get('uid'));
         var activities = [];
-        activities = matchActivitiesWithUserInterests(user_object, num_activities_requested);
+
+        if(by_interest) {
+            activities = matchActivitiesWithUserInterests(user_object, num_activities_requested);
+        }
 
         //If activities is null(i.e. there are no matches at all, just grab 'num_activities' amount
         //of activities from activities collection.
-        if (activities.length == 0) {
-            activities = matchDefaultActivities(num_activities_requested);
+        if (activities.length < num_activities_requested) {
+            activities = matchDefaultActivities(num_activities_requested - activities.length);
         }
 
         response.json(activities);
