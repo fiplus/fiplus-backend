@@ -29,3 +29,30 @@ exports.removeExistingDeviceIds = function(deviceId) {
     "filter @deviceId in u.userData.device_ids " +
     "update {_key: u._key, userData:{device_ids:remove_value(u.userData.device_ids,@deviceId,1)}} in user", {deviceId:deviceId});
 };
+
+exports.getActivitiesWithGivenInterest = function(interestId)
+{
+    return db._query("return unique((for tagged in graph_edges('fiplus', @interestId, {edgeCollectionRestriction:'tagged'})" +
+    "for suggested in graph_edges('fiplus', tagged._from, {edgeCollectionRestriction:'suggested'})" +
+    "for is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'})" +
+    "for start in graph_edges('fiplus', is._to, {edgeCollectionRestriction:'start'})" +
+    "filter document(start._to).value >= date_now()" +
+    "return document(tagged._from)))", {interestId:interestId}).toArray()[0];
+};
+
+exports.getInterestsOfUser = function(userId)
+{
+    return db._query("return unique((for interested_in in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'interested_in'})" +
+    "return document(interested_in._to)))", {userId:userId}).toArray()[0];
+};
+
+
+exports.getDefaultActivities = function()
+{
+    return db._query("return unique((for activity in graph_vertices('fiplus', {}, {direction: 'any', vertexCollectionRestriction:'activity'})" +
+    "for suggested in graph_edges('fiplus', activity, {edgeCollectionRestriction:'suggested'})" +
+    "for is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'})" +
+    "for start in graph_edges('fiplus', is._to, {edgeCollectionRestriction:'start'})" +
+    "filter document(start._to).value >= date_now()" +
+    "return activity))").toArray()[0];
+};
