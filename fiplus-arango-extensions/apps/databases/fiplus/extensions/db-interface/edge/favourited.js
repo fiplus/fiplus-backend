@@ -1,5 +1,6 @@
 var db = require('org/arangodb').db;
 var error = require('error');
+var helper = require('db-interface/util/helper');
 
 /**
  * Constructs a favourited db interface object
@@ -50,7 +51,7 @@ Favourited.prototype.getUserFavourites = function(currentUserHandle, maximum)
 
 
     for(var i = 0; i < limit; i++) {
-        userfavourites.push(this.db.user.document(favourites_array[i]._to)._key);
+        userfavourites.push(helper.getProfile(this.db.user.document(favourites_array[i]._to), currentUserHandle));
     }
     return userfavourites;
 };

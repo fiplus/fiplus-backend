@@ -193,37 +193,9 @@ var helper = require('db-interface/util/helper');
         var User = new user();
 
         var user_node = User.getUserWithId(userId);
+        var current_userId = req.session.get('uid');
 
-        var profile = new model_common.UserProfile();
-
-        var user_data = user_node[User.DATA_FIELD];
-
-        // Public information
-        profile.user_id = user_node._key;
-        profile.username = user_data[User.DATA_USERNAME_FIELD];
-        profile.profile_pic = user_data[User.DATA_PROFILE_PIC_FIELD];
-        profile.tagged_interests = (new interested_in.InterestedIn()).getUserInterests(user_node._id);
-
-        // Private information
-        if (req.session.get('uid') == user_node._id) {
-
-            profile.email = user_node[User.EMAIL_FIELD];
-            profile.age = user_data[User.DATA_AGE_FIELD];
-            profile.gender = user_data[User.DATA_GENDER_FIELD];
-            profile.location_proximity_setting = user_data[User.DATA_LOCATION_PROXIMITY_SETTING_FIELD];
-
-            var Location = new location.Location();
-            var location_node = (new in_location.InLocation()).getUserLocation(user_node._id);
-
-            var loc = new model_common.Location();
-            if(location_node != null) {
-                loc.latitude = location_node[Location.LATITUDE_FIELD];
-                loc.longitude = location_node[Location.LONGITUDE_FIELD];
-            }
-
-            profile.location = loc;
-            profile.availabilities = (new is_available.IsAvailable()).getUserAvailabilities(user_node._id);
-        }
+        var profile = helper.getProfile(user_node, current_userId);
 
         res.json(profile);
     }).pathParam('userId', {

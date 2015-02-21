@@ -7,6 +7,7 @@ var suggester = require('db-interface/edge/suggested').Suggested;
 var joiner = require('db-interface/edge/joined').Joined;
 var voted = require('db-interface/edge/voted').Voted;
 var actor = require('db-interface/node/activity').Activity;
+var user = require('db-interface/node/user').User;
 var error = require('error');
 var model_common = require('model-common');
 var helper = require('db-interface/util/helper');
@@ -113,6 +114,7 @@ var helper = require('db-interface/util/helper');
      */
     controller.get('/:activityid/user', function(req, res) {
         var activity_id = 'activity/' + req.params('activityid');
+        var current_userId = req.session.get('uid');
         var lim = req.params('Limit');
         (new actor()).exists(activity_id);
 
@@ -120,7 +122,7 @@ var helper = require('db-interface/util/helper');
         var attendees = new model_common.Attendee();
         attendees.num_attendees = Joiner.getNumJoiners(activity_id);
         // TODO attendeeDetail.participants
-        attendees.joiners =  Joiner.getJoiners(activity_id, lim);
+        attendees.joiners =  Joiner.getJoinersProfile(activity_id, lim, current_userId);
 
         res.json(attendees);
     }).pathParam('activityid', {
@@ -210,7 +212,7 @@ var helper = require('db-interface/util/helper');
 
         var Joined = new joiner();
         // Only joined users are allowed to suggest, and if a joiner then continue to check if activity is open
-        if(Joined.getJoiners(activityId, null).indexOf(userId.split('/')[1]) == -1)
+        if(Joined.getJoinersId(activityId, null).indexOf(userId.split('/')[1]) == -1)
         {
             throw new error.NotAllowedError('Suggestions from non-joiners');
         }

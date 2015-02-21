@@ -47,7 +47,7 @@ Activity.suggested_locations = ['Location'];
 exports.Activity = Activity;
 
 var Favourites = function(){};
-Favourites.favourite_users = [String];
+Favourites.favourite_users = ['UserProfile'];
 exports.Favourites = Favourites;
 
 var Icebreaker = function(){};
@@ -80,8 +80,8 @@ exports.HistoryRequest = HistoryRequest;
 
 var Attendee = function(){};
 Attendee.num_attendees = Number;
-Attendee.participants = [String];
-Attendee.joiners = [String];
+Attendee.participants = ['UserProfile'];
+Attendee.joiners = ['UserProfile'];
 exports.Attendee = Attendee;
 
 var SetDeviceId = function(){};
