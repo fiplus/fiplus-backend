@@ -4,6 +4,11 @@ var suggester = require('db-interface/edge/suggested').Suggested;
 var voted = require('db-interface/edge/voted').Voted;
 var actor = require('db-interface/node/activity').Activity;
 var joiner = require('db-interface/edge/joined').Joined;
+var user = require('db-interface/node/user').User;
+var interested_in = require('db-interface/edge/interested_in');
+var in_location = require('db-interface/edge/in_location');
+var location = require('db-interface/node/location');
+var is_available = require('db-interface/edge/is_available');
 var model_common = require('model-common');
 
 exports.getActivity = function(activity_node)
@@ -24,4 +29,40 @@ exports.getActivity = function(activity_node)
     activity.suggested_times = Suggester.getSuggestedTimes(activity_node._id);
     activity.suggested_locations = Suggester.getSuggestedLocations(activity_node._id);
     return activity;
+};
+
+exports.getProfile = function(target_user_node, current_userId)
+{
+    var User = new user();
+    var profile = new model_common.UserProfile();
+
+    var user_data = target_user_node[User.DATA_FIELD];
+
+    // Public information
+    profile.user_id = target_user_node._key;
+    profile.username = user_data[User.DATA_USERNAME_FIELD];
+    profile.profile_pic = user_data[User.DATA_PROFILE_PIC_FIELD];
+    profile.tagged_interests = (new interested_in.InterestedIn()).getUserInterests(target_user_node._id);
+
+    // Private information
+    if (current_userId == target_user_node._id) {
+
+        profile.email = target_user_node[User.EMAIL_FIELD];
+        profile.age = user_data[User.DATA_AGE_FIELD];
+        profile.gender = user_data[User.DATA_GENDER_FIELD];
+        profile.location_proximity_setting = user_data[User.DATA_LOCATION_PROXIMITY_SETTING_FIELD];
+
+        var Location = new location.Location();
+        var location_node = (new in_location.InLocation()).getUserLocation(target_user_node._id);
+
+        var loc = new model_common.Location();
+        if(location_node != null) {
+            loc.latitude = location_node[Location.LATITUDE_FIELD];
+            loc.longitude = location_node[Location.LONGITUDE_FIELD];
+        }
+
+        profile.location = loc;
+        profile.availabilities = (new is_available.IsAvailable()).getUserAvailabilities(target_user_node._id);
+    }
+    return profile;
 };

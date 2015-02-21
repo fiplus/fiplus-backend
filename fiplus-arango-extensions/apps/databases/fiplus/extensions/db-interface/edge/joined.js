@@ -2,6 +2,7 @@ var db = require('org/arangodb').db;
 var error = require('error');
 var activity = require('db-interface/node/activity').Activity;
 var user = require('db-interface/node/user').User;
+var helper = require('db-interface/util/helper');
 
 /**
  * Constructs a joined db interface object
@@ -49,7 +50,23 @@ Joined.prototype.getNumJoiners = function(activity_id)
     return this.db.joined.edges(activity_id).length;
 }
 
-Joined.prototype.getJoiners = function(activity_id, maximum)
+Joined.prototype.getJoinersProfile = function(activity_id, maximum, current_userId)
+{
+    if(maximum == null) {
+        maximum = this.GET_JOINER_MAX;
+    }
+    var joiners = [];
+    var num_joiners = this.getNumJoiners(activity_id);
+    var joined_array = this.db.joined.inEdges(activity_id);
+    var limit = (num_joiners <= maximum)? num_joiners: maximum;
+
+    for(var i = 0; i < limit; i++) {
+        joiners.push(helper.getProfile(this.db.user.document(joined_array[i]._from), current_userId));
+    }
+    return joiners;
+}
+
+Joined.prototype.getJoinersId = function(activity_id, maximum)
 {
     if(maximum == null) {
         maximum = this.GET_JOINER_MAX;
