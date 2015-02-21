@@ -23,69 +23,180 @@ frisby.create(this.description)
     })
     .toss();
 
-describe("Get activities based on user interests", function () {
+describe("Retrieve activities using match", function () {
     it("should get activities related to the user interests", function () {
     frisby.create("Request activities based on user interest")
         .get('http://localhost:3001/api/Matches/activities?num_activities=100&by_interest=true')
-        .expectJSON('?',    {
-            "activity_id": "2",
-            "Name": "A2",
-            "description": "activity 2",
-            "max_attendees": 0,
+        .expectStatus(200)
+        .expectJSON('?',
+        {
+            "activity_id": "1",
+            "Name": "A1",
+            "description": "activity 1",
+            "max_attendees": 5,
+            "allow_joiner_input": true,
             "num_attendees": 3,
-            "creator": "2",
+            "creator": "1",
             "tagged_interests": [
-                "Hockey",
-                "Basketball"
+                "Soccer",
+                "Newinterest"
             ],
             "suggested_times": [
                 {
                     "suggestion_votes": 0,
                     "start": 4102513200000,
                     "end": 4102516800000
+                },
+                {
+                    "suggestion_votes": 0,
+                    "start": 2524676400000,
+                    "end": 2524680000000
+                },
+                {
+                    "suggestion_votes": 0,
+                    "start": 222222222222222200,
+                    "end": 333333333333333300
+                },
+                {
+                    "suggestion_votes": 0,
+                    "start": 32883177600000,
+                    "end": 32883181200000
                 }
             ],
             "suggested_locations": [
                 {
                     "suggestion_votes": 0,
-                    "longitude": 150,
-                    "latitude": 150
+                    "longitude": 23,
+                    "latitude": 100
                 },
                 {
                     "suggestion_votes": 0,
-                    "longitude": 100,
-                    "latitude": 50
+                    "longitude": 89,
+                    "latitude": 89
+                },
+                {
+                    "suggestion_votes": 0,
+                    "longitude": 50,
+                    "latitude": 100
                 }
             ]
         })
-        .expectJSON('?',   {
-            "Name": "BasketballNW",
-            "creator": "101",
+        .expectJSON('?',
+        {
+            "activity_id": "3",
+            "Name": "A3",
+            "description": "activity 3",
+            "max_attendees": 3,
+            "allow_joiner_input": false,
+            "num_attendees": 3,
+            "creator": "3",
             "tagged_interests": [
-                "Basketball"
-            ]
-        })
-        .expectJSON('?', {
-            "Name": "BasketballSW",
-            "creator": "101",
-            "tagged_interests": [
-                "Basketball"
-            ]
-        })
-        .expectJSON('?', {
-            "Name": "BasketballNE",
-            "creator": "101",
-            "tagged_interests": [
-                "Basketball"
-            ]
-        })
-        .expectJSON('?', {
-            "Name": "BasketballSE",
-            "creator": "101",
-            "tagged_interests": [
-                "Basketball"
+                "Soccer"
+            ],
+            "suggested_times": [
+                {
+                    "suggestion_id": "1",
+                    "suggestion_votes": 1,
+                    "start": 4102513200000,
+                    "end": 4102516800000
+                },
+                {
+                    "suggestion_id": "1",
+                    "suggestion_votes": 1,
+                    "start": 4102513200000,
+                    "end": 4102516800000
+                }
+            ],
+            "suggested_locations": [
+                {
+                    "suggestion_id": "2",
+                    "suggestion_votes": 1,
+                    "longitude": 150,
+                    "latitude": 150
+                }
             ]
         })
         .toss();
+    });
+    it("should get activities for main page", function () {
+        frisby.create("Request activities for main page (interests + padding)")
+            .get('http://localhost:3001/api/Matches/activities?num_activities=100&by_interest=false')
+            .expectStatus(200)
+            .expectJSON('?',
+            {
+                "activity_id": "1",
+                "Name": "A1",
+                "description": "activity 1",
+                "max_attendees": 5,
+                "allow_joiner_input": true,
+                "num_attendees": 3,
+                "creator": "1",
+                "tagged_interests": [
+                    "Soccer",
+                    "Newinterest"
+                ],
+                "suggested_times": [
+                    {
+                        "suggestion_votes": 0,
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    },
+                    {
+                        "suggestion_votes": 0,
+                        "start": 2524676400000,
+                        "end": 2524680000000
+                    },
+                    {
+                        "suggestion_votes": 0,
+                        "start": 222222222222222200,
+                        "end": 333333333333333300
+                    },
+                    {
+                        "suggestion_votes": 0,
+                        "start": 32883177600000,
+                        "end": 32883181200000
+                    }
+                ],
+                "suggested_locations": [
+                    {
+                        "suggestion_votes": 0,
+                        "longitude": 23,
+                        "latitude": 100
+                    },
+                    {
+                        "suggestion_votes": 0,
+                        "longitude": 89,
+                        "latitude": 89
+                    },
+                    {
+                        "suggestion_votes": 0,
+                        "longitude": 50,
+                        "latitude": 100
+                    }
+                ]
+            })
+            .expectJSON('?',
+            {
+                "activity_id": "5",
+                "Name": "A5",
+                "description": "activity 5",
+                "max_attendees": 5,
+                "allow_joiner_input": false,
+                "num_attendees": 1,
+                "creator": "101",
+                "tagged_interests": [
+                    "Curling"
+                ],
+                "suggested_times": [
+                    {
+                        "suggestion_id": "1",
+                        "suggestion_votes": 1,
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    }
+                ],
+                "suggested_locations": []
+            })
+            .toss();
     });
 });

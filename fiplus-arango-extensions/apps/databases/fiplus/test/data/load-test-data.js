@@ -72,6 +72,7 @@ var loc4 = db.location.save({"latitude": 150,"longitude": 150});
 var int1 = db.interest.save({name:"Soccer"});
 var int2 = db.interest.save({name:"Hockey"});
 var int3 = db.interest.save({name:"Basketball"});
+var int4 = db.interest.save({name:"Curling"});
 
 // Date test data
 // Dec 1, 2014 10am
@@ -159,6 +160,14 @@ var act4 = db.activity.save({
     allow_joiner_input: false
 });
 
+var act5 = db.activity.save({
+    _key:'5',
+    Name:'A5',
+    description:'activity 5',
+    max_attendees:5,
+    allow_joiner_input: false
+});
+
 var activity1 = db.activity.save({Name:'BasketballNW'});
 var activity2 = db.activity.save({Name:'BasketballSW'});
 var activity3 = db.activity.save({Name:'BasketballNE'});
@@ -207,6 +216,8 @@ db.created.save(user3, act3, {});
 db.joined.save(user3, act3, {});
 db.created.save(defaultUser, act4, {});
 db.joined.save(defaultUser, act4, {});
+db.created.save(defaultUser, act5, {});
+db.joined.save(defaultUser, act5, {});
 
 
 // Joiners
@@ -221,6 +232,7 @@ db.tagged.save(act1, int1, {});
 db.tagged.save(act2, int2, {});
 db.tagged.save(act2, int3, {});
 db.tagged.save(act3, int1, {});
+db.tagged.save(act5, int4, {});
 db.tagged.save(activity1,int3,{});
 db.tagged.save(activity2,int3,{});
 db.tagged.save(activity3,int3,{});
@@ -242,5 +254,9 @@ db.is.save(sug3, tp1, {});
 // One activity in past, one activity in future
 db.suggested.save(act3, sug1, {});
 db.suggested.save(act4, sug3, {});
+db.suggested.save(act5, sug1, {});
+db.suggested.save(activity1, sug1, {});
+db.suggested.save(activity1, sug3, {});
+db.suggested.save(activity2, sug3, {});
 
 // Favourite users
