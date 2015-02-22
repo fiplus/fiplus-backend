@@ -9,6 +9,7 @@ UserProfile.user_id = String;
 UserProfile.email = String;
 UserProfile.username = String;
 UserProfile.profile_pic = String;
+UserProfile.favourited = Boolean;
 UserProfile.age = Number;
 UserProfile.gender = String;
 UserProfile.location = 'Location';
