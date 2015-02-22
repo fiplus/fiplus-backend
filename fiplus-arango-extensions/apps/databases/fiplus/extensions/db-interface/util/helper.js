@@ -9,6 +9,7 @@ var interested_in = require('db-interface/edge/interested_in');
 var in_location = require('db-interface/edge/in_location');
 var location = require('db-interface/node/location');
 var is_available = require('db-interface/edge/is_available');
+var favourited = require('db-interface/edge/favourited');
 var model_common = require('model-common');
 
 exports.getActivity = function(activity_node)
@@ -43,6 +44,7 @@ exports.getProfile = function(target_user_node, current_userId)
     profile.username = user_data[User.DATA_USERNAME_FIELD];
     profile.profile_pic = user_data[User.DATA_PROFILE_PIC_FIELD];
     profile.tagged_interests = (new interested_in.InterestedIn()).getUserInterests(target_user_node._id);
+    profile.favourited = (new favourited.Favourited()).isFavourite(current_userId, target_user_node._id);
 
     // Private information
     if (current_userId == target_user_node._id) {

@@ -69,5 +69,20 @@ Favourited.prototype.deleteFavourite = function(currentUserHandle, targetUserHan
     }
 };
 
+Favourited.prototype.isFavourite = function(currentUserHandle, targetUserHandle)
+{
+    var IsFavourite = true;
+    var favouritedObject = {};
+    favouritedObject[this.FROM_FIELD] = currentUserHandle;
+    favouritedObject[this.TO_FIELD] = targetUserHandle;
+
+    var result = this.db.favourited.firstExample(favouritedObject);
+    if(result == null)
+    {
+        IsFavourite = false;
+    }
+    return IsFavourite;
+};
+
 exports.Favourited = Favourited;
 
