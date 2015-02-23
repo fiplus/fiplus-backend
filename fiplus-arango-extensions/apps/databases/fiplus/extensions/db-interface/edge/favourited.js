@@ -35,7 +35,7 @@ Favourited.prototype.addFavourite = function(currentUserHandle, targetUserHandle
 
 Favourited.prototype.getNumFavourites = function(currentUserHandle)
 {
-    return this.db.favourited.edges(currentUserHandle).length;
+    return this.db.favourited.outEdges(currentUserHandle).length;
 }
 
 Favourited.prototype.getUserFavourites = function(currentUserHandle, maximum)
