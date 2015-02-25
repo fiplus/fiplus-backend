@@ -1,5 +1,7 @@
 var loopback = require('loopback');
 var boot = require('loopback-boot');
+var https = require('https');
+var sslconfig = require('./ssl-config');
 
 var app = module.exports = loopback();
 
@@ -8,8 +10,16 @@ var app = module.exports = loopback();
 boot(app, __dirname);
 
 app.start = function() {
+
+  var options = {
+    key: sslconfig.privateKey,
+    cert: sslconfig.certificate
+  };
+
+  var server = https.createServer(options, app);
+
   // start the web server
-  return app.listen(function() {
+  return server.listen(app.get('port'), function() {
     app.emit('started');
     console.log('Web server listening at: %s', app.get('url'));
   });
