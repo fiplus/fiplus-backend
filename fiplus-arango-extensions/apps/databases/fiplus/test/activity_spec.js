@@ -1,8 +1,10 @@
 var frisby = require('frisby');
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 // Test setup - Login as default user
 frisby.create(this.description)
-    .post('http://localhost:3001/api/Users/login',
+    .post('https://localhost:3001/api/Users/login',
     {
         "email": "1234@data.com",
         "password": "1234"
@@ -26,7 +28,7 @@ frisby.create(this.description)
 describe("Create activity", function () {
     it("should create a simple activity with a suggested time and location", function () {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Acts',
+            .post('https://localhost:3001/api/Acts',
             {
                 "Name" : "The Event",
                 "description" : "My first event",
@@ -56,20 +58,20 @@ describe("Create activity", function () {
 describe("Tag activity", function () {
     it("should tag with existing interest", function () {
         frisby.create(this.description)
-            .put("http://localhost:3001/api/Acts/1/interest/soccer")
+            .put("https://localhost:3001/api/Acts/1/interest/soccer")
             .expectStatus(200)
             .toss();
     });
     it("should tag with non-existing interest", function () {
 
         frisby.create(this.description)
-            .put("http://localhost:3001/api/Acts/1/interest/newinterest")
+            .put("https://localhost:3001/api/Acts/1/interest/newinterest")
             .expectStatus(200)
             .toss();
     });
     it("should tag a non-existing activity", function () {
         frisby.create(this.description)
-            .put("http://localhost:3001/api/Acts/0/interest/soccer")
+            .put("https://localhost:3001/api/Acts/0/interest/soccer")
             .expectStatus(404)
             .toss();
     });
@@ -98,7 +100,7 @@ describe("Tag activity", function () {
 describe("Join activity", function () {
     it("should join existing activity", function () {
         frisby.create(this.description)
-        .put("http://localhost:3001/api/Acts/1/user")
+        .put("https://localhost:3001/api/Acts/1/user")
         .expectStatus(200)
         .after(function() {
             frisby.create(this.description + ' db check')
@@ -118,21 +120,21 @@ describe("Join activity", function () {
 
     it("should fail to join a non-existing activity", function () {
         frisby.create(this.description)
-        .put("http://localhost:3001/api/Acts/0/user")
+        .put("https://localhost:3001/api/Acts/0/user")
         .expectStatus(404)
         .toss();
     });
 
     it("should fail to join if activity is full", function () {
         frisby.create(this.description)
-        .put("http://localhost:3001/api/Acts/2/user")
+        .put("https://localhost:3001/api/Acts/2/user")
         .expectStatus(400)
         .toss();
     });
 
     it("Unjoin activity", function() {
         frisby.create(this.description)
-            .delete("http://localhost:3001/api/Acts/6/user")
+            .delete("https://localhost:3001/api/Acts/6/user")
             .expectStatus(200)
             .after(function() {
                 frisby.create(this.description + ' db check')
@@ -154,7 +156,7 @@ describe("Join activity", function () {
 describe('Joiner Suggest time/location tests', function() {
     it('should allow suggestions from joiner', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Users/login',
+            .post('https://localhost:3001/api/Users/login',
             {
                 "email": "test@data.com",
                 "password": "test"
@@ -176,7 +178,7 @@ describe('Joiner Suggest time/location tests', function() {
             .toss();
 
         frisby.create('Suggest Valid Time for activity from joiner')
-            .put('http://localhost:3001/api/Acts/1/time',
+            .put('https://localhost:3001/api/Acts/1/time',
             {
                 start:222222222222222222,
                 end:333333333333333333
@@ -202,7 +204,7 @@ describe('Joiner Suggest time/location tests', function() {
             .toss();
 
         frisby.create('Suggest Valid Location for activity from joiner')
-            .put('http://localhost:3001/api/Acts/1/location',
+            .put('https://localhost:3001/api/Acts/1/location',
             {
                 latitude:89,
                 longitude:89
@@ -227,7 +229,7 @@ describe('Joiner Suggest time/location tests', function() {
 
     it('should disallow suggestions from joiner', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Users/login',
+            .post('https://localhost:3001/api/Users/login',
             {
                 "email": "test@data.com",
                 "password": "test"
@@ -249,7 +251,7 @@ describe('Joiner Suggest time/location tests', function() {
             .toss();
 
         frisby.create('Suggest Valid Time for activity from joiner')
-            .put('http://localhost:3001/api/Acts/3/time',
+            .put('https://localhost:3001/api/Acts/3/time',
             {
                 // jan. 1, 2050 12 - 1pm
                 start:222222222222222222,
@@ -259,7 +261,7 @@ describe('Joiner Suggest time/location tests', function() {
             .toss();
 
         frisby.create('Suggest Valid Location for activity from joiner')
-            .put('http://localhost:3001/api/Acts/3/location',
+            .put('https://localhost:3001/api/Acts/3/location',
             {
                 // jan. 1, 2050 12 - 1pm
                 latitude:89,
@@ -269,7 +271,7 @@ describe('Joiner Suggest time/location tests', function() {
             .toss();
 
         frisby.create('Suggest Valid Time for activity not joined')
-            .put('http://localhost:3001/api/Acts/4/time',
+            .put('https://localhost:3001/api/Acts/4/time',
             {
                 // jan. 1, 2050 12 - 1pm
                 start:222222222222222222,
@@ -279,7 +281,7 @@ describe('Joiner Suggest time/location tests', function() {
             .toss();
 
         frisby.create('Suggest Valid Time for activity not joined')
-            .put('http://localhost:3001/api/Acts/4/location',
+            .put('https://localhost:3001/api/Acts/4/location',
             {
                 // jan. 1, 2050 12 - 1pm
                 latitude:89,
@@ -293,7 +295,7 @@ describe('Joiner Suggest time/location tests', function() {
 describe('Suggest Time', function() {
     it('should suggest time', function(){
         frisby.create('Suggest Valid Time for activity')
-            .put('http://localhost:3001/api/Acts/1/time',
+            .put('https://localhost:3001/api/Acts/1/time',
             {
                 // jan. 1, 2050 12 - 1pm
                 start:2524676400000,
@@ -322,7 +324,7 @@ describe('Suggest Time', function() {
 
     it('suggests duplicate time', function() {
         frisby.create('Suggest Duplicate Time')
-            .put('http://localhost:3001/api/Acts/1/time',
+            .put('https://localhost:3001/api/Acts/1/time',
             {
                 // jan. 1, 2050 12 - 1pm
                 start:2524676400000,
@@ -334,7 +336,7 @@ describe('Suggest Time', function() {
 
     it('suggests past time', function() {
         frisby.create('Suggest Past Time for activity')
-            .put('http://localhost:3001/api/Acts/1/time',
+            .put('https://localhost:3001/api/Acts/1/time',
             {
                 // jan. 1, 2000 12 - 1pm
                 start:946753200000,
@@ -346,7 +348,7 @@ describe('Suggest Time', function() {
 
     it('suggest invalid time', function() {
         frisby.create('Suggest invalid time period for activity')
-            .put('http://localhost:3001/api/Acts/1/time',
+            .put('https://localhost:3001/api/Acts/1/time',
             {
                 // jan. 1, 2000 12 - 1pm
                 start:946756800000,
@@ -358,7 +360,7 @@ describe('Suggest Time', function() {
 
     it('suggests for non-existing activity', function() {
         frisby.create('Suggest Non-existing for activity')
-            .put('http://localhost:3001/api/Acts/0/time',
+            .put('https://localhost:3001/api/Acts/0/time',
             {
                 // jan. 1, 2000 12 - 1pm
                 start:946753200000,
@@ -372,7 +374,7 @@ describe('Suggest Time', function() {
 describe('Suggest Location', function(){
     it('suggests a location', function() {
         frisby.create('Suggest Valid Location for activity')
-            .put('http://localhost:3001/api/Acts/1/location',
+            .put('https://localhost:3001/api/Acts/1/location',
             {
                 // jan. 1, 2050 12 - 1pm
                 latitude:100,
@@ -398,7 +400,7 @@ describe('Suggest Location', function(){
 
     it('suggests duplicate location', function() {
         frisby.create('Suggest duplicate Valid Location for activity')
-            .put('http://localhost:3001/api/Acts/1/location',
+            .put('https://localhost:3001/api/Acts/1/location',
             {
                 // jan. 1, 2050 12 - 1pm
                 latitude:100,
@@ -412,12 +414,12 @@ describe('Suggest Location', function(){
 describe('Suggestion Vote', function() {
     it('saves suggestion votes', function() {
         frisby.create('time vote')
-            .post('http://localhost:3001/api/Acts/suggestion/1/user')
+            .post('https://localhost:3001/api/Acts/suggestion/1/user')
             .expectStatus(200)
             .toss();
 
         frisby.create('location vote')
-            .post('http://localhost:3001/api/Acts/suggestion/2/user')
+            .post('https://localhost:3001/api/Acts/suggestion/2/user')
             .expectStatus(200)
             .toss();
 
@@ -448,7 +450,7 @@ describe('Suggestion Vote', function() {
 
     it('should return activity information with updated vote counts for suggested time and location and corresponding suggestion id.', function() {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Acts/3',
+            .get('https://localhost:3001/api/Acts/3',
             {})
             .expectStatus(200)
             .expectJSON(
@@ -480,7 +482,7 @@ describe('Suggestion Vote', function() {
 describe('Get Activity', function() {
    it('should return activity information.', function() {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Acts/2',
+            .get('https://localhost:3001/api/Acts/2',
             {})
             .expectStatus(200)
             .expectJSON(
@@ -517,7 +519,7 @@ describe('Get Activity', function() {
     });
     it('should fail to get non-existent activity.', function() {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Acts/activity/0',
+            .get('https://localhost:3001/api/Acts/activity/0',
             {})
             .expectStatus(404)
             .toss();
@@ -527,7 +529,7 @@ describe('Get Activity', function() {
 describe('Get Attendees', function() {
     it('should return a list of attendees information.', function() {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Acts/2/user?Limit=100',
+            .get('https://localhost:3001/api/Acts/2/user?Limit=100',
             {})
             .expectStatus(200)
             .expectJSON(
@@ -543,14 +545,14 @@ describe('Get Attendees', function() {
     });
     it('should fail to get non-existent activity.', function() {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Acts/0?Limit=100',
+            .get('https://localhost:3001/api/Acts/0?Limit=100',
             {})
             .expectStatus(404)
             .toss();
     });
     it('should only return as many users as the prescribed limit.', function() {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Acts/2/user?Limit=2',
+            .get('https://localhost:3001/api/Acts/2/user?Limit=2',
             {})
             .expectStatus(200)
             .expectJSON(
@@ -565,7 +567,7 @@ describe('Get Attendees', function() {
     });
     it('should default to 50 as a limit.', function() {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Acts/2/user',
+            .get('https://localhost:3001/api/Acts/2/user',
             {})
             .expectStatus(200)
             .expectJSON(
@@ -584,7 +586,7 @@ describe('Get Attendees', function() {
 describe('Firm Up Activity', function() {
     it('should confirm existing time suggestion.', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Acts/7/confirm/10',
+            .post('https://localhost:3001/api/Acts/7/confirm/10',
             {})
             .expectStatus(200)
             .toss();
@@ -608,7 +610,7 @@ describe('Firm Up Activity', function() {
     });
     it('should confirm existing location suggestion.', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Acts/7/confirm/11',
+            .post('https://localhost:3001/api/Acts/7/confirm/11',
             {})
             .expectStatus(200)
             .toss();
@@ -629,28 +631,28 @@ describe('Firm Up Activity', function() {
     });
     it('should allow over-writing confirmation.', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Acts/7/confirm/12',
+            .post('https://localhost:3001/api/Acts/7/confirm/12',
             {})
             .expectStatus(200)
             .toss();
     });
     it('should not allow confirming an activity which you are not the creator of.', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Acts/2/confirm/6',
+            .post('https://localhost:3001/api/Acts/2/confirm/6',
             {})
             .expectStatus(401)
             .toss();
     });
     it('should not allow confirmation of non-existing suggestion.', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Acts/7/confirm/24',
+            .post('https://localhost:3001/api/Acts/7/confirm/24',
             {})
             .expectStatus(404)
             .toss();
     });
     it('Get Activity should return only confirmed activities.', function() {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Acts/7',
+            .get('https://localhost:3001/api/Acts/7',
             {})
             .expectStatus(200)
             .expectJSON(
