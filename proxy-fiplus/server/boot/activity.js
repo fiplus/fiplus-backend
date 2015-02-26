@@ -299,5 +299,40 @@ activity.afterRemote('joinActivity', function(ctx, model, next) {
   ctx.res.end();
 });
 
+activity.unjoinActivity = function(id, req, cb) {
+
+  request({
+    url: fwd.FIPLUS_BASE_URL + '/activity/' + id + '/user/',
+    method: 'DELETE',
+    headers: {
+      cookie: req.get('Cookie')
+    },
+    body: req.body,
+    json: true
+  }, function(e, response) {
+    if(e)
+    {
+      console.log(e);
+    }
+    else
+    {
+      fwd.saveArangoResponse(response);
+
+      // No error so 1st arg = null
+      cb(null, response.body);
+    }
+  });
+};
+
+activity.unjoinActivity.shared = true;
+activity.unjoinActivity.accepts = [{arg:'id', type: 'string', http:{source:'path'}},{arg:'req', type:'object',http:{source:'req'}}];
+activity.unjoinActivity.http = {verb: 'DELETE', path: '/:id/user'};
+activity.unjoinActivity.description = 'Unjoin activity';
+activity.afterRemote('unjoinActivity', function(ctx, model, next) {
+  fwd.forwardResponse(ctx.res);
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
+});
+
 app.model(activity); 
 

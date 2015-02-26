@@ -129,6 +129,26 @@ describe("Join activity", function () {
         .expectStatus(400)
         .toss();
     });
+
+    it("Unjoin activity", function() {
+        frisby.create(this.description)
+            .delete("http://localhost:3001/api/Acts/6/user")
+            .expectStatus(200)
+            .after(function() {
+                frisby.create(this.description + ' db check')
+                    .post("http://localhost:8529/_db/fiplus/_api/traversal", {
+                        startVertex: 'activity/6',
+                        graphName: 'fiplus',
+                        direction: 'inbound',
+                        edgeCollection: 'joined'
+                    }, {json: true})
+                    .afterJSON(function(response) {
+                        expect(JSON.stringify(response)).not.toContain('1234@data.com')
+                    })
+                    .toss();
+            })
+            .toss();
+    });
 });
 
 describe('Joiner Suggest time/location tests', function() {
