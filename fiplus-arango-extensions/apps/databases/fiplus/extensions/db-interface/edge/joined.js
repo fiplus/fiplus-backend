@@ -45,10 +45,22 @@ Joined.prototype.setUserJoinedActivity = function(userHandle, activityHandle)
     return result;
 };
 
+Joined.prototype.removeUserJoinedActivity = function(userHandle, activityHandle) {
+    var joinedObject = {};
+    joinedObject[this.FROM_FIELD] = userHandle;
+    joinedObject[this.TO_FIELD] = activityHandle;
+
+    var result = this.db.joined.removeByExample(joinedObject);
+    if(!result)
+    {
+        throw new error.GenericError('Deleting user joined activity failed.');
+    }
+};
+
 Joined.prototype.getNumJoiners = function(activity_id)
 {
     return this.db.joined.edges(activity_id).length;
-}
+};
 
 Joined.prototype.getJoinersProfile = function(activity_id, maximum, current_userId)
 {
@@ -64,7 +76,7 @@ Joined.prototype.getJoinersProfile = function(activity_id, maximum, current_user
         joiners.push(helper.getProfile(this.db.user.document(joined_array[i]._from), current_userId));
     }
     return joiners;
-}
+};
 
 Joined.prototype.getJoinersId = function(activity_id, maximum)
 {
@@ -80,6 +92,6 @@ Joined.prototype.getJoinersId = function(activity_id, maximum)
         joiners.push(this.db.user.document(joined_array[i]._from)._key);
     }
     return joiners;
-}
+};
 
 exports.Joined = Joined;

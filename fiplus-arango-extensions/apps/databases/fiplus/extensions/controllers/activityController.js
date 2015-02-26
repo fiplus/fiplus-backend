@@ -295,4 +295,14 @@ var helper = require('db-interface/util/helper');
         type: joi.string(),
         description: 'User id to add to activity'
     }).onlyIfAuthenticated();
+
+    controller.delete('/:activityid/user', function(request, response) {
+        var activity_id = 'activity/' + request.params('activityid');
+        var uid = request.session.get('uid');
+
+        (new joiner()).removeUserJoinedActivity(uid, activity_id);
+    }).pathParam('activityid', {
+        type: joi.string(),
+        descriptions: 'The activity to unjoin'
+    }).onlyIfAuthenticated();
 }());

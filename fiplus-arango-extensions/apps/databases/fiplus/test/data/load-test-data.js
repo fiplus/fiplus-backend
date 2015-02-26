@@ -178,6 +178,15 @@ var act5 = db.activity.save({
     allow_joiner_input: false
 });
 
+// Used for unjoin testing
+var act6 = db.activity.save({
+    _key:'6',
+    Name:'A6',
+    description:'activity 6',
+    max_attendees:6,
+    allow_joiner_input: false
+});
+
 var activity1 = db.activity.save({Name:'BasketballNW'});
 var activity2 = db.activity.save({Name:'BasketballSW'});
 var activity3 = db.activity.save({Name:'BasketballNE'});
@@ -236,6 +245,7 @@ db.joined.save(user2, act3, {});
 db.joined.save(user1, act2, {});
 db.joined.save(user3, act2, {});
 db.joined.save(defaultUser, act3, {});
+db.joined.save(defaultUser, act6, {});
 
 // Tagged
 db.tagged.save(act1, int1, {});
