@@ -45,6 +45,7 @@ Activity.creator = String;
 Activity.tagged_interests = [String];
 Activity.times = ['Time'];
 Activity.locations = ['Location'];
+Activity.is_cancelled = Boolean;
 exports.Activity = Activity;
 
 var Favourites = function(){};

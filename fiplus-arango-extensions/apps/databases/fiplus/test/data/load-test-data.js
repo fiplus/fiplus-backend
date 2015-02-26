@@ -178,7 +178,6 @@ var act5 = db.activity.save({
     allow_joiner_input: false
 });
 
-// Used for unjoin testing
 var act6 = db.activity.save({
     _key:'6',
     Name:'A6',
@@ -195,6 +194,18 @@ var act7 = db.activity.save({
     max_attendees:0,
     allow_joiner_input: false
 });
+
+// Used for unjoin testing
+var act8 = db.activity.save({
+    _key:'8',
+    Name:'A8',
+    description:'activity 8',
+    max_attendees:6,
+    allow_joiner_input: false
+});
+
+
+
 var activity1 = db.activity.save({Name:'BasketballNW'});
 var activity2 = db.activity.save({Name:'BasketballSW'});
 var activity3 = db.activity.save({Name:'BasketballNE'});
@@ -260,6 +271,8 @@ db.created.save(defaultUser, act4, {});
 db.joined.save(defaultUser, act4, {});
 db.created.save(defaultUser, act5, {});
 db.joined.save(defaultUser, act5, {});
+db.created.save(defaultUser, act6, {});
+db.joined.save(defaultUser, act6, {});
 db.created.save(defaultUser, act7, {});
 db.joined.save(defaultUser, act7, {});
 
@@ -269,7 +282,7 @@ db.joined.save(user2, act3, {});
 db.joined.save(user1, act2, {});
 db.joined.save(user3, act2, {});
 db.joined.save(defaultUser, act3, {});
-db.joined.save(defaultUser, act6, {});
+db.joined.save(defaultUser, act8{});
 
 // Tagged
 db.tagged.save(act1, int1, {});
@@ -288,6 +301,11 @@ db.suggested.save(act1, sug2, {});
 
 var sug3 = db.suggestion.save({_key:'3'});
 db.is.save(sug3, tp1, {});
+
+var sug4 = db.suggestion.save({_key:'4'});
+db.is.save(sug4, tp4, {});
+db.suggested.save(act6, sug4, {});
+
 
 // One activity in past, one activity in future
 db.suggested.save(act3, sug1, {});

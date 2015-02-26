@@ -55,6 +55,76 @@ describe("Create activity", function () {
     });
 });
 
+describe("Cancel Activity Tests", function() {
+    it('Non creator tries to cancel activity', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Users/login',
+            {
+                "email": "test@data.com",
+                "password": "test"
+            }, {json: true})
+            .addHeader('Cookie', 'sid=test;sid.sig=test')
+            .after(function (err, res, body) {
+                var sid = res.headers['set-cookie'][0];
+                var sidSig = res.headers['set-cookie'][1];
+
+                frisby.globalSetup({
+                    request: {
+                        headers: {
+                            cookie: sid.split(';')[0] + ';' + sidSig.split(';')[0]
+                        }
+                    }
+                });
+
+                frisby.create('cancels')
+                    .delete("http://localhost:3001/api/Acts/6")
+                    .expectStatus(400)
+                    .toss();
+            })
+            .toss();
+    });
+
+    it('Cancels activity', function() {
+        frisby.create('cancels')
+            .delete("http://localhost:3001/api/Acts/6")
+            .expectStatus(200)
+            .toss();
+
+        frisby.create('tagging cancelled')
+            .put("http://localhost:3001/api/Acts/6/interest/soccer")
+            .expectStatus(400)
+            .toss();
+
+        frisby.create(this.description)
+            .put("http://localhost:3001/api/Acts/6/user")
+            .expectStatus(400);
+
+        frisby.create('Suggesting cancelled')
+            .put('http://localhost:3001/api/Acts/6/time',
+            {
+                start:222222222222222222,
+                end:333333333333333333
+            },{json:true})
+            .expectStatus(400)
+            .toss();
+
+        frisby.create('Suggest location on cancelled')
+            .put('http://localhost:3001/api/Acts/6/location',
+            {
+                // jan. 1, 2050 12 - 1pm
+                latitude:100,
+                longitude:23
+            },{json:true})
+            .expectStatus(400)
+            .toss();
+
+        frisby.create('time vote')
+            .post('http://localhost:3001/api/Acts/suggestion/4/user')
+            .expectStatus(400)
+            .toss();
+    });
+});
+
 describe("Tag activity", function () {
     it("should tag with existing interest", function () {
         frisby.create(this.description)
@@ -134,12 +204,12 @@ describe("Join activity", function () {
 
     it("Unjoin activity", function() {
         frisby.create(this.description)
-            .delete("https://localhost:3001/api/Acts/6/user")
+            .delete("https://localhost:3001/api/Acts/7/user")
             .expectStatus(200)
             .after(function() {
                 frisby.create(this.description + ' db check')
                     .post("http://localhost:8529/_db/fiplus/_api/traversal", {
-                        startVertex: 'activity/6',
+                        startVertex: 'activity/7',
                         graphName: 'fiplus',
                         direction: 'inbound',
                         edgeCollection: 'joined'

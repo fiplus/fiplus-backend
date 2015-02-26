@@ -36,7 +36,7 @@ exports.getActivitiesWithGivenInterest = function(interestId)
     "for suggested in graph_edges('fiplus', tagged._from, {edgeCollectionRestriction:'suggested'})" +
     "for is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'})" +
     "for start in graph_edges('fiplus', is._to, {edgeCollectionRestriction:'start'})" +
-    "filter document(start._to).value >= date_now()" +
+    "filter document(start._to).value >= date_now() AND !document(tagged._from).is_cancelled " +
     "return document(tagged._from)))", {interestId:interestId}).toArray()[0];
 };
 
@@ -53,6 +53,6 @@ exports.getDefaultActivities = function()
     "for suggested in graph_edges('fiplus', activity, {edgeCollectionRestriction:'suggested'})" +
     "for is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'})" +
     "for start in graph_edges('fiplus', is._to, {edgeCollectionRestriction:'start'})" +
-    "filter document(start._to).value >= date_now()" +
+    "filter document(start._to).value >= date_now() AND !activity.is_cancelled " +
     "return activity))").toArray()[0];
 };

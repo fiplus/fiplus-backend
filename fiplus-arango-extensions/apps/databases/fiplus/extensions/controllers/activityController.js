@@ -228,6 +228,7 @@ var helper = require('db-interface/util/helper');
         var times = request.params('Time');
 
         var suggest = new suggester();
+        (new actor()).checkIfCancelled(activityId);
         checkIfAllowedToSuggest(activityId, request.session.get('uid'));
         suggest.saveSuggestedTimeEdge(activityId, times.get('start'), times.get('end'));
 
@@ -247,6 +248,7 @@ var helper = require('db-interface/util/helper');
         var times = request.params('Location');
 
         var suggest = new suggester();
+        (new actor()).checkIfCancelled(activityId);
         checkIfAllowedToSuggest(activityId, request.session.get('uid'));
         suggest.saveSuggestedLocationEdge(activityId, times.get('latitude'), times.get('longitude'));
     }).pathParam('activityId', {
@@ -284,6 +286,19 @@ var helper = require('db-interface/util/helper');
 
         var uid = request.session.get('uid');
 
+        // Getting the suggested edge for given suggestion in order to get activity to check if it is cancelled
+        var suggestedEdge = {};
+        suggestedEdge._to = suggestionId;
+        suggestedEdge = db.suggested.firstExample(suggestedEdge);
+        if(suggestedEdge != null)
+        {
+            (new actor()).checkIfCancelled(suggestedEdge._from);
+        }
+        else
+        {
+            throw new error.NotFoundError('Suggested edge for suggestion ');
+        }
+
         (new voted()).saveUserVote(uid, suggestionId);
 
     }).pathParam('suggestionId', {
@@ -310,6 +325,7 @@ var helper = require('db-interface/util/helper');
         var activityHandle = 'activity/' + request.params('activityid');
         var interest = request.params('interest');
 
+        (new actor()).checkIfCancelled(activityHandle);
         (new tagger()).tagActivityWithInterest(activityHandle, interest);
     }).pathParam('activityid', {
         type: joi.string(),
@@ -326,6 +342,7 @@ var helper = require('db-interface/util/helper');
         var activity_id = 'activity/' + req.params('activityid');
         var uid = req.session.get('uid');
 
+        (new actor()).checkIfCancelled(activity_id);
         (new joiner()).setUserJoinedActivity(uid, activity_id);
     }).pathParam('activityid', {
         type: joi.string(),
@@ -333,6 +350,26 @@ var helper = require('db-interface/util/helper');
     }).pathParam('userid', {
         type: joi.string(),
         description: 'User id to add to activity'
+    }).onlyIfAuthenticated();
+
+    // Cancel activity
+    controller.delete("/:activityid", function(request, response) {
+        var activity_id = 'activity/' + request.params('activityid');
+
+        var uid = request.session.get('uid');
+        require('console').log(uid);
+        var createdEdge = {};
+        createdEdge._from = uid;
+        createdEdge._to = activity_id;
+        var result = db.created.firstExample(createdEdge);
+        if(result == null)
+        {
+            throw new error.NotAllowedError('Cancelling activity by non-creator');
+        }
+
+        (new actor()).cancelActivity(activity_id);
+    }).pathParam('activityid', {
+        type: joi.string()
     }).onlyIfAuthenticated();
 
     controller.delete('/:activityid/user', function(request, response) {

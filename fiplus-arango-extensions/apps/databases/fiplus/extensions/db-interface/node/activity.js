@@ -15,7 +15,8 @@ var Activity = function()
     this.NAME_FIELD = 'Name';
     this.DESCRIPTION_FIELD = 'description';
     this.MAXIMUM_ATTENDANCE_FIELD = 'max_attendees';
-    this.ALLOW_JOINER_INPUT = 'allow_joiner_input'
+    this.ALLOW_JOINER_INPUT = 'allow_joiner_input';
+    this.IS_CANCELLED = 'is_cancelled';
 };
 
 Activity.prototype.saveActivityToDb = function(name, description, maximum_attendance, allow_joiner_input)
@@ -37,7 +38,7 @@ Activity.prototype.saveActivityToDb = function(name, description, maximum_attend
 Activity.prototype.get = function(activity_id) {
     this.exists(activity_id);
     return this.db.activity.document(activity_id);
-}
+};
 
 Activity.prototype.exists = function(activity_id) {
     if(!this.db.activity.exists(activity_id)) {
@@ -52,6 +53,30 @@ Activity.prototype.activityFull = function(activity_id) {
     var fill = this.db.joined.outEdges(activity_id).length;
 
     return (fill >= max);
+};
+
+Activity.prototype.cancelActivity = function(activity_id) {
+    var activityUpdate = {};
+    activityUpdate[this.IS_CANCELLED] = true;
+
+    var result = this.db.activity.update(activity_id, activityUpdate);
+    if(result.error)
+    {
+        throw new error.GenericError('Cancelling activity ' + activity_id + ' failed.');
+    }
+};
+
+Activity.prototype.checkIfCancelled = function(activity_id)
+{
+    if(!this.db.activity.exists(activity_id))
+    {
+        throw new error.NotFoundError(activity_id + 'not found');
+    }
+
+    if(this.db.activity.document(activity_id)[this.IS_CANCELLED])
+    {
+        throw new error.NotAllowedError('Activity cancelled; operation');
+    }
 };
 
 exports.Activity = Activity;
