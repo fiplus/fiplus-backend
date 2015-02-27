@@ -14,3 +14,13 @@ var FirmUpMessage = function(activityId, Name, time, location) {
   this.location = location;
 };
 exports.FirmUpMessage = FirmUpMessage;
+
+
+var CancelledActivityMessage = function(activityId, message) {
+  this.type = 'cancelled_activity';
+  this.activityId = activityId;
+  this.message = message;
+};
+exports.CancelledActivityMessage = CancelledActivityMessage;
+
+

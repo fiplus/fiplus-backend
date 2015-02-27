@@ -52,3 +52,19 @@ exports.SendNotificationOnFirmUp = function(firmUp)
     sendPushNotification(message, devices);
   });
 };
+
+exports.SendCancelledActivityMessage = function(activity)
+{
+  var cancelActivityResponse = JSON.parse(activity);
+  query.getDeviceIdsJoinedActivity(cancelActivityResponse.activity_id, function(err, devices) {
+    var message = new push_message.CancelledActivityMessage(cancelActivityResponse.activity_id, cancelActivityResponse.Name + ' has been cancelled');
+    console.log(JSON.stringify(message));
+    console.log(devices);
+    var gcmMessage = new gcm.Message({
+      data: message,
+      dry_run: false
+    });
+
+    sendPushNotification(gcmMessage, devices);
+  });
+};

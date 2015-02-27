@@ -110,7 +110,7 @@ var helper = require('db-interface/util/helper');
         }
 
         // Return the activity key and name value so that push notifications can be sent for activity
-        var createActivityResponse = new model_common.CreateActivityResponse();
+        var createActivityResponse = new model_common.CreateCancelActivityResponse();
         createActivityResponse.activity_id = activity_id.split('/')[1];
         createActivityResponse.Name = activity.get('Name');
         res.json(JSON.stringify(createActivityResponse));
@@ -368,6 +368,14 @@ var helper = require('db-interface/util/helper');
         }
 
         (new actor()).cancelActivity(activity_id);
+
+        // Return the activity key and name value so that push notifications can be sent for activity
+        var cancelledActivityResponse = new model_common.CreateCancelActivityResponse();
+
+        var activity = db.activity.document(activity_id);
+        cancelledActivityResponse.activity_id = activity_id.split('/')[1];
+        cancelledActivityResponse.Name = activity[(new actor()).NAME_FIELD];
+        response.json(JSON.stringify(cancelledActivityResponse));
     }).pathParam('activityid', {
         type: joi.string()
     }).onlyIfAuthenticated();

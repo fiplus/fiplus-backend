@@ -365,6 +365,10 @@ activity.cancelActivity.description = 'Cancel activity';
 activity.afterRemote('cancelActivity', function(ctx, model, next) {
   fwd.forwardResponse(ctx.res);
   ctx.res.send(ctx.res.body);
+  if(ctx.res.statusCode == 200)
+  {
+    push.SendCancelledActivityMessage(ctx.res.body);
+  }
   ctx.res.end();
 });
 
