@@ -17,7 +17,7 @@ var Confirmed = function()
     this.TO_FIELD = '_to';
 };
 
-function save(activityId, suggested_id, is_time)
+function save(activityId, suggestedId, is_time)
 {
     if(!db.activity.exists(activityId))
     {
@@ -44,14 +44,30 @@ function save(activityId, suggested_id, is_time)
     });
 
     // save confirmation
-    var result = db.confirmed.save(activityId, suggested_id, {});
+    var result = db.confirmed.save(activityId, suggestedId, {});
     if(result.error == true)
     {
         throw new error.GenericError('Saving confirmation for suggestion failed.');
     }
+
     return result;
 }
 
+// confirm all users that have voted for the event
+function confirmVoters(activityId, suggestionId)
+{
+    // find all voters of the suggestion
+    db.voted.inEdges(suggestionId).forEach(function(edge)
+    {
+        var voter_id = edge._from;
+        // create a confirmed edge between user and activity
+        var result = db.confirmed.save(voter_id, activityId, {});
+        if(result.error == true)
+        {
+            throw new error.GenericError('Saving confirmation for voter failed.');
+        }
+    });
+}
 
 Confirmed.prototype.saveConfirmed = function(activityId, suggestionId)
 {
@@ -61,22 +77,28 @@ Confirmed.prototype.saveConfirmed = function(activityId, suggestionId)
     }
 
     var id = db.is.outEdges(suggestionId)[0]._to;
-    var is_time = (id.split('/')[0] ==  "time_period")
-    return save(activityId, id, is_time);
+    var is_time = (id.split('/')[0] ==  "time_period");
+    var result = save(activityId, id, is_time);
+    confirmVoters(activityId, suggestionId);
+    return result;
 };
 
 Confirmed.prototype.saveConfirmedTime = function(activityId, start_time, end_time)
 {
     var period_node = (new period()).saveTimePeriod(start_time, end_time);
 
-    return save(activityId, period_node._id, true);
+    var result = save(activityId, period_node._id, true);
+    confirmVoters(activityId, suggestionId);
+    return result;
 };
 
 Confirmed.prototype.saveConfirmedLocation = function(activityId, latitude, longitude)
 {
     var loc_node = (new location()).saveLocation(latitude, longitude);
 
-    return save(activityId, loc_node._id, false);
+    var result = save(activityId, loc_node._id, false);
+    confirmVoters(activityId, suggestionId);
+    return result;
 };
 
 Confirmed.prototype.getConfirmedTime = function(activity_id)

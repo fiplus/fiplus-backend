@@ -728,7 +728,7 @@ describe('Firm Up Activity', function() {
         frisby.create(this.description + "dB")
             .post("http://localhost:8529/_db/fiplus/_api/traversal",
             {
-                startVertex: 'activity/2',
+                startVertex: 'activity/7',
                 graphName: 'fiplus',
                 direction: 'outbound',
                 edgeCollection: 'confirmed',
@@ -746,6 +746,20 @@ describe('Firm Up Activity', function() {
             {})
             .expectStatus(200)
             .toss();
+        frisby.create(this.description + "dB")
+            .post("http://localhost:8529/_db/fiplus/_api/traversal",
+            {
+                startVertex: 'activity/7',
+                graphName: 'fiplus',
+                direction: 'outbound',
+                edgeCollection: 'confirmed',
+                maxDepth: 3
+            }, {json: true})
+            .expectJSON('result.visited.vertices.?',
+            {
+                latitude: 150,
+                longitude: 150
+            });
     });
     it('should not allow confirming an activity which you are not the creator of.', function() {
         frisby.create(this.description)
@@ -788,5 +802,21 @@ describe('Firm Up Activity', function() {
                 ]
             })
             .toss();
+    });
+
+    it('should confirm voted users.', function() {
+        frisby.create(this.description + "dB")
+            .post("http://localhost:8529/_db/fiplus/_api/traversal",
+            {
+                startVertex: 'activity/7',
+                graphName: 'fiplus',
+                direction: 'inbound',
+                edgeCollection: 'confirmed',
+                maxDepth: 1
+            }, {json: true})
+            .expectJSON('result.visited.vertices.?',
+            {
+                _key: "4"
+            });
     });
 });

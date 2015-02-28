@@ -72,6 +72,20 @@ var user3 = db.user.save({
     }
 });
 
+// used for confirm voted for suggestion users
+var user4 = db.user.save({
+    "_key": "4",
+    "user": "test4@data.com",
+    "userData" :
+    {
+        "username": "four",
+        "profile_pic": "any",
+        "age": 22,
+        "gender": "female",
+        "location_proximity_setting": true
+    }
+});
+
 // Location test data
 var loc1 = db.location.save({"latitude": 100,"longitude": 100});
 var loc2 = db.location.save({"latitude": 50,"longitude": 100});
@@ -285,6 +299,7 @@ db.joined.save(user1, act2, {});
 db.joined.save(user3, act2, {});
 db.joined.save(defaultUser, act3, {});
 db.joined.save(defaultUser, act8, {});
+db.joined.save(user4, act7, {});
 
 // Tagged
 db.tagged.save(act1, int1, {});
@@ -316,4 +331,5 @@ db.suggested.save(activity1, sug1, {});
 db.suggested.save(activity1, sug3, {});
 db.suggested.save(activity2, sug3, {});
 
-// Favourite users
+// used for confirm voted for suggestion users.
+db.voted.save(user4, timeSug4, {});
