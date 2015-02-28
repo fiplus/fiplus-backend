@@ -6,6 +6,7 @@ var user = require('db-interface/node/user');
 var underscore = require('underscore');
 var helper = require('db-interface/util/helper');
 var query = require('db-interface/util/query');
+var favourited = require('db-interface/edge/favourited');
 
 (function() {
     "use strict";
@@ -61,6 +62,29 @@ var query = require('db-interface/util/query');
                 //Only push to user_activities_array if we didn't meet the num_activities requirement yet
                 if (activities.length < num_activities_requested) {
                     addIfNotExist(activity_node, activities);
+                }
+            });
+        }
+        return activities;
+    };
+
+    function matchActivitiesWithUserFavourites(user_object, num_activities_requested){
+        var user_favourites_array = (new favourited.Favourited()).getUserFavouritesID(user_object._id);
+        var user_favourites_array_length = user_favourites_array.length;
+        var activities = [];
+        var favourited_user_id;
+
+        for (var i = 0; i < user_favourites_array_length; i++) {
+            favourited_user_id = user_favourites_array[i];
+            //Get available activities associated with the given favourites
+            var activity_nodes = query.getActivitiesOfFavourite(favourited_user_id);
+            activity_nodes.forEach(function(activity_node) {
+                //Only push to user_activities_array if we didn't meet the num_activities requirement yet
+                if (activities.length < num_activities_requested) {
+                    var act = helper.getActivity(activity_node);
+                    if(underscore.findWhere(activities, activity_node) == null) {
+                        activities.push(act);
+                    }
                 }
             });
         }
