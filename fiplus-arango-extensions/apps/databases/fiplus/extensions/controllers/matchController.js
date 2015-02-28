@@ -37,6 +37,16 @@ var query = require('db-interface/util/query');
         }
     });
 
+    function addIfNotExist(activity_node, activities){
+        var found = activities.some(function (el) {
+            return el.activity_id === activity_node._key;
+        });
+        if (!found) {
+            var act = helper.getActivity(activity_node);
+            activities.push(act);
+        }
+    };
+
     function matchActivitiesWithUserInterests(user_object, num_activities_requested){
         var user_interests_array = query.getInterestsOfUser(user_object._id);
         var user_interests_array_length = user_interests_array.length;
@@ -50,10 +60,7 @@ var query = require('db-interface/util/query');
             activity_nodes.forEach(function(activity_node) {
                 //Only push to user_activities_array if we didn't meet the num_activities requirement yet
                 if (activities.length < num_activities_requested) {
-                    var act = helper.getActivity(activity_node);
-                    if(underscore.findWhere(activities, activity_node) == null) {
-                        activities.push(act);
-                    }
+                    addIfNotExist(activity_node, activities);
                 }
             });
         }
@@ -67,10 +74,7 @@ var query = require('db-interface/util/query');
 
         for (var i = 0; i < activity_list_length; i++) {
             var activity_node = activity_list[i];
-            var act = helper.getActivity(activity_node);
-            if (underscore.findWhere(activities, activity_node) == null) {
-                activities.push(act);
-            }
+            addIfNotExist(activity_node, activities);
         }
         return activities;
     };
