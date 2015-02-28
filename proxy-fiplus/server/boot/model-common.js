@@ -43,8 +43,8 @@ Activity.allow_joiner_input = Boolean;
 Activity.num_attendees = Number;
 Activity.creator = String;
 Activity.tagged_interests = [String];
-Activity.suggested_times = ['Time'];
-Activity.suggested_locations = ['Location'];
+Activity.times = ['Time'];
+Activity.locations = ['Location'];
 exports.Activity = Activity;
 
 var Favourites = function(){};
@@ -98,3 +98,10 @@ var CreateActivityResponse = function(){};
 CreateActivityResponse.activity_id = String;
 CreateActivityResponse.Name = String;
 exports.CreateActivityResponse = CreateActivityResponse;
+
+var FirmUpResponse = function(){};
+FirmUpResponse.activity_id = String;
+FirmUpResponse.Name = String;
+FirmUpResponse.time = 'Time';
+FirmUpResponse.location = 'Location';
+exports.FirmUpResponse = FirmUpResponse;

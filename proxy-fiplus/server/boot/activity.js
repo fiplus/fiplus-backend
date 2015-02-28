@@ -46,7 +46,6 @@ activity.afterRemote('createActivity', function(ctx, model, next) {
   ctx.res.end();
 });
 
-
 activity.getActivity = function(id, req, cb) {
 
   request({
@@ -334,5 +333,44 @@ activity.afterRemote('unjoinActivity', function(ctx, model, next) {
   ctx.res.end();
 });
 
-app.model(activity); 
 
+activity.firmUpSuggestion = function(activityId, suggestionId, req, cb) {
+
+  request({
+    url: fwd.FIPLUS_BASE_URL + '/activity/' + activityId + '/confirm/' + suggestionId,
+    method: 'POST',
+    headers: {
+      cookie: req.get('Cookie')
+    },
+    body: req.body,
+    json: true
+  }, function(e, response) {
+    if(e)
+    {
+      console.log(e);
+    }
+    else
+    {
+      fwd.saveArangoResponse(response);
+
+      // No error so 1st arg = null
+      cb(null, response.body);
+    }
+  });
+};
+
+activity.firmUpSuggestion.shared = true;
+activity.firmUpSuggestion.accepts = [
+  {arg:'activityId', type: 'string', http:{source:'path'}},
+  {arg:'suggestionId', type: 'string', http:{source:'path'}},
+  {arg:'req', type:'object',http:{source:'req'}}
+];
+activity.firmUpSuggestion.http = {verb: 'POST', path: '/:activityId/confirm/:suggestionId'};
+activity.firmUpSuggestion.description = 'Firms up (confirms) specified suggestion';
+activity.afterRemote('firmUpSuggestion', function(ctx, model, next) {
+  fwd.forwardResponse(ctx.res);
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
+});
+
+app.model(activity);

@@ -6,6 +6,7 @@ var tagger = require('db-interface/edge/tagged').Tagged;
 var suggester = require('db-interface/edge/suggested').Suggested;
 var joiner = require('db-interface/edge/joined').Joined;
 var voted = require('db-interface/edge/voted').Voted;
+var confirmer = require('db-interface/edge/confirmed').Confirmed;
 var actor = require('db-interface/node/activity').Activity;
 var user = require('db-interface/node/user').User;
 var error = require('error');
@@ -29,6 +30,11 @@ var helper = require('db-interface/util/helper');
         })
         .errorResponse(error.GenericError, error.GenericError.code, 'Server Error', function(e) {
             return {
+                error: e.message
+            }
+        })
+        .errorResponse(error.UnauthorizedError, error.UnauthorizedError.code, 'Authentication Error', function(e) {
+            return{
                 error: e.message
             }
         });
@@ -56,7 +62,7 @@ var helper = require('db-interface/util/helper');
         var creator_id = 'user/' + activity.get('creator');
         var uid = req.session.get('uid');
         if (uid != creator_id) {
-            throw new error.UnauthorizedError(uid, "createActivity with creator " + creator_id)
+            throw new error.UnauthorizedError(uid, "createActivity with creator " + creator_id);
         }
 
         var Creator = new creator();
@@ -74,16 +80,33 @@ var helper = require('db-interface/util/helper');
         }
 
         var Suggester = new suggester();
-        var times = activity.get('suggested_times');
-        for (var i = 0; i < times.length; i++) {
+        var Confirmer = new confirmer();
+        var times = activity.get('times');
+        for (var i = 0; i < times.length; i++)
+        {
             var time = times[i];
-            Suggester.saveSuggestedTimeEdge(activity_id, time.start, time.end);
+            if(time.suggestion_id == "-1")
+            {
+                Confirmer.saveConfirmedTime(activity_id, times.start, times.end);
+            }
+            else
+            {
+                Suggester.saveSuggestedTimeEdge(activity_id, time.start, time.end);
+            }
         }
 
-        var locations = activity.get('suggested_locations');
-        for (var i = 0; i < locations.length; i++) {
+        var locations = activity.get('locations');
+        for (var i = 0; i < locations.length; i++)
+        {
             var location = locations[i];
-            Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude);
+            if(location.suggestion_id == "-1")
+            {
+                Confirmer.saveConfirmedLocation(activity_id, location.latitude, location.longitude);
+            }
+            else
+            {
+                Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude);
+            }
         }
 
         // Return the activity key and name value so that push notifications can be sent for activity
@@ -103,6 +126,7 @@ var helper = require('db-interface/util/helper');
 
         var activity_node = (new actor()).get(activity_id);
         var activity = helper.getActivity(activity_node);
+
         res.json(activity);
     }).pathParam('activityid', {
         type: joi.string(),
@@ -158,17 +182,42 @@ var helper = require('db-interface/util/helper');
         description: 'The user to remove from activity'
     }).onlyIfAuthenticated();
 
-    controller.post('/:activity_id/time/:time_id/user/:user_id', function(req, res) {
+    /*
+     * firmUpSuggestion
+     */
+    controller.post('/:activityId/confirm/:suggestionId', function(req, res) {
+        var activityId = 'activity/' + req.params('activityId');
+        var suggestionId = 'suggestion/' + req.params('suggestionId');
 
-    }).pathParam('activity_id', {
+        (new actor()).exists(activityId);
+
+        // Check privilege: only creators can firm up
+        var user_id = req.session.get('uid');
+        var creator_id = 'user/' + (new creator()).getCreator(activityId);
+        if(user_id != creator_id)
+        {
+            throw new error.UnauthorizedError(user_id, 'Firm Up');
+        }
+
+        // Add confirmed edge
+        var Confirmer = new confirmer();
+        var result = Confirmer.saveConfirmed(activityId, suggestionId);
+
+        // Return the activity key and name value so that push notifications can be sent for activity
+        // Note: a confirmed time and location sent one after the other will trigger 2 push notifications.
+        var FirmUpResponse = new model_common.FirmUpResponse();
+        FirmUpResponse.activity_id = activityId.split('/')[1];
+        FirmUpResponse.Name = (new actor).get(activityId).Name;
+        FirmUpResponse.time = Confirmer.getConfirmedTime(activityId);
+        FirmUpResponse.location = Confirmer.getConfirmedLocation(activityId);
+
+        res.json(JSON.stringify(FirmUpResponse));
+    }).pathParam('activityId', {
         type: joi.string(),
         description: 'The activity to confirm for'
-    }).pathParam('time_id', {
+    }).pathParam('suggestionId', {
         type: joi.string(),
         description: 'The time to confirm for'
-    }).pathParam('user_id', {
-        type: joi.string(),
-        description: 'The user that is confirming'
     }).onlyIfAuthenticated();
 
     /*
@@ -240,16 +289,6 @@ var helper = require('db-interface/util/helper');
     }).pathParam('suggestionId', {
         type: joi.string(),
         description: 'The suggestion id being voted for'
-    }).onlyIfAuthenticated();
-
-    controller.post('/:activity_id/location/:location_id', function(req, res) {
-
-    }).pathParam('activity_id', {
-        type: joi.string(),
-        description: 'The activity to confirm location for'
-    }).pathParam('location_id', {
-        type: joi.string(),
-        description: 'The location to confirm for'
     }).onlyIfAuthenticated();
 
     controller.put('/comment', function(req, res) {
