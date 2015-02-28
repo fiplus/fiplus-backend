@@ -370,6 +370,10 @@ activity.firmUpSuggestion.description = 'Firms up (confirms) specified suggestio
 activity.afterRemote('firmUpSuggestion', function(ctx, model, next) {
   fwd.forwardResponse(ctx.res);
   ctx.res.send(ctx.res.body);
+  if(ctx.res.statusCode == 200)
+  {
+    push.SendNotificationOnFirmUp(ctx.res.body);
+  }
   ctx.res.end();
 });
 
