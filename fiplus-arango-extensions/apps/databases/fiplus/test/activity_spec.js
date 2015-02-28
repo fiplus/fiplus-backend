@@ -804,7 +804,7 @@ describe('Firm Up Activity', function() {
             .toss();
     });
 
-    it('should confirm voted users.', function() {
+    it('should confirm voted users', function() {
         frisby.create(this.description + "dB")
             .post("http://localhost:8529/_db/fiplus/_api/traversal",
             {
@@ -817,6 +817,12 @@ describe('Firm Up Activity', function() {
             .expectJSON('result.visited.vertices.?',
             {
                 _key: "4"
-            });
+            })
+            .afterJSON(function(response) {
+                expect(JSON.stringify(response)).not.toContain("_key: '101'");
+                expect(JSON.stringify(response)).not.toContain("_key: '5'");
+                expect(JSON.stringify(response)).not.toContain("_key: '6'");
+            })
+            .toss();
     });
 });

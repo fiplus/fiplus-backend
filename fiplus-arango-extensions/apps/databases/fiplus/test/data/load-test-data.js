@@ -86,6 +86,34 @@ var user4 = db.user.save({
     }
 });
 
+// used for not confirm voted for suggestion users b/c only voted for one
+var user5 = db.user.save({
+    "_key": "5",
+    "user": "test5@data.com",
+    "userData" :
+    {
+        "username": "five",
+        "profile_pic": "any",
+        "age": 22,
+        "gender": "female",
+        "location_proximity_setting": true
+    }
+});
+
+// used for not confirm voted for suggestion users b/c only voted for other sugs
+var user6 = db.user.save({
+    "_key": "6",
+    "user": "test6@data.com",
+    "userData" :
+    {
+        "username": "six",
+        "profile_pic": "any",
+        "age": 22,
+        "gender": "female",
+        "location_proximity_setting": true
+    }
+});
+
 // Location test data
 var loc1 = db.location.save({"latitude": 100,"longitude": 100});
 var loc2 = db.location.save({"latitude": 50,"longitude": 100});
@@ -245,6 +273,9 @@ var timeSug3 = db.suggestion.save({_key:'6'});
 var timeSug4 = db.suggestion.save({_key:'10'});
  db.suggested.save(act7, timeSug4, {});
  db.is.save(timeSug4, tp3, {});
+var timeSug5 = db.suggestion.save({_key:'13'});
+db.suggested.save(act7, timeSug5, {});
+db.is.save(timeSug5, tp4, {});
 
 // Location Suggestions
 var sug2 = db.suggestion.save({_key:'2'});
@@ -300,6 +331,8 @@ db.joined.save(user3, act2, {});
 db.joined.save(defaultUser, act3, {});
 db.joined.save(defaultUser, act8, {});
 db.joined.save(user4, act7, {});
+db.joined.save(user5, act7, {});
+db.joined.save(user6, act7, {});
 
 // Tagged
 db.tagged.save(act1, int1, {});
@@ -333,3 +366,7 @@ db.suggested.save(activity2, sug3, {});
 
 // used for confirm voted for suggestion users.
 db.voted.save(user4, timeSug4, {});
+db.voted.save(user4, locSug8, {});
+db.voted.save(user5, timeSug4, {});
+db.voted.save(user6, locSug7, {});
+db.voted.save(user6, timeSug5, {});

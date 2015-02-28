@@ -53,20 +53,67 @@ function save(activityId, suggestedId, is_time)
     return result;
 }
 
-// confirm all users that have voted for the event
-function confirmVoters(activityId, suggestionId)
+// returns true if the activity has been confirmed (both time and location). False otherwise
+function isConfirmed(activityId)
 {
-    // find all voters of the suggestion
-    db.voted.inEdges(suggestionId).forEach(function(edge)
+    var time_sug, loc_sug;
+    db.confirmed.outEdges(activityId).forEach(function(edge)
     {
-        var voter_id = edge._from;
-        // create a confirmed edge between user and activity
-        var result = db.confirmed.save(voter_id, activityId, {});
-        if(result.error == true)
+        var id = edge._to;
+        if((id.split('/')[0] ==  "time_period"))
         {
-            throw new error.GenericError('Saving confirmation for voter failed.');
+            db.is.inEdges(id).forEach(function (edge) {
+                var sug = edge._from;
+                if(db.suggested.firstExample({"_from":activityId, "_to":sug}) != null)
+                {
+                    time_sug = sug;
+                }
+            });
+        }
+        else if((id.split('/')[0] ==  "location"))
+        {
+            db.is.inEdges(id).forEach(function (edge) {
+                var sug = edge._from;
+                if(db.suggested.firstExample({"_from":activityId, "_to":sug}) != null)
+                {
+                    loc_sug = sug;
+                }
+            });
         }
     });
+
+    return{
+        confirmed: (time_sug != null && loc_sug != null),
+        time_sug: time_sug,
+        loc_sug: loc_sug
+    };
+}
+
+
+// confirm all users that have voted for the event
+function confirmVoters(activityId)
+{
+    var isConfirm = isConfirmed(activityId);
+    if(isConfirm.confirmed)
+    {
+        // find all voters of the suggestion
+        db.voted.inEdges(isConfirm.time_sug).forEach(function(edge)
+        {
+            var voter_id = edge._from;
+            // if user voted for both time and location, confirm
+            if (db.voted.firstExample({"_from": voter_id, "_to": isConfirm.loc_sug}) != null)
+            {
+                if(db.confirmed.firstExample({"_from": voter_id, "_to": activityId}) == null)
+                {
+                    var result = db.confirmed.save(voter_id, activityId, {});
+                    if (result.error == true)
+                    {
+                        throw new error.GenericError('Saving confirmation for voter failed.');
+                    }
+                }
+            }
+        });
+    }
 }
 
 Confirmed.prototype.saveConfirmed = function(activityId, suggestionId)
@@ -79,7 +126,7 @@ Confirmed.prototype.saveConfirmed = function(activityId, suggestionId)
     var id = db.is.outEdges(suggestionId)[0]._to;
     var is_time = (id.split('/')[0] ==  "time_period");
     var result = save(activityId, id, is_time);
-    confirmVoters(activityId, suggestionId);
+    confirmVoters(activityId);
     return result;
 };
 
@@ -88,7 +135,7 @@ Confirmed.prototype.saveConfirmedTime = function(activityId, start_time, end_tim
     var period_node = (new period()).saveTimePeriod(start_time, end_time);
 
     var result = save(activityId, period_node._id, true);
-    confirmVoters(activityId, suggestionId);
+    confirmVoters(activityId);
     return result;
 };
 
@@ -97,7 +144,7 @@ Confirmed.prototype.saveConfirmedLocation = function(activityId, latitude, longi
     var loc_node = (new location()).saveLocation(latitude, longitude);
 
     var result = save(activityId, loc_node._id, false);
-    confirmVoters(activityId, suggestionId);
+    confirmVoters(activityId);
     return result;
 };
 
