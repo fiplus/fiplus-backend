@@ -53,6 +53,76 @@ describe("Create activity", function () {
             })
             .toss();
     });
+
+    it("should create events with confirmed date and time and confirm creator", function () {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Acts',
+            {
+                "Name" : "Another Event",
+                "description" : "My Nth event",
+                "max_attendees" : "1000",
+                "allow_joiner_input" : false,
+                "creator" : "101",
+                "tagged_interests": ["Basketball"],
+                "times" : [
+                    {
+                        suggestion_id : "-1",
+                        "start" : "253416421800000",
+                        "end" : "253416429000000"
+                    } // 12/6/10000, 10:30 - 12:30
+                ],
+                "locations": [
+                    {
+                        suggestion_id : "-1",
+                        "latitude" : 56,
+                        "longitude" : -96
+                    } // Canada
+                ]
+            }, {json: true})
+            .expectStatus(200)
+            .afterJSON(function(res) {
+                activity_id = res.activity_id;
+                frisby.create(this.description + "dB")
+                    .post("http://localhost:8529/_db/fiplus/_api/traversal",
+                    {
+                        startVertex: 'activity/' + activity_id,
+                        graphName: 'fiplus',
+                        direction: 'outbound',
+                        edgeCollection: 'confirmed',
+                        maxDepth: 3
+                    }, {json: true})
+                    .expectJSON('result.visited.vertices.?',
+                    {
+                        value : "253416421800000"
+                    })
+                    .expectJSON('result.visited.vertices.?',
+                    {
+                        value : "253416429000000"
+                    })
+                    .expectJSON('result.visited.vertices.?',
+                    {
+                        "latitude" : 56,
+                        "longitude" : -96
+                    })
+                    .toss();
+                frisby.create(this.description + "dB")
+                    .post("http://localhost:8529/_db/fiplus/_api/traversal",
+                    {
+                        startVertex: 'activity/' + activity_id,
+                        graphName: 'fiplus',
+                        direction: 'inbound',
+                        edgeCollection: 'confirmed',
+                        maxDepth: 1
+                    }, {json: true})
+                    .expectJSON('result.visited.vertices.?',
+                    {
+                        "_key" : "101"
+                    })
+                    .toss();
+            })
+            .toss();
+
+    });
 });
 
 describe("Cancel Activity Tests", function() {
@@ -759,7 +829,8 @@ describe('Firm Up Activity', function() {
             {
                 latitude: 150,
                 longitude: 150
-            });
+            })
+            .toss();
     });
     it('should not allow confirming an activity which you are not the creator of.', function() {
         frisby.create(this.description)

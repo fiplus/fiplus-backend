@@ -99,7 +99,7 @@ var defines = require('db-interface/util/defines');
 
                     if(time.suggestion_id == "-1")
                     {
-                        Confirmer.saveConfirmedTime(activity_id, times.start, times.end);
+                        Confirmer.saveConfirmedTime(activity_id, time.start, time.end);
                     }
                     else
                     {
@@ -119,6 +119,11 @@ var defines = require('db-interface/util/defines');
                     {
                         Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude);
                     }
+        }
+
+        if(Confirmer.isConfirmed(activity_id).confirmed)
+        {
+            Confirmer.confirmUser(creator_id, activity_id);
                 }
 
                 // Return the activity key and name value so that push notifications can be sent for activity
