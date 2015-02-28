@@ -57,7 +57,12 @@ var helper = require('db-interface/util/helper');
             User = new user();
 
         var password = auth.hashPassword(credentials.get('password'));
-        User.createUser(email, {}, password);
+        var createdUser = User.createUser(email, {}, password);
+
+        // Adding an 'All' interest by default enabling notifications for all events etc.
+        // until they remove this from their profile. This ensures that by default the application
+        // will be engaging to the user, with the ability to throttle that engagement if desired.
+        (new interested_in.InterestedIn()).saveUserInterest(createdUser.get('_id'), 'All');
 
         req.session.get('sessionData').username = email;
         req.session.setUser(User.resolve(email));
