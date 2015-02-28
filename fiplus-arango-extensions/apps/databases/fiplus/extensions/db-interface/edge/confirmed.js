@@ -17,76 +17,66 @@ var Confirmed = function()
     this.TO_FIELD = '_to';
 };
 
-Confirmed.prototype.saveConfirmed = function(activityId, suggestionId)
+function save(activityId, suggested_id, is_time)
 {
     if(!db.activity.exists(activityId))
     {
         throw new error.NotFoundError('Activity')
     }
+
+    // delete existing time or location confirmation accordingly
+    db.confirmed.outEdges(activityId).forEach(function (edge)
+    {
+        if(edge._to.split('/')[0] ==  "time_period")
+        {
+            if(is_time)
+            {
+                db.confirmed.remove(edge._key);
+            }
+        }
+        else if(edge._to.split('/')[0] ==  "location")
+        {
+            if(!is_time)
+            {
+                db.confirmed.remove(edge._key);
+            }
+        }
+    });
+
+    // save confirmation
+    var result = db.confirmed.save(activityId, suggested_id, {});
+    if(result.error == true)
+    {
+        throw new error.GenericError('Saving confirmation for suggestion failed.');
+    }
+    return result;
+}
+
+
+Confirmed.prototype.saveConfirmed = function(activityId, suggestionId)
+{
     if(!db.suggestion.exists(suggestionId))
     {
         throw new error.NotFoundError('Suggestion');
     }
 
     var id = db.is.outEdges(suggestionId)[0]._to;
-
-    // restrict one location/time confirmation
-    var hasTime = false, hasLoc = false;
-    db.confirmed.outEdges(activityId).forEach(function (edge)
-    {
-        if(edge._to.indexOf("location") > -1)
-        {
-            hasLoc = true;
-        }
-        else
-        {
-            hasTime = true;
-        }
-    });
-
-    // save confirmation
-    var result = db.confirmed.save(activityId, id, {});
-    if(result.error == true)
-    {
-        throw new error.GenericError('Saving confirmation for suggestion failed.');
-    }
-    return result;
+    var is_time = (id.split('/')[0] ==  "time_period")
+    return save(activityId, id, is_time);
 };
 
 Confirmed.prototype.saveConfirmedTime = function(activityId, start_time, end_time)
 {
-    if(!db.activity.exists(activityId))
-    {
-        throw new error.NotFoundError('Activity')
-    }
-
     var period_node = (new period()).saveTimePeriod(start_time, end_time);
 
-    // save confirmation
-    var result = db.confirmed.save(activityId, period_node._id, {});
-    if(result.error == true)
-    {
-        throw new error.GenericError('Saving confirmation for suggestion failed.');
-    }
-    return result;
+    return save(activityId, period_node._id, true);
 };
 
 Confirmed.prototype.saveConfirmedLocation = function(activityId, latitude, longitude)
 {
-    if(!db.activity.exists(activityId))
-    {
-        throw new error.NotFoundError('Activity')
-    }
-
     var loc_node = (new location()).saveLocation(latitude, longitude);
 
-    // save confirmation
-    var result = db.confirmed.save(activityId, loc_node._id, {});
-    if(result.error == true)
-    {
-        throw new error.GenericError('Saving confirmation for suggestion failed.');
-    }
-    return result;
+    return save(activityId, loc_node._id, false);
 };
 
 Confirmed.prototype.getConfirmedTime = function(activity_id)
@@ -107,6 +97,7 @@ Confirmed.prototype.getConfirmedTime = function(activity_id)
             time.end = db.time_stamp.document(end)[Stamp.VALUE_FIELD];
         }
     }
+
     return time;
 };
 

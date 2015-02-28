@@ -96,6 +96,7 @@ var defines = require('db-interface/util/defines');
                 for (var i = 0; i < times.length; i++)
                 {
                     var time = times[i];
+
                     if(time.suggestion_id == "-1")
                     {
                         Confirmer.saveConfirmedTime(activity_id, times.start, times.end);
@@ -226,7 +227,7 @@ var defines = require('db-interface/util/defines');
                 var result = Confirmer.saveConfirmed(activityId, suggestionId);
 
                 // Return the activity key and name value so that push notifications can be sent for activity
-                // Note: a confirmed time and location sent one after the other will trigger 2 push notifications.
+                // FIXME: a confirmed time and location sent one after the other will trigger 2 push notifications.
                 var FirmUpResponse = new model_common.FirmUpResponse();
                 FirmUpResponse.activity_id = activityId.split('/')[1];
                 FirmUpResponse.Name = (new actor).get(activityId).Name;

@@ -782,8 +782,8 @@ describe('Firm Up Activity', function() {
                 "locations": [
                     {
                         "suggestion_id": "-1",
-                        "longitude": 100,
-                        "latitude": 50
+                        "longitude": 150,
+                        "latitude": 150
                     }
                 ]
             })
