@@ -357,14 +357,9 @@ var helper = require('db-interface/util/helper');
         var activity_id = 'activity/' + request.params('activityid');
 
         var uid = request.session.get('uid');
-        require('console').log(uid);
-        var createdEdge = {};
-        createdEdge._from = uid;
-        createdEdge._to = activity_id;
-        var result = db.created.firstExample(createdEdge);
-        if(result == null)
+        if(uid.split('/')[1] != (new creator()).getCreator(activity_id))
         {
-            throw new error.NotAllowedError('Cancelling activity by non-creator');
+            throw new error.UnauthorizedError('Cancelling activity by non-creator');
         }
 
         (new actor()).cancelActivity(activity_id);

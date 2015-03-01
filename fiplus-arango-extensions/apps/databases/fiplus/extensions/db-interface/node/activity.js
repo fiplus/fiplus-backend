@@ -26,6 +26,7 @@ Activity.prototype.saveActivityToDb = function(name, description, maximum_attend
     activityObject[this.DESCRIPTION_FIELD] = description;
     activityObject[this.MAXIMUM_ATTENDANCE_FIELD] = maximum_attendance;
     activityObject[this.ALLOW_JOINER_INPUT] = allow_joiner_input;
+    activityObject[this.IS_CANCELLED] = false;
 
     var result = this.db.activity.save(activityObject);
     if(result.error == true)

@@ -78,7 +78,7 @@ describe("Cancel Activity Tests", function() {
 
                 frisby.create('cancels')
                     .delete("https://localhost:3001/api/Acts/6")
-                    .expectStatus(400)
+                    .expectStatus(401)
                     .toss();
             })
             .toss();
@@ -530,6 +530,7 @@ describe('Suggestion Vote', function() {
                 "description": "activity 3",
                 "max_attendees": 3,
                 allow_joiner_input: false,
+                is_cancelled: false,
                 "num_attendees": 3,
                 "creator": "3",
                 "tagged_interests": [
@@ -562,6 +563,7 @@ describe('Get Activity', function() {
                 "description": "activity 2",
                 "max_attendees": 0,
                 allow_joiner_input: false,
+                is_cancelled: false,
                 "num_attendees": 3,
                 "creator": "2",
                 "tagged_interests": [

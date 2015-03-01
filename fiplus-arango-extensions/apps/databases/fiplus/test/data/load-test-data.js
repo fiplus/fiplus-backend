@@ -149,7 +149,8 @@ var act2 = db.activity.save({
     Name:'A2',
     description:'activity 2',
     max_attendees:0,
-    allow_joiner_input: false
+    allow_joiner_input: false,
+    is_cancelled: false
 });
 
 var act3 = db.activity.save({
@@ -157,7 +158,8 @@ var act3 = db.activity.save({
     Name:'A3',
     description:'activity 3',
     max_attendees:3,
-    allow_joiner_input: false
+    allow_joiner_input: false,
+    is_cancelled: false
 });
 
 var act4 = db.activity.save({
@@ -165,7 +167,8 @@ var act4 = db.activity.save({
     Name:'A4',
     description:'activity 4',
     max_attendees:5,
-    allow_joiner_input: false
+    allow_joiner_input: false,
+    is_cancelled: false
 });
 
 var act5 = db.activity.save({
@@ -173,7 +176,8 @@ var act5 = db.activity.save({
     Name:'A5',
     description:'activity 5',
     max_attendees:5,
-    allow_joiner_input: false
+    allow_joiner_input: false,
+    is_cancelled: false
 });
 
 var act6 = db.activity.save({
@@ -181,7 +185,8 @@ var act6 = db.activity.save({
     Name:'A6',
     description:'activity 6',
     max_attendees:6,
-    allow_joiner_input: false
+    allow_joiner_input: false,
+    is_cancelled: false
 });
 
 // Used for FirmUp testing
@@ -190,7 +195,8 @@ var act7 = db.activity.save({
     Name:'A7',
     description:'activity 7',
     max_attendees:0,
-    allow_joiner_input: false
+    allow_joiner_input: false,
+    is_cancelled: false
 });
 
 // Used for unjoin testing
@@ -199,7 +205,8 @@ var act8 = db.activity.save({
     Name:'A8',
     description:'activity 8',
     max_attendees:6,
-    allow_joiner_input: false
+    allow_joiner_input: false,
+    is_cancelled: false
 });
 
 var activity1 = db.activity.save({Name:'BasketballNW'});

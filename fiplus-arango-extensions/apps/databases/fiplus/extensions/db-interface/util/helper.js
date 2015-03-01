@@ -26,6 +26,7 @@ exports.getActivity = function(activity_node)
     activity.num_attendees = (new joiner()).getNumJoiners(activity_node._id);
     activity.creator = (new creator()).getCreator(activity_node._id);
     activity.tagged_interests = (new tagger()).getTags(activity_node._id);
+    activity.is_cancelled = activity_node[Actor.IS_CANCELLED];
 
     var Suggester = new suggester();
     var Confirmer = new confirmer();
