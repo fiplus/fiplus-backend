@@ -5,3 +5,12 @@ var NewActivityMessage = function(activityId, message) {
   this.message = message;
 };
 exports.NewActivityMessage = NewActivityMessage;
+
+var FirmUpMessage = function(activityId, Name, time, location) {
+  this.type = 'firm_up';
+  this.activityId = activityId;
+  this.Name = Name;
+  this.time = time;
+  this.location = location;
+};
+exports.FirmUpMessage = FirmUpMessage;
