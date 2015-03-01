@@ -2,7 +2,7 @@ var frisby = require('frisby');
 
 // Test setup - Login as default user
 frisby.create(this.description)
-    .post('http://localhost:3001/api/Users/login',
+    .post('https://localhost:3001/api/Users/login',
     {
         "email": "1234@data.com",
         "password": "1234"
@@ -25,7 +25,7 @@ frisby.create(this.description)
 describe("Configure User Profile", function () {
     it("should add information to the user's profile", function () {
         frisby.create(this.description)
-            .put('http://localhost:3001/api/Users/profile',
+            .put('https://localhost:3001/api/Users/profile',
             {
                 "email": "1234@data.com",
                 username: '1234',
@@ -107,7 +107,7 @@ describe("Configure User Profile", function () {
 describe('Get User Profile', function () {
     it('should return this user\'s profile.', function () {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Users/profile/101', {})
+            .get('https://localhost:3001/api/Users/profile/101', {})
             .expectStatus(200)
             .expectJSON(
             {
@@ -141,7 +141,7 @@ describe('Get User Profile', function () {
     });
     it('should return another user\'s profile.', function () {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Users/profile/2', {})
+            .get('https://localhost:3001/api/Users/profile/2', {})
             .expectStatus(200)
             .expectJSON(
             {
@@ -158,7 +158,7 @@ describe('Get User Profile', function () {
 describe('Set User device ids', function() {
     it('add device id', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Users/device', {
+            .post('https://localhost:3001/api/Users/device', {
                 current_device_id: '',
                 new_device_id: '3'
             }, {json:true})
@@ -177,7 +177,7 @@ describe('Set User device ids', function() {
 
     it('update device id', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Users/device', {
+            .post('https://localhost:3001/api/Users/device', {
                 current_device_id: '3',
                 new_device_id: '4'
             }, {json:true})
@@ -198,7 +198,7 @@ describe('Set User device ids', function() {
 describe('Who Am I', function () {
     it('should return the current user.', function () {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Users/whoami', {})
+            .get('https://localhost:3001/api/Users/whoami', {})
             .expectStatus(200)
             .expectJSON(
             {
@@ -211,21 +211,21 @@ describe('Who Am I', function () {
 describe('Test user favourites', function() {
     it('add user to favourites', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Users/favourites/1', {json:true})
+            .post('https://localhost:3001/api/Users/favourites/1', {json:true})
             .expectStatus(200)
             .toss();
     });
 
     it('add user to favourites', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Users/favourites/3', {json:true})
+            .post('https://localhost:3001/api/Users/favourites/3', {json:true})
             .expectStatus(200)
             .toss();
     });
 
     it('get favourites of logged in user with limit', function() {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Users/favourites?Limit=2', {})
+            .get('https://localhost:3001/api/Users/favourites?Limit=2', {})
             .expectStatus(200)
             .expectJSON(
             {
@@ -252,14 +252,14 @@ describe('Test user favourites', function() {
 
     it('delete user from favourites', function() {
         frisby.create(this.description)
-            .delete('http://localhost:3001/api/Users/favourites/3', {json:true})
+            .delete('https://localhost:3001/api/Users/favourites/3', {json:true})
             .expectStatus(200)
             .toss();
     });
 
     it('get favourites of logged in user without putting a limit. Also confirms that delete worked.', function() {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Users/favourites?', {})
+            .get('https://localhost:3001/api/Users/favourites?', {})
             .expectStatus(200)
             .expectJSON(
             {
