@@ -51,8 +51,8 @@ exports.getDeviceIdsJoinedActivity = function(activity_id, cb)
 
   dbconn.query("let devices = (" +
   "for j in graph_edges('fiplus', @activity, {edgeCollectionRestriction:'joined'}) " +
-  "for u in user " +
-  "filter u._id == j._from and u.userData.device_ids != null " +
+  "let u = document(j._from)" +
+  "filter u.userData.device_ids != null " +
   "return u.userData.device_ids) " +
   "return unique(flatten(devices))", {activity: 'activity/' + activity_id}, qCallback);
   return deviceIds;

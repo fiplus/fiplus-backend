@@ -34,11 +34,11 @@ describe("Create activity", function () {
                 "allow_joiner_input" : false,
                 "creator" : "101",
                 "tagged_interests": ["Basketball"],
-                "suggested_times" : [
+                "times" : [
                     { "start" : "253416421800000",
                         "end" : "253416429000000" } // 12/6/10000, 10:30 - 12:30
                 ],
-                "suggested_locations": [
+                "locations": [
                     {"latitude" : 56,
                         "longitude" : -96} // Canada
                 ]
@@ -445,7 +445,38 @@ describe('Suggestion Vote', function() {
             });
 
     });
+
+    it('should return activity information with updated vote counts for suggested time and location and corresponding suggestion id.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:3001/api/Acts/3',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "activity_id": "3",
+                "Name": "A3",
+                "description": "activity 3",
+                "max_attendees": 3,
+                allow_joiner_input: false,
+                "num_attendees": 3,
+                "creator": "3",
+                "tagged_interests": [
+                    "Soccer"
+                ],
+                "times": [
+                    {
+                        "suggestion_id": "1",
+                        "suggestion_votes": 1,
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    }
+                ],
+                "locations": [ ]
+            })
+            .toss();
+    });
 });
+
 describe('Get Activity', function() {
    it('should return activity information.', function() {
         frisby.create(this.description)
@@ -465,13 +496,13 @@ describe('Get Activity', function() {
                     "Hockey",
                     "Basketball"
                 ],
-                "suggested_times": [
+                "times": [
                     {
                         "start": 4102513200000,
                         "end": 4102516800000
                     }
                 ],
-                "suggested_locations": [
+                "locations": [
                     {
                         "longitude": 150,
                         "latitude": 150
@@ -479,42 +510,6 @@ describe('Get Activity', function() {
                     {
                         "longitude": 100,
                         "latitude": 50
-                    }
-                ]
-            })
-            .toss();
-    });
-    it('should return activity information with updated vote counts for suggested time and location and corresponding suggestion id.', function() {
-        frisby.create(this.description)
-            .get('http://localhost:3001/api/Acts/3',
-            {})
-            .expectStatus(200)
-            .expectJSON(
-            {
-                "activity_id": "3",
-                "Name": "A3",
-                "description": "activity 3",
-                "max_attendees": 3,
-                allow_joiner_input: false,
-                "num_attendees": 3,
-                "creator": "3",
-                "tagged_interests": [
-                    "Soccer"
-                ],
-                "suggested_times": [
-                    {
-                        "suggestion_id": "1",
-                        "suggestion_votes": 1,
-                        "start": 4102513200000,
-                        "end": 4102516800000
-                    }
-                ],
-                "suggested_locations": [
-                    {
-                        "suggestion_id": "2",
-                        "suggestion_votes": 1,
-                        "longitude": 150,
-                        "latitude": 150
                     }
                 ]
             })
@@ -580,6 +575,103 @@ describe('Get Attendees', function() {
                     "2",
                     "3",
                     "1"
+                ]
+            })
+            .toss();
+    });
+});
+
+describe('Firm Up Activity', function() {
+    it('should confirm existing time suggestion.', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Acts/7/confirm/10',
+            {})
+            .expectStatus(200)
+            .toss();
+        frisby.create(this.description + "dB")
+            .post("http://localhost:8529/_db/fiplus/_api/traversal",
+            {
+                startVertex: 'activity/2',
+                graphName: 'fiplus',
+                direction: 'outbound',
+                edgeCollection: 'confirmed',
+                maxDepth: 3
+            }, {json: true})
+            .expectJSON('result.visited.vertices.?',
+            {
+                value: 4102513200000
+            })
+            .expectJSON('result.visited.vertices.?',
+            {
+                value: 4102516800000
+            });
+    });
+    it('should confirm existing location suggestion.', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Acts/7/confirm/11',
+            {})
+            .expectStatus(200)
+            .toss();
+        frisby.create(this.description + "dB")
+            .post("http://localhost:8529/_db/fiplus/_api/traversal",
+            {
+                startVertex: 'activity/2',
+                graphName: 'fiplus',
+                direction: 'outbound',
+                edgeCollection: 'confirmed',
+                maxDepth: 3
+            }, {json: true})
+            .expectJSON('result.visited.vertices.?',
+            {
+                latitude: 50,
+                longitude: 100
+            });
+    });
+    it('should allow over-writing confirmation.', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Acts/7/confirm/12',
+            {})
+            .expectStatus(200)
+            .toss();
+    });
+    it('should not allow confirming an activity which you are not the creator of.', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Acts/2/confirm/6',
+            {})
+            .expectStatus(401)
+            .toss();
+    });
+    it('should not allow confirmation of non-existing suggestion.', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Acts/7/confirm/24',
+            {})
+            .expectStatus(404)
+            .toss();
+    });
+    it('Get Activity should return only confirmed activities.', function() {
+        frisby.create(this.description)
+            .get('http://localhost:3001/api/Acts/7',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "Name": "A7",
+                "description": "activity 7",
+                "max_attendees": 0,
+                "creator": "101",
+                "times": [
+                    {
+                        "suggestion_id": "-1",
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    }
+                ],
+                "locations": [
+                    {
+                        "suggestion_id": "-1",
+                        "longitude": 100,
+                        "latitude": 50
+                    }
                 ]
             })
             .toss();

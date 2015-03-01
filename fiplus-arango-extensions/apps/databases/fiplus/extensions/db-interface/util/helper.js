@@ -4,6 +4,7 @@ var suggester = require('db-interface/edge/suggested').Suggested;
 var voted = require('db-interface/edge/voted').Voted;
 var actor = require('db-interface/node/activity').Activity;
 var joiner = require('db-interface/edge/joined').Joined;
+var confirmer = require('db-interface/edge/confirmed').Confirmed;
 var user = require('db-interface/node/user').User;
 var interested_in = require('db-interface/edge/interested_in');
 var in_location = require('db-interface/edge/in_location');
@@ -25,10 +26,29 @@ exports.getActivity = function(activity_node)
     activity.num_attendees = (new joiner()).getNumJoiners(activity_node._id);
     activity.creator = (new creator()).getCreator(activity_node._id);
     activity.tagged_interests = (new tagger()).getTags(activity_node._id);
-    // TODO if there is a confirmed time/location, return an array of 1 with only the confirmed suggestion
+
     var Suggester = new suggester();
-    activity.suggested_times = Suggester.getSuggestedTimes(activity_node._id);
-    activity.suggested_locations = Suggester.getSuggestedLocations(activity_node._id);
+    var Confirmer = new confirmer();
+    var confirmedTime = Confirmer.getConfirmedTime(activity_node._id);
+    if(confirmedTime != null)
+    {
+        activity.times = [confirmedTime];
+    }
+    else
+    {
+        activity.times = Suggester.getSuggestedTimes(activity_node._id);
+    }
+
+    var confirmedLoc = Confirmer.getConfirmedLocation(activity_node._id);
+
+    if(confirmedLoc != null)
+    {
+        activity.locations = [confirmedLoc];
+    }
+    else
+    {
+        activity.locations = Suggester.getSuggestedLocations(activity_node._id);
+    }
     return activity;
 };
 

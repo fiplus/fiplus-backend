@@ -189,5 +189,17 @@ describe("Activity Requests", function () {
             {}, {json: true})
             .expectStatus(401)
             .toss();
+
+        frisby.create(this.description + "post un-join")
+            .delete('http://localhost:3001/api/Acts/1/user',
+            {}, {json: true})
+            .expectStatus(401)
+            .toss();
+
+        frisby.create(this.description + "post firmUp")
+            .post('http://localhost:3001/api/Acts/7/confirm/10',
+            {}, {json: true})
+            .expectStatus(401)
+            .toss();
     });
 });

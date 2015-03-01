@@ -8,7 +8,7 @@ var error = require('error');
 var Voted = function()
 {
     this.db = db;
-    this.COLLECTION_NAME = 'suggested';
+    this.COLLECTION_NAME = 'voted';
     this.FROM_FIELD = '_from';
     this.TO_FIELD = '_to';
 };
