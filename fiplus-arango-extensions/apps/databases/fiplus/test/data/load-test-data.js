@@ -102,8 +102,6 @@ var time7 = db.time_stamp.save({"value":32883177600000});
 // Jan 11, 3012 9 pm
 var time8 = db.time_stamp.save({"value":32883181200000});
 
-
-
 // Time period
 var tp1 = db.time_period.save({});
 var tp2 = db.time_period.save({});
@@ -204,14 +202,11 @@ var act8 = db.activity.save({
     allow_joiner_input: false
 });
 
-
-
 var activity1 = db.activity.save({Name:'BasketballNW'});
 var activity2 = db.activity.save({Name:'BasketballSW'});
 var activity3 = db.activity.save({Name:'BasketballNE'});
 var activity4 = db.activity.save({Name:'BasketballSE'});
 var activity5 = db.activity.save({Name:'SoccerSE'});
-
 
 // Time Suggestions
 var sug1 = db.suggestion.save({_key:'1'});
@@ -282,7 +277,7 @@ db.joined.save(user2, act3, {});
 db.joined.save(user1, act2, {});
 db.joined.save(user3, act2, {});
 db.joined.save(defaultUser, act3, {});
-db.joined.save(defaultUser, act8{});
+db.joined.save(defaultUser, act8, {});
 
 // Tagged
 db.tagged.save(act1, int1, {});
@@ -302,10 +297,9 @@ db.suggested.save(act1, sug2, {});
 var sug3 = db.suggestion.save({_key:'3'});
 db.is.save(sug3, tp1, {});
 
-var sug4 = db.suggestion.save({_key:'4'});
+var sug4 = db.suggestion.save({_key:'13'});
 db.is.save(sug4, tp4, {});
 db.suggested.save(act6, sug4, {});
-
 
 // One activity in past, one activity in future
 db.suggested.save(act3, sug1, {});
