@@ -162,14 +162,27 @@ var defines = require('db-interface/util/defines');
         var lim = req.params('Limit');
         (new actor()).exists(activity_id);
 
-        var Joiner = new joiner();
+        var Confirmer = new confirmer();
         var attendees = new model_common.Attendee();
-        attendees.num_attendees = Joiner.getNumJoiners(activity_id);
-        // TODO attendeeDetail.participants
-        //Will be reverted to this in the future
-        //attendees.joiners =  Joiner.getJoinersProfile(activity_id, lim, current_userId);
-        //Temporary code for alpha
-        attendees.joiners =  Joiner.getJoinersId(activity_id, lim);
+        if(Confirmer.isConfirmed(activity_id).confirmed)
+        {
+            attendees.num_attendees = Confirmer.getNumConfirmers(activity_id);
+            //Will be reverted to this in the future
+            //attendees.joiners =  Confirmer.getConfirmersProfile(activity_id, lim, current_userId);
+            //Temporary code for alpha
+            attendees.joiners =  Confirmer.getConfirmersId(activity_id, lim);
+        }
+        else
+        {
+            var Joiner = new joiner();
+
+            attendees.num_attendees = Joiner.getNumJoiners(activity_id);
+            // TODO attendeeDetail.participants
+            //Will be reverted to this in the future
+            //attendees.joiners =  Joiner.getJoinersProfile(activity_id, lim, current_userId);
+            //Temporary code for alpha
+            attendees.joiners =  Joiner.getJoinersId(activity_id, lim);
+        }
 
         res.json(attendees);
     }).pathParam('activityid', {

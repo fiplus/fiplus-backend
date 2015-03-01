@@ -762,6 +762,22 @@ describe('Get Attendees', function() {
             })
             .toss();
     });
+
+    it('should return only confirmed users if event is confirmed', function() {
+        frisby.create(this.description)
+            .get('http://localhost:3001/api/Acts/8/user?Limit=100',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "num_attendees": 2,
+                "joiners": [
+                    "6",
+                    "101"
+                ]
+            })
+            .toss();
+    });
 });
 
 describe('Firm Up Activity', function() {
@@ -855,7 +871,7 @@ describe('Firm Up Activity', function() {
             {
                 "Name": "A7",
                 "description": "activity 7",
-                "max_attendees": 0,
+                "max_attendees": 10,
                 "creator": "101",
                 "times": [
                     {

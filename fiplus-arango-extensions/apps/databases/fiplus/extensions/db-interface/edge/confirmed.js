@@ -1,6 +1,7 @@
 var db = require('org/arangodb').db;
 var error = require('error');
 var stamp = require('db-interface/node/time_stamp').TimeStamp;
+var joiner = require('db-interface/edge/joined').Joined;
 var period = require('db-interface/node/time_period').TimePeriod;
 var model_common = require('model-common');
 var location = require('db-interface/node/location').Location;
@@ -206,6 +207,45 @@ Confirmed.prototype.getConfirmedLocation = function(activity_id)
         }
     }
     return loc_model;
+};
+
+Confirmed.prototype.getNumConfirmers = function(activity_id)
+{
+    //Note: assumes x -> confirmed -> activity, x is always user
+    return this.db.confirmed.inEdges(activity_id).length;
+};
+
+Confirmed.prototype.getConfirmersProfile = function(activity_id, maximum, current_userId)
+{
+    if(maximum == null) {
+        maximum = (new joiner()).GET_JOINER_MAX;
+    }
+    var joiners = [];
+    var num_joiners = this.getNumConfirmers(activity_id);
+    var joined_array = this.db.confirmed.inEdges(activity_id);
+    var limit = (num_joiners <= maximum)? num_joiners: maximum;
+
+    for(var i = 0; i < limit; i++) {
+        joiners.push(helper.getProfile(this.db.user.document(joined_array[i]._from), current_userId));
+    }
+    return joiners;
+
+};
+
+Confirmed.prototype.getConfirmersId = function(activity_id, maximum)
+{
+    if(maximum == null) {
+        maximum = (new joiner()).GET_JOINER_MAX;
+    }
+    var joiners = [];
+    var num_joiners = this.getNumConfirmers(activity_id);
+    var joined_array = this.db.confirmed.inEdges(activity_id);
+    var limit = (num_joiners <= maximum)? num_joiners: maximum;
+
+    for(var i = 0; i < limit; i++) {
+        joiners.push(this.db.user.document(joined_array[i]._from)._key);
+    }
+    return joiners;
 };
 
 exports.Confirmed = Confirmed;
