@@ -96,7 +96,7 @@ exports.getInterestsOfUser = function(userId)
 };
 
 
-exports.getDefaultActivities = function()
+exports.getFutureActivities = function()
 {
     var returnValue = "return activity";
     return db._query(

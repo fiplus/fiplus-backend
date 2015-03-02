@@ -1,6 +1,7 @@
 var db = require('org/arangodb').db;
 var error = require('error');
 var interest = require('db-interface/node/interest');
+var tagger = require('db-interface/edge/tagged').Tagged;
 
 /**
  * Constructs a user interest db interface object
@@ -45,6 +46,35 @@ InterestedIn.prototype.getUserInterests = function(userHandle)
     return userinterests;
 };
 
+InterestedIn.prototype.isInterest = function(currentUserHandle, InterestHandle)
+{
+    var IsInterest = true;
+    var interestedInObject = {};
+    interestedInObject[this.FROM_FIELD] = currentUserHandle;
+    interestedInObject[this.TO_FIELD] = InterestHandle;
+
+    var result = this.db.interested_in.firstExample(interestedInObject);
+    if(result == null)
+    {
+        IsInterest = false;
+    }
+    return IsInterest;
+};
+
+InterestedIn.prototype.getNumberOfInterestsInActivity = function(currentUserHandle, activityHandle)
+{
+    var NumInterests = 0;
+    var Tagger = new tagger();
+    var Tagged_Interests_Id_List = Tagger.getTaggedInterestsID(activityHandle);
+
+    for(var i = 0; i < Tagged_Interests_Id_List.length; i++) {
+        if(this.isInterest(currentUserHandle, "interest/" + Tagged_Interests_Id_List[i])) {
+            NumInterests++;
+        }
+    }
+
+    return NumInterests;
+};
 
 InterestedIn.prototype.deleteUserInterests = function(userHandle)
 {
