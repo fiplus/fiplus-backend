@@ -102,8 +102,6 @@ var time7 = db.time_stamp.save({"value":32883177600000});
 // Jan 11, 3012 9 pm
 var time8 = db.time_stamp.save({"value":32883181200000});
 
-
-
 // Time period
 var tp1 = db.time_period.save({});
 var tp2 = db.time_period.save({});
@@ -151,7 +149,8 @@ var act2 = db.activity.save({
     Name:'A2',
     description:'activity 2',
     max_attendees:0,
-    allow_joiner_input: false
+    allow_joiner_input: false,
+    is_cancelled: false
 });
 
 var act3 = db.activity.save({
@@ -159,7 +158,8 @@ var act3 = db.activity.save({
     Name:'A3',
     description:'activity 3',
     max_attendees:3,
-    allow_joiner_input: false
+    allow_joiner_input: false,
+    is_cancelled: false
 });
 
 var act4 = db.activity.save({
@@ -167,7 +167,8 @@ var act4 = db.activity.save({
     Name:'A4',
     description:'activity 4',
     max_attendees:5,
-    allow_joiner_input: false
+    allow_joiner_input: false,
+    is_cancelled: false
 });
 
 var act5 = db.activity.save({
@@ -175,16 +176,17 @@ var act5 = db.activity.save({
     Name:'A5',
     description:'activity 5',
     max_attendees:5,
-    allow_joiner_input: false
+    allow_joiner_input: false,
+    is_cancelled: false
 });
 
-// Used for unjoin testing
 var act6 = db.activity.save({
     _key:'6',
     Name:'A6',
     description:'activity 6',
     max_attendees:6,
-    allow_joiner_input: false
+    allow_joiner_input: false,
+    is_cancelled: false
 });
 
 // Used for FirmUp testing
@@ -193,14 +195,25 @@ var act7 = db.activity.save({
     Name:'A7',
     description:'activity 7',
     max_attendees:0,
-    allow_joiner_input: false
+    allow_joiner_input: false,
+    is_cancelled: false
 });
+
+// Used for unjoin testing
+var act8 = db.activity.save({
+    _key:'8',
+    Name:'A8',
+    description:'activity 8',
+    max_attendees:6,
+    allow_joiner_input: false,
+    is_cancelled: false
+});
+
 var activity1 = db.activity.save({Name:'BasketballNW'});
 var activity2 = db.activity.save({Name:'BasketballSW'});
 var activity3 = db.activity.save({Name:'BasketballNE'});
 var activity4 = db.activity.save({Name:'BasketballSE'});
 var activity5 = db.activity.save({Name:'SoccerSE'});
-
 
 // Time Suggestions
 var sug1 = db.suggestion.save({_key:'1'});
@@ -260,6 +273,8 @@ db.created.save(defaultUser, act4, {});
 db.joined.save(defaultUser, act4, {});
 db.created.save(defaultUser, act5, {});
 db.joined.save(defaultUser, act5, {});
+db.created.save(defaultUser, act6, {});
+db.joined.save(defaultUser, act6, {});
 db.created.save(defaultUser, act7, {});
 db.joined.save(defaultUser, act7, {});
 
@@ -269,7 +284,7 @@ db.joined.save(user2, act3, {});
 db.joined.save(user1, act2, {});
 db.joined.save(user3, act2, {});
 db.joined.save(defaultUser, act3, {});
-db.joined.save(defaultUser, act6, {});
+db.joined.save(defaultUser, act8, {});
 
 // Tagged
 db.tagged.save(act1, int1, {});
@@ -288,6 +303,10 @@ db.suggested.save(act1, sug2, {});
 
 var sug3 = db.suggestion.save({_key:'3'});
 db.is.save(sug3, tp1, {});
+
+var sug4 = db.suggestion.save({_key:'13'});
+db.is.save(sug4, tp4, {});
+db.suggested.save(act6, sug4, {});
 
 // One activity in past, one activity in future
 db.suggested.save(act3, sug1, {});

@@ -45,6 +45,7 @@ Activity.creator = String;
 Activity.tagged_interests = [String];
 Activity.times = ['Time'];
 Activity.locations = ['Location'];
+Activity.is_cancelled = Boolean;
 exports.Activity = Activity;
 
 var Favourites = function(){};
@@ -94,10 +95,10 @@ var WhoAmI = function(){};
 WhoAmI.user_id = String;
 exports.WhoAmI = WhoAmI;
 
-var CreateActivityResponse = function(){};
-CreateActivityResponse.activity_id = String;
-CreateActivityResponse.Name = String;
-exports.CreateActivityResponse = CreateActivityResponse;
+var CreateCancelActivityResponse = function(){};
+CreateCancelActivityResponse.activity_id = String;
+CreateCancelActivityResponse.Name = String;
+exports.CreateCancelActivityResponse = CreateCancelActivityResponse;
 
 var FirmUpResponse = function(){};
 FirmUpResponse.activity_id = String;

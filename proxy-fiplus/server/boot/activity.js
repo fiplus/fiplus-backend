@@ -333,6 +333,45 @@ activity.afterRemote('unjoinActivity', function(ctx, model, next) {
   ctx.res.end();
 });
 
+activity.cancelActivity = function(id, req, cb) {
+
+  request({
+    url: fwd.FIPLUS_BASE_URL + '/activity/' + id,
+    method: 'DELETE',
+    headers: {
+      cookie: req.get('Cookie')
+    },
+    body: req.body,
+    json: true
+  }, function(e, response) {
+    if(e)
+    {
+      console.log(e);
+    }
+    else
+    {
+      fwd.saveArangoResponse(response);
+
+      // No error so 1st arg = null
+      cb(null, response.body);
+    }
+  });
+};
+
+activity.cancelActivity.shared = true;
+activity.cancelActivity.accepts = [{arg:'id', type: 'string', http:{source:'path'}},{arg:'req', type:'object',http:{source:'req'}}];
+activity.cancelActivity.http = {verb: 'DELETE', path: '/:id'};
+activity.cancelActivity.description = 'Cancel activity';
+activity.afterRemote('cancelActivity', function(ctx, model, next) {
+  fwd.forwardResponse(ctx.res);
+  ctx.res.send(ctx.res.body);
+  if(ctx.res.statusCode == 200)
+  {
+    push.SendCancelledActivityMessage(ctx.res.body);
+  }
+  ctx.res.end();
+});
+
 
 activity.firmUpSuggestion = function(activityId, suggestionId, req, cb) {
 
