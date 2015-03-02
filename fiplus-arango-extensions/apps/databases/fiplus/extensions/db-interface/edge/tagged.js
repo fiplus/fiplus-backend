@@ -45,7 +45,13 @@ Tagged.prototype.getTags = function(activity_id)
     var Interest = new interest();
     var tags = [];
     this.db.tagged.outEdges(activity_id).forEach(function(edge) {
-        tags.push(Interest.getInterest(edge._to));
+        var interest = Interest.getInterest(edge._to);
+
+        // Filtering out 'All' tag as this is added automatically and it's implicit/obvious that all activities belongs to all activities
+        if(interest != 'All')
+        {
+            tags.push(interest);
+        }
     });
     return tags;
 };

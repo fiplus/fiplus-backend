@@ -57,7 +57,12 @@ var helper = require('db-interface/util/helper');
             User = new user();
 
         var password = auth.hashPassword(credentials.get('password'));
-        User.createUser(email, {}, password);
+        var createdUser = User.createUser(email, {}, password);
+
+        // Adding an 'All' interest by default enabling notifications for all events etc.
+        // until they remove this from their profile. This ensures that by default the application
+        // will be engaging to the user, with the ability to throttle that engagement if desired.
+        (new interested_in.InterestedIn()).saveUserInterest(createdUser.get('_id'), 'All');
 
         req.session.get('sessionData').username = email;
         req.session.setUser(User.resolve(email));
@@ -175,10 +180,15 @@ var helper = require('db-interface/util/helper');
         if(tagged_interests != null) {
             //Delete old interests
             (new interested_in.InterestedIn()).deleteUserInterests(target_user._id);
+
             //Add new interests
             for (var i = 0; i < tagged_interests.length; i++) {
-                var input_interest_name = tagged_interests[i];
-                (new interested_in.InterestedIn()).saveUserInterest(target_user._id, input_interest_name);
+                // Remove 'all' tag if more specific interests are added otherwise the more specific tags will have no efficacy
+                if(tagged_interests.length == 1 || tagged_interests[i] != 'All')
+                {
+                    var input_interest_name = tagged_interests[i];
+                    (new interested_in.InterestedIn()).saveUserInterest(target_user._id, input_interest_name);
+                }
             }
         }
     }).bodyParam("UserProfile", {

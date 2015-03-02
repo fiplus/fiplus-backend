@@ -78,6 +78,7 @@ var helper = require('db-interface/util/helper');
         for (var i = 0; i < interests.length; i++) {
             Tagger.tagActivityWithInterest(activity_id, interests[i]);
         }
+        Tagger.tagActivityWithInterest(activity_id, 'All');
 
         var Suggester = new suggester();
         var Confirmer = new confirmer();
