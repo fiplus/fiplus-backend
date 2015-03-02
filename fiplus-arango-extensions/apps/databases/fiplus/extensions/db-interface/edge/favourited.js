@@ -1,6 +1,8 @@
 var db = require('org/arangodb').db;
 var error = require('error');
 var helper = require('db-interface/util/helper');
+var joiner = require('db-interface/edge/joined').Joined;
+var console = require('console');
 
 /**
  * Constructs a favourited db interface object
@@ -61,8 +63,9 @@ Favourited.prototype.getUserFavouritesID = function(currentUserHandle)
     //Return all favourited users
     var userfavourites = [];
     var favourites_array = this.db.favourited.outEdges(currentUserHandle);
-
-    userfavourites.push(helper.getProfile(favourites_array[i]._to));
+    for(var i = 0; i < favourites_array.length; i++) {
+        userfavourites.push(favourites_array[i]._to);
+    }
     return userfavourites;
 };
 
@@ -92,6 +95,21 @@ Favourited.prototype.isFavourite = function(currentUserHandle, targetUserHandle)
         IsFavourite = false;
     }
     return IsFavourite;
+};
+
+Favourited.prototype.getNumberOfFavouritesInActivity = function(currentUserHandle, activityHandle)
+{
+    var NumFavourites = 0;
+    var Joiner = new joiner();
+    var Joiners_Id_List = Joiner.getJoinersId(activityHandle, null);
+
+    for(var i = 0; i < Joiners_Id_List.length; i++) {
+        if(this.isFavourite(currentUserHandle, "user/" + Joiners_Id_List[i])) {
+            NumFavourites++;
+        }
+    }
+
+    return NumFavourites;
 };
 
 exports.Favourited = Favourited;
