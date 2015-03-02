@@ -12,6 +12,7 @@ var user = require('db-interface/node/user').User;
 var error = require('error');
 var model_common = require('model-common');
 var helper = require('db-interface/util/helper');
+var defines = require('db-interface/util/defines');
 
 (function() {
     "use strict";
@@ -52,69 +53,81 @@ var helper = require('db-interface/util/helper');
      * createActivity
      */
     controller.post('/', function(req, res) {
-        var activity = req.params('Activity');
+        db._executeTransaction({
+            collections: {
+                write: defines.collectionList
+            },
+            params:{
+                req:req,
+                res:res
+            },
+            action: function(params) {
+                var activity = params.req.params('Activity');
 
-        var max = activity.get('max_attendees');
-        if(max < 2) {
-            throw new error.NotAllowedError("Non-group activities are ");
-        }
+                var max = activity.get('max_attendees');
+                if(max < 2) {
+                    throw new error.NotAllowedError("Non-group activities are ");
+                }
 
-        var creator_id = 'user/' + activity.get('creator');
-        var uid = req.session.get('uid');
-        if (uid != creator_id) {
-            throw new error.UnauthorizedError(uid, "createActivity with creator " + creator_id);
-        }
+                var creator_id = 'user/' + activity.get('creator');
+                var uid = params.req.session.get('uid');
+                if (uid != creator_id) {
+                    throw new error.UnauthorizedError(uid, "createActivity with creator " + creator_id);
+                }
 
-        var Creator = new creator();
-        var created_edge = db.created.document((Creator.saveCreatedEdge(creator_id ,activity.get('Name'),
-            activity.get('description'), max, activity.get('allow_joiner_input')))._id);
-        var activity_id = created_edge._to;
+                var Creator = new creator();
+                var created_edge = db.created.document((Creator.saveCreatedEdge(creator_id ,activity.get('Name'),
+                    activity.get('description'), max, activity.get('allow_joiner_input')))._id);
+                var activity_id = created_edge._to;
 
-        var Joiner = new joiner();
-        Joiner.setUserJoinedActivity(creator_id, activity_id);
+                var Joiner = new joiner();
+                Joiner.setUserJoinedActivity(creator_id, activity_id);
 
-        var Tagger = new tagger();
-        var interests = activity.get('tagged_interests');
-        for (var i = 0; i < interests.length; i++) {
-            Tagger.tagActivityWithInterest(activity_id, interests[i]);
-        }
-        Tagger.tagActivityWithInterest(activity_id, 'All');
+                var Tagger = new tagger();
+                var interests = activity.get('tagged_interests');
+                for (var i = 0; i < interests.length; i++) {
+                    Tagger.tagActivityWithInterest(activity_id, interests[i]);
+                }
+                Tagger.tagActivityWithInterest(activity_id, 'All');
 
-        var Suggester = new suggester();
-        var Confirmer = new confirmer();
-        var times = activity.get('times');
-        for (var i = 0; i < times.length; i++)
-        {
-            var time = times[i];
-            if(time.suggestion_id == "-1")
-            {
-                Confirmer.saveConfirmedTime(activity_id, times.start, times.end);
+                var Suggester = new suggester();
+                var Confirmer = new confirmer();
+                var times = activity.get('times');
+                for (var i = 0; i < times.length; i++)
+                {
+                    var time = times[i];
+                    if(time.suggestion_id == "-1")
+                    {
+                        Confirmer.saveConfirmedTime(activity_id, times.start, times.end);
+                    }
+                    else
+                    {
+                        Suggester.saveSuggestedTimeEdge(activity_id, time.start, time.end);
+                    }
+                }
+
+                var locations = activity.get('locations');
+                for (var i = 0; i < locations.length; i++)
+                {
+                    var location = locations[i];
+                    if(location.suggestion_id == "-1")
+                    {
+                        Confirmer.saveConfirmedLocation(activity_id, location.latitude, location.longitude);
+                    }
+                    else
+                    {
+                        Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude);
+                    }
+                }
+
+                // Return the activity key and name value so that push notifications can be sent for activity
+                var createActivityResponse = new model_common.CreateCancelActivityResponse();
+                createActivityResponse.activity_id = activity_id.split('/')[1];
+                createActivityResponse.Name = activity.get('Name');
+                params.res.json(JSON.stringify(createActivityResponse));
             }
-            else
-            {
-                Suggester.saveSuggestedTimeEdge(activity_id, time.start, time.end);
-            }
-        }
+        });
 
-        var locations = activity.get('locations');
-        for (var i = 0; i < locations.length; i++)
-        {
-            var location = locations[i];
-            if(location.suggestion_id == "-1")
-            {
-                Confirmer.saveConfirmedLocation(activity_id, location.latitude, location.longitude);
-            }
-            else
-            {
-                Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude);
-            }
-        }
-
-        // Return the activity key and name value so that push notifications can be sent for activity
-        var createActivityResponse = new model_common.CreateCancelActivityResponse();
-        createActivityResponse.activity_id = activity_id.split('/')[1];
-        createActivityResponse.Name = activity.get('Name');
-        res.json(JSON.stringify(createActivityResponse));
     }).bodyParam('Activity', {
         type: foxx.Model
     }).onlyIfAuthenticated();
@@ -187,32 +200,42 @@ var helper = require('db-interface/util/helper');
      * firmUpSuggestion
      */
     controller.post('/:activityId/confirm/:suggestionId', function(req, res) {
-        var activityId = 'activity/' + req.params('activityId');
-        var suggestionId = 'suggestion/' + req.params('suggestionId');
+        db._executeTransaction({
+            collections: {
+                write: defines.collectionList
+            },
+            params:{
+                req: req,
+                res: res
+            },
+            action: function(params) {
+                var activityId = 'activity/' + params.req.params('activityId');
+                var suggestionId = 'suggestion/' + params.req.params('suggestionId');
+                (new actor()).exists(activityId);
 
-        (new actor()).exists(activityId);
+                // Check privilege: only creators can firm up
+                var user_id = params.req.session.get('uid');
+                var creator_id = 'user/' + (new creator()).getCreator(activityId);
+                if(user_id != creator_id)
+                {
+                    throw new error.UnauthorizedError(user_id, 'Firm Up');
+                }
 
-        // Check privilege: only creators can firm up
-        var user_id = req.session.get('uid');
-        var creator_id = 'user/' + (new creator()).getCreator(activityId);
-        if(user_id != creator_id)
-        {
-            throw new error.UnauthorizedError(user_id, 'Firm Up');
-        }
+                // Add confirmed edge
+                var Confirmer = new confirmer();
+                var result = Confirmer.saveConfirmed(activityId, suggestionId);
 
-        // Add confirmed edge
-        var Confirmer = new confirmer();
-        var result = Confirmer.saveConfirmed(activityId, suggestionId);
+                // Return the activity key and name value so that push notifications can be sent for activity
+                // Note: a confirmed time and location sent one after the other will trigger 2 push notifications.
+                var FirmUpResponse = new model_common.FirmUpResponse();
+                FirmUpResponse.activity_id = activityId.split('/')[1];
+                FirmUpResponse.Name = (new actor).get(activityId).Name;
+                FirmUpResponse.time = Confirmer.getConfirmedTime(activityId);
+                FirmUpResponse.location = Confirmer.getConfirmedLocation(activityId);
 
-        // Return the activity key and name value so that push notifications can be sent for activity
-        // Note: a confirmed time and location sent one after the other will trigger 2 push notifications.
-        var FirmUpResponse = new model_common.FirmUpResponse();
-        FirmUpResponse.activity_id = activityId.split('/')[1];
-        FirmUpResponse.Name = (new actor).get(activityId).Name;
-        FirmUpResponse.time = Confirmer.getConfirmedTime(activityId);
-        FirmUpResponse.location = Confirmer.getConfirmedLocation(activityId);
-
-        res.json(JSON.stringify(FirmUpResponse));
+                params.res.json(JSON.stringify(FirmUpResponse));
+            }
+        });
     }).pathParam('activityId', {
         type: joi.string(),
         description: 'The activity to confirm for'
@@ -225,14 +248,24 @@ var helper = require('db-interface/util/helper');
      * suggestTimePeriodForActivity
      */
     controller.put('/:activityId/time', function(request, response) {
-        var activityId = 'activity/'+request.params('activityId');
-        var times = request.params('Time');
+        db._executeTransaction({
+            collections: {
+                write: defines.collectionList
+            },
+            params: {
+                request: request,
+                response: response
+            },
+            action: function(params) {
+                var activityId = 'activity/'+params.request.params('activityId');
+                var times = params.request.params('Time');
 
-        var suggest = new suggester();
-        (new actor()).checkIfCancelled(activityId);
-        checkIfAllowedToSuggest(activityId, request.session.get('uid'));
-        suggest.saveSuggestedTimeEdge(activityId, times.get('start'), times.get('end'));
-
+                var suggest = new suggester();
+                (new actor()).checkIfCancelled(activityId);
+                checkIfAllowedToSuggest(activityId, params.request.session.get('uid'));
+                suggest.saveSuggestedTimeEdge(activityId, times.get('start'), times.get('end'));
+            }
+        });
     }).pathParam('activityId', {
         type: joi.string(),
         description: 'Activity suggestion will be linked to'
@@ -245,13 +278,24 @@ var helper = require('db-interface/util/helper');
      * suggestLocationForActivity
      */
     controller.put('/:activityId/location', function(request, response) {
-        var activityId = 'activity/'+request.params('activityId');
-        var times = request.params('Location');
+        db._executeTransaction({
+            collections: {
+                write: defines.collectionList
+            },
+            params: {
+                request: request,
+                response: response
+            },
+            action: function(params) {
+                var activityId = 'activity/'+params.request.params('activityId');
+                var locations = params.request.params('Location');
 
-        var suggest = new suggester();
-        (new actor()).checkIfCancelled(activityId);
-        checkIfAllowedToSuggest(activityId, request.session.get('uid'));
-        suggest.saveSuggestedLocationEdge(activityId, times.get('latitude'), times.get('longitude'));
+                var suggest = new suggester();
+                (new actor()).checkIfCancelled(activityId);
+                checkIfAllowedToSuggest(activityId, params.request.session.get('uid'));
+                suggest.saveSuggestedLocationEdge(activityId, locations.get('latitude'), locations.get('longitude'));
+            }
+        });
     }).pathParam('activityId', {
         type: joi.string(),
         description: 'Activity to be linked to location'
@@ -283,25 +327,31 @@ var helper = require('db-interface/util/helper');
      * voteForSuggestion
      */
     controller.post('/suggestion/:suggestionId/user', function(request, response) {
-        var suggestionId = 'suggestion/' + request.params('suggestionId');
+        db._executeTransaction({
+            collections: {
+                write: defines.collectionList
+            },
+            params: {
+                request: request,
+                response:response
+            },
+            action:function(params) {
+                var suggestionId = 'suggestion/' + params.request.params('suggestionId');
 
-        var uid = request.session.get('uid');
+                var uid = params.request.session.get('uid');
+                var suggestedEdge = {};
+                suggestedEdge._to = suggestionId;
+                suggestedEdge = db.suggested.firstExample(suggestedEdge);
+                if (suggestedEdge != null) {
+                    (new actor()).checkIfCancelled(suggestedEdge._from);
+                }
+                else {
+                    throw new error.NotFoundError('Suggested edge for suggestion ');
+                }
 
-        // Getting the suggested edge for given suggestion in order to get activity to check if it is cancelled
-        var suggestedEdge = {};
-        suggestedEdge._to = suggestionId;
-        suggestedEdge = db.suggested.firstExample(suggestedEdge);
-        if(suggestedEdge != null)
-        {
-            (new actor()).checkIfCancelled(suggestedEdge._from);
-        }
-        else
-        {
-            throw new error.NotFoundError('Suggested edge for suggestion ');
-        }
-
-        (new voted()).saveUserVote(uid, suggestionId);
-
+                (new voted()).saveUserVote(uid, suggestionId);
+            }
+        });
     }).pathParam('suggestionId', {
         type: joi.string(),
         description: 'The suggestion id being voted for'
@@ -323,11 +373,22 @@ var helper = require('db-interface/util/helper');
      * tagActivityWithInterest
      */
     controller.put('/:activityid/interest/:interest', function(request, response){
-        var activityHandle = 'activity/' + request.params('activityid');
-        var interest = request.params('interest');
+        db._executeTransaction({
+            collections: {
+                write: defines.collectionList
+            },
+            params:{
+                request:request,
+                response:response
+            },
+            action:function(params) {
+                var activityHandle = 'activity/' + params.request.params('activityid');
+                var interest = params.request.params('interest');
 
-        (new actor()).checkIfCancelled(activityHandle);
-        (new tagger()).tagActivityWithInterest(activityHandle, interest);
+                (new actor()).checkIfCancelled(activityHandle);
+                (new tagger()).tagActivityWithInterest(activityHandle, interest);
+            }
+        })
     }).pathParam('activityid', {
         type: joi.string(),
         description: 'Activity being tagged'
@@ -340,11 +401,21 @@ var helper = require('db-interface/util/helper');
      * joinActivity
      */
     controller.put('/:activityid/user', function(req, res) {
-        var activity_id = 'activity/' + req.params('activityid');
-        var uid = req.session.get('uid');
-
-        (new actor()).checkIfCancelled(activity_id);
-        (new joiner()).setUserJoinedActivity(uid, activity_id);
+        db._executeTransaction({
+            collections:{
+                write: defines.collectionList
+            },
+            params:{
+                req:req,
+                res:res
+            },
+            action:function(params) {
+                var activity_id = 'activity/' + params.req.params('activityid')
+                var uid = params.req.session.get('uid');
+                (new actor()).checkIfCancelled(activity_id);
+                (new joiner()).setUserJoinedActivity(uid, activity_id);
+            }
+        });
     }).pathParam('activityid', {
         type: joi.string(),
         description: 'The activity to join'

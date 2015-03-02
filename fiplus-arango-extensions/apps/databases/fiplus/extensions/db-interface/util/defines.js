@@ -1,0 +1,2 @@
+
+exports.collectionList = ['activity', 'interest', 'location', 'suggestion', 'time_period', 'time_stamp', 'user', 'confirmed','created','end','favourited','in_location','interested_in','is','is_available','joined','participated','start','suggested','tagged','voted','sessions_sessions'];
