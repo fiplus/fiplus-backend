@@ -22,7 +22,6 @@ Created.prototype.saveCreatedEdge = function(user_id, activity_name, description
 {
     var result;
     var activity_node = (new act.Activity()).saveActivityToDb(activity_name, description, maximum_attendance, allow_joiner_input);
-
     var result = this.db.created.save(user_id, activity_node._id, {});
     if(result.error == true) {
         throw new error.GenericError('Saving created activity ' + activity_name + ' failed.');

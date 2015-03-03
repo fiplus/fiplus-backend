@@ -62,11 +62,17 @@ IsAvailable.prototype.deleteUserAvailabilities = function(user_id)
 {
     var is_available_object = {};
     is_available_object[this.FROM_FIELD] = user_id;
-    result = this.db.is_available.removeByExample(is_available_object);
-    if(result.error == true)
-    {
-        throw new error.GenericError('is_available edge removal for ' + user_id + ' failed.');
-    }
+    var db = this.db;
+
+    // removeByExample cannot occur within a user transaction (is a transaction itself and not allowed nested trans.)
+    var result = this.db.is_available.byExample(is_available_object).toArray();
+    result.forEach(function(isAvailableEdge) {
+        var removeResult = db.is_available.remove(isAvailableEdge);
+        if(removeResult.error == true)
+        {
+            throw new error.GenericError('is_available edge removal for ' + user_id + ' failed.');
+        }
+    });
 };
 
 exports.IsAvailable = IsAvailable;

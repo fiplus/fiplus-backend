@@ -50,11 +50,17 @@ InterestedIn.prototype.deleteUserInterests = function(userHandle)
 {
     var interested_in_object = {};
     interested_in_object[this.FROM_FIELD] = userHandle;
-    result = this.db.interested_in.removeByExample(interested_in_object);
-    if(result.error == true)
-    {
-        throw new error.GenericError('interested_in edge removal for ' + userHandle + ' failed.');
-    }
+    var db = this.db;
+
+    // removeByExample cannot occur within a user transaction (is a transaction itself and not allowed nested trans.)
+    var result = this.db.interested_in.byExample(interested_in_object).toArray();
+    result.forEach(function(interestedInEdge) {
+        var removeResult = db.interested_in.remove(interestedInEdge);
+        if(removeResult.error == true)
+        {
+            throw new error.GenericError('interested_in edge removal for ' + userHandle + ' failed.');
+        }
+    });
 };
 
 exports.InterestedIn = InterestedIn;
