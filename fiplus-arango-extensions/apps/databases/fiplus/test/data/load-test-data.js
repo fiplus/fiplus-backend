@@ -55,6 +55,14 @@ var user2 = db.user.save({
         "age": 20,
         "gender": "female",
         "location_proximity_setting": true
+    },
+    authData: { //password: test2
+        active: true,
+        keyLength: 66,
+        workUnits: 60,
+        hashMethod: "pbkdf2",
+        hash: "YOkZwdgCz1SaJtqq34NPHMgBHc4qFFbNMxSgE6ig/KJ6UAXluLvF39F0ipYbOfCl+gHZ0yoyf8IEkY/P+JCtvBWD",
+        salt: "tqyK0h68ilfsPxA6Muk8wQqWPYaf32s4RITfNj34TDUOqAIEvoJbkgnXquuirX1gI4"
     }
 });
 
@@ -83,6 +91,14 @@ var user4 = db.user.save({
         "age": 22,
         "gender": "female",
         "location_proximity_setting": true
+    },
+    authData: { //password: test4
+        active: true,
+        keyLength: 66,
+        workUnits: 60,
+        hashMethod: "pbkdf2",
+        hash: "wNjirmHAbwRUvg2ij09oxu6p4oxEZe8OcdLOixg5B2TPFC+4JbcnI0JTyF3bHc+apx/ocQW7H+ih/Ky4OMKaFe92",
+        salt: "EsmjF5l2uum0FEZAU4NumWxeRWpCBrFTAfVyhAn4MeXpKcEfIwkw49zgUXRGnBv1xO"
     }
 });
 
@@ -97,6 +113,14 @@ var user5 = db.user.save({
         "age": 22,
         "gender": "female",
         "location_proximity_setting": true
+    },
+    authData: { //password: test5
+        active: true,
+        keyLength: 66,
+        workUnits: 60,
+        hashMethod: "pbkdf2",
+        hash: "DVxGuXqgoSM14jSzpX9e5IAq6UlHZ34apV5vq5zhC6HRYmyVg9K7UwV8VjqVYUO3r5egNg6YNWuev0vjd80QJpxX",
+        salt: "OI4JbEsim4qZmkebOicjG1gkHGVv7TxvvjAXk5ts9AqH1irKL9XkylLVbgVPIAgJ4v"
     }
 });
 
@@ -245,7 +269,7 @@ var act8 = db.activity.save({
     _key:'8',
     Name:'A8',
     description:'activity 8',
-    max_attendees:10,
+    max_attendees:5,
 });
 
 // Used for unjoin testing

@@ -4,6 +4,8 @@ var stamp = require('db-interface/node/time_stamp').TimeStamp;
 var joiner = require('db-interface/edge/joined').Joined;
 var period = require('db-interface/node/time_period').TimePeriod;
 var model_common = require('model-common');
+var activity = require('db-interface/node/activity').Activity;
+var user = require('db-interface/node/user').User;
 var location = require('db-interface/node/location').Location;
 
 /**
@@ -255,22 +257,26 @@ Confirmed.prototype.setUserConfirmedActivity = function(userHandle, activityHand
     (new user()).exists(userHandle);
     Activity.exists(activityHandle);
 
-    if(Activity.activityFull(activityHandle))
-    {
-        throw new error.NotAllowedError('Activity is full. Joining is');
-    }
-
     var joinedObject = {};
     joinedObject[this.FROM_FIELD] = userHandle;
     joinedObject[this.TO_FIELD] = activityHandle;
-    var result = this.db.joined.firstExample(joinedObject);
+
+    var full = Activity.activityFull(activityHandle);
+    var isJoined = db.joined.firstExample(joinedObject) != null;
+
+    if(full && !isJoined)
+    {
+        throw new error.NotAllowedError('Activity is full. Confirming is');
+    }
+
+    var result = this.db.confirmed.firstExample(joinedObject);
 
     if(result == null)
     {
-        result = this.db.joined.save(userHandle, activityHandle, {});
+        result = this.db.confirmed.save(userHandle, activityHandle, {});
         if(result.error == true)
         {
-            throw new error.GenericError('Saving user joined activity failed.');
+            throw new error.GenericError('Saving user confirmed attending activity failed.');
         }
     }
     return result;

@@ -462,7 +462,7 @@ var defines = require('db-interface/util/defines');
                 var Confirmer = new confirmer();
                 if(Confirmer.isConfirmed(activity_id).confirmed)
                 {
-                    confirmer.setUserConfirmedActivity(uid, activity_id);
+                    Confirmer.setUserConfirmedActivity(uid, activity_id);
                 }
                 else
                 {

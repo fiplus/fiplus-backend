@@ -913,3 +913,154 @@ describe('Firm Up Activity', function() {
             .toss();
     });
 });
+
+describe('Join Confirmed Activity', function() {
+    it('should confirm a non-joined user to attend.', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Users/login',
+            {
+                "email": "test@data.com",
+                "password": "test"
+            }, {json: true})
+            .addHeader('Cookie', 'sid=asdf;sid.sig=asdf')
+            .after(function (err, res, body) {
+                var sid = res.headers['set-cookie'][0];
+                var sidSig = res.headers['set-cookie'][1];
+
+                frisby.globalSetup({
+                    request: {
+                        headers: {
+                            cookie: sid.split(';')[0] + ';' + sidSig.split(';')[0]
+                        }
+                    }
+                });
+
+                frisby.create(this.description)
+                    .put("http://localhost:3001/api/Acts/8/user")
+                    .expectStatus(200)
+                    .after(function() {
+                        frisby.create(this.description + ' db check')
+                            .post("http://localhost:8529/_db/fiplus/_api/traversal", {
+                                startVertex: 'activity/8',
+                                graphName: 'fiplus',
+                                direction: 'inbound',
+                                edgeCollection: 'confirmed'
+                            }, {json: true})
+                            .expectJSON('result.visited.vertices.?', {
+                                user: 'test@data.com'
+                            })
+                            .toss();
+                    })
+                    .toss();
+            })
+            .toss();
+    });
+    it('should confirm a joined user to attend.', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Users/login',
+            {
+                "email": "test5@data.com",
+                "password": "test5"
+            }, {json: true})
+            .addHeader('Cookie', 'sid=asdf;sid.sig=asdf')
+            .after(function (err, res, body) {
+                var sid = res.headers['set-cookie'][0];
+                var sidSig = res.headers['set-cookie'][1];
+
+                frisby.globalSetup({
+                    request: {
+                        headers: {
+                            cookie: sid.split(';')[0] + ';' + sidSig.split(';')[0]
+                        }
+                    }
+                });
+
+                frisby.create(this.description)
+                    .put("http://localhost:3001/api/Acts/8/user")
+                    .expectStatus(200)
+                    .after(function() {
+                        frisby.create(this.description + ' db check')
+                            .post("http://localhost:8529/_db/fiplus/_api/traversal", {
+                                startVertex: 'activity/8',
+                                graphName: 'fiplus',
+                                direction: 'inbound',
+                                edgeCollection: 'confirmed'
+                            }, {json: true})
+                            .expectJSON('result.visited.vertices.?', {
+                                user: 'test5@data.com'
+                            })
+                            .toss();
+                    })
+                    .toss();
+            })
+            .toss();
+    });
+    it('should confirm joined users even if event is full.', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Users/login',
+            {
+                "email": "test4@data.com",
+                "password": "test4"
+            }, {json: true})
+            .addHeader('Cookie', 'sid=asdf;sid.sig=asdf')
+            .after(function (err, res, body) {
+                var sid = res.headers['set-cookie'][0];
+                var sidSig = res.headers['set-cookie'][1];
+
+                frisby.globalSetup({
+                    request: {
+                        headers: {
+                            cookie: sid.split(';')[0] + ';' + sidSig.split(';')[0]
+                        }
+                    }
+                });
+
+                frisby.create(this.description)
+                    .put("http://localhost:3001/api/Acts/8/user")
+                    .expectStatus(200)
+                    .after(function() {
+                        frisby.create(this.description + ' db check')
+                            .post("http://localhost:8529/_db/fiplus/_api/traversal", {
+                                startVertex: 'activity/8',
+                                graphName: 'fiplus',
+                                direction: 'inbound',
+                                edgeCollection: 'confirmed'
+                            }, {json: true})
+                            .expectJSON('result.visited.vertices.?', {
+                                user: 'test4@data.com'
+                            })
+                            .toss();
+                    })
+                    .toss();
+            })
+            .toss();
+    });
+
+    it('should not confirm non-joined users if event is full.', function() {
+        frisby.create(this.description)
+            .post('http://localhost:3001/api/Users/login',
+            {
+                "email": "test2@data.com",
+                "password": "test2"
+            }, {json: true})
+            .addHeader('Cookie', 'sid=asdf;sid.sig=asdf')
+            .after(function (err, res, body) {
+                var sid = res.headers['set-cookie'][0];
+                var sidSig = res.headers['set-cookie'][1];
+
+                frisby.globalSetup({
+                    request: {
+                        headers: {
+                            cookie: sid.split(';')[0] + ';' + sidSig.split(';')[0]
+                        }
+                    }
+                });
+
+                frisby.create(this.description)
+                    .put("http://localhost:3001/api/Acts/8/user")
+                    .expectStatus(400)
+                    .toss();
+            })
+            .toss();
+    });
+});
