@@ -7,7 +7,9 @@ var underscore = require('underscore');
 var helper = require('db-interface/util/helper');
 var query = require('db-interface/util/query');
 var favourited = require('db-interface/edge/favourited');
+var voted = require('db-interface/edge/voted');
 var interested_in = require('db-interface/edge/interested_in');
+var confirmer = require('db-interface/edge/confirmed').Confirmed;
 var console = require('console');
 
 (function() {
@@ -93,6 +95,36 @@ var console = require('console');
         return sorted_activities;
     };
 
+    function getTimeScore(reference_time, activity_handle){
+        var time_score;
+        var activity_time;
+        var Confirmer = new confirmer();
+        var confirmedTime = Confirmer.getConfirmedTime(activity_node._id);
+        if(confirmedTime != null)
+        {
+            activity_time = confirmedTime.start;
+        }
+        else
+        {
+            activity_time = (new voted.Voted()).getMostVotedSuggestedFutureTime(activity_handle, reference_time);
+        }
+        time_score = activity_time - reference_time;
+        //return time_score;
+    };
+
+    function getSocialProximityScore(current_user_handle, activity_handle){
+        var social_score;
+        //Only favourites for now
+        social_score = (new favourited.Favourited()).getNumberOfFavouritesInActivity(current_user_handle, activity_handle);
+        return social_score;
+    };
+
+    function getInterestScore(current_user_handle, activity_handle){
+        var interest_score;
+        interest_score = (new interested_in.InterestedIn()).getNumberOfInterestsInActivity(current_user_handle, activity_handle);
+        return interest_score;
+    }
+
     function rankActivitiesBasedOnMatchScore(original_activity_list, activity_list_with_score){
         activity_list_with_score.sort(function(a,b) {return b.match_score-a.match_score;});
 
@@ -107,6 +139,7 @@ var console = require('console');
         var activity_list_with_score = [];
         var old_index;
         var match_score;
+        var reference_time = query.getDateNow(); //Reference time to be used for time score.
         var interest_weight = 3; //Can be changed later on or can be user modifiable.
         var social_weight = 1; //Can be changed later on or can be user modifiable.
         //Figure out the total match score based on wanted parameters. Can remove all these booleans if we just want to do all of
@@ -117,12 +150,12 @@ var console = require('console');
             //Add interest score in match score.
             if(by_interest)
             {
-                match_score += interest_weight*(new interested_in.InterestedIn()).getNumberOfInterestsInActivity(current_user_handle, "activity/" + activity_list[i].activity_id);
+                match_score += interest_weight*getInterestScore(current_user_handle, "activity/" + activity_list[i].activity_id);
             }
             //Add social proximity score in match score.
             if(by_social_proximity)
             {
-                match_score += social_weight*(new favourited.Favourited()).getNumberOfFavouritesInActivity(current_user_handle, "activity/" + activity_list[i].activity_id);
+                match_score += social_weight*getSocialProximityScore(current_user_handle, "activity/" + activity_list[i].activity_id);
             }
             //Add geo proximity score in match score.
             if(by_location)
@@ -132,7 +165,7 @@ var console = require('console');
             //Add time score in match score.
             if(by_time)
             {
-                //Stub
+                getTimeScore(reference_time, "activity/" + activity_list[i].activity_id);
             }
             activity_list_with_score.push({
                 "activity_id": activity_list[i].activity_id,
@@ -205,11 +238,12 @@ var console = require('console');
         }
         //This is for the main page tab. More factors will be incorporated here in the future to decide which activities to return
         else{
+            console.log(query.getDateNow());
             var temp_activities = [];
             //Grab all future events(this is the only hard filter for now. Later on it will be all future events within a certain radius in x km)
             temp_activities = matchFutureActivities();
             //Calculate the match score for all of the qualified events and rank them accordingly.
-            temp_activities = calculateMatchScoreAndSort(user_object._id, temp_activities, true, true, false, false);
+            temp_activities = calculateMatchScoreAndSort(user_object._id, temp_activities, true, true, false, true);
             //Fill up activities with ranked activities from temp_activities until we reach num_activities_requested amount
             appendActivitiesList(activities, temp_activities, num_activities_requested);
         }

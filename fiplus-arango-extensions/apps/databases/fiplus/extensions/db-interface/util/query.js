@@ -118,3 +118,8 @@ exports.getAllAttendees = function(actId)
                         "return document(confirmed._from))))" ,
             {actId:actId}).toArray()[0];
 };
+
+exports.getDateNow = function()
+{
+    return db._query("return date_now()").toArray()[0];
+}

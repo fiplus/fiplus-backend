@@ -1,5 +1,9 @@
 var db = require('org/arangodb').db;
 var error = require('error');
+var suggested = require('db-interface/edge/suggested');
+var console = require('console');
+
+
 
 /**
  * Constructs a voted db interface object
@@ -118,6 +122,14 @@ Voted.prototype.getVotersId = function(suggestionId)
         voters.push(this.db.user.document(voters_array[i]._from)._key);
     }
     return voters;
+
+//Returns the most voted suggested future time. If there is a tie, the suggestion that will happen first will be returned.
+Voted.prototype.getMostVotedSuggestedFutureTime = function(activityHandle, reference_time)
+{
+    var suggested_times = [];
+    suggested_times = (new suggested.Suggested()).getSuggestedTimes(activityHandle);
+    //START HERE
+    console.log(suggested_times);
 };
 
 exports.Voted = Voted;
