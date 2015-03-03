@@ -107,6 +107,7 @@ Suggested.prototype.getSuggestedTimes = function(activity_id)
             var Stamp = new stamp();
             time.suggestion_id = db.suggestion.document(edge._to)._key;
             time.suggestion_votes = Voted.getNumberOfUserVotes(db.suggestion.document(edge._to));
+            time.suggestion_voters = Voted.getVotersId(db.suggestion.document(edge._to));
             time.start = db.time_stamp.document(start)[Stamp.VALUE_FIELD];
             time.end = db.time_stamp.document(end)[Stamp.VALUE_FIELD];
             times.push(time);
@@ -127,6 +128,7 @@ Suggested.prototype.getSuggestedLocations = function(activity_id)
             var loc_node = Location.get(location_id);
             loc_model.suggestion_id = db.suggestion.document(edge._to)._key;
             loc_model.suggestion_votes = Voted.getNumberOfUserVotes(db.suggestion.document(edge._to));
+            loc_model.suggestion_voters = Voted.getVotersId(db.suggestion.document(edge._to));
             loc_model.longitude = loc_node[Location.LONGITUDE_FIELD];
             loc_model.latitude = loc_node[Location.LATITUDE_FIELD];
             locations.push(loc_model);

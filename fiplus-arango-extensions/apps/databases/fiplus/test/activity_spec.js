@@ -515,10 +515,9 @@ describe('Suggestion Vote', function() {
                 latitude: 150,
                 longitude: 150
             });
-
     });
 
-    it('should return activity information with updated vote counts for suggested time and location and corresponding suggestion id.', function() {
+    it('should return activity information with updated vote counts and voters id list for suggested time and location and corresponding suggestion id.', function() {
         frisby.create(this.description)
             .get('https://localhost:3001/api/Acts/3',
             {})
@@ -540,6 +539,46 @@ describe('Suggestion Vote', function() {
                     {
                         "suggestion_id": "1",
                         "suggestion_votes": 1,
+                        "suggestion_voters": ['101'],
+                        "start": 4102513200000,
+                        "end": 4102516800000
+                    }
+                ],
+                "locations": [ ]
+            })
+            .toss();
+        frisby.create('time unvote')
+            .delete('https://localhost:3001/api/Acts/suggestion/1/user')
+            .expectStatus(200)
+            .toss();
+
+        frisby.create('location unvote')
+            .delete('https://localhost:3001/api/Acts/suggestion/2/user')
+            .expectStatus(200)
+            .toss();
+
+        frisby.create(this.description)
+            .get('https://localhost:3001/api/Acts/3',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "activity_id": "3",
+                "Name": "A3",
+                "description": "activity 3",
+                "max_attendees": 3,
+                allow_joiner_input: false,
+                is_cancelled: false,
+                "num_attendees": 3,
+                "creator": "3",
+                "tagged_interests": [
+                    "Soccer"
+                ],
+                "times": [
+                    {
+                        "suggestion_id": "1",
+                        "suggestion_votes": 0,
+                        "suggestion_voters": [],
                         "start": 4102513200000,
                         "end": 4102516800000
                     }
