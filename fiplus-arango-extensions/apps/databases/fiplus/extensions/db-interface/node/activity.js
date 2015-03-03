@@ -1,6 +1,7 @@
 var db = require('org/arangodb').db;
 var error = require('error');
 var tagged = require('db-interface/edge/tagged');
+var query = require('db-interface/util/query');
 
 /**
  * Constructs an activity db interface object
@@ -51,7 +52,7 @@ Activity.prototype.exists = function(activity_id) {
 Activity.prototype.activityFull = function(activity_id) {
     var activity = this.db.activity.document(activity_id);
     var max = activity[this.MAXIMUM_ATTENDANCE_FIELD];
-    var fill = this.db.joined.edges(activity_id).length;
+    var fill = query.getAllAttendees(activity_id).length;
 
     return (fill >= max);
 };

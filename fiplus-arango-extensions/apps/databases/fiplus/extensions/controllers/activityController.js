@@ -457,10 +457,18 @@ var defines = require('db-interface/util/defines');
                 res:res
             },
             action:function(params) {
-                var activity_id = 'activity/' + params.req.params('activityid')
+                var activity_id = 'activity/' + params.req.params('activityid');
                 var uid = params.req.session.get('uid');
-                (new actor()).checkIfCancelled(activity_id);
-                (new joiner()).setUserJoinedActivity(uid, activity_id);
+                var Confirmer = new confirmer();
+                if(Confirmer.isConfirmed(activity_id).confirmed)
+                {
+                    confirmer.setUserConfirmedActivity(uid, activity_id);
+                }
+                else
+                {
+                    (new actor()).checkIfCancelled(activity_id);
+                    (new joiner()).setUserJoinedActivity(uid, activity_id);
+                }
             }
         });
     }).pathParam('activityid', {
