@@ -1,27 +1,60 @@
 var db = require('org/arangodb').db;
 
+function getFutureSuggestedAndNotConfirmedActivities(returnValue) {
+    return "let s = ( " +
+        "for activity in activities " +
+        "for suggested in graph_edges('fiplus', activity, {edgeCollectionRestriction:'suggested'}) "+
+        "for suggested_is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'}) "+
+        "for suggested_start in graph_edges('fiplus', suggested_is._to, {edgeCollectionRestriction:'start'}) "+
+        "filter document(suggested_start._to).value >= date_now() && length(graph_edges('fiplus', activity, {edgeCollectionRestriction:'confirmed'})) == 0 "+
+        returnValue + ") ";
+}
+
+function getFutureConfirmedActivities(returnValue) {
+    return "let c = ( " +
+    "for activity in activities " +
+    "for confirmed_is in graph_edges('fiplus', activity, {edgeCollectionRestriction:'confirmed', endVertexCollectionRestriction:'time_period'}) "+
+    "for confirmed_start in graph_edges('fiplus', confirmed_is._to, {edgeCollectionRestriction:'start'}) "+
+    "filter document(confirmed_start._to).value >= date_now() "+
+    returnValue + ") ";
+}
+
+
 exports.getJoinedActivities = function(userId, future, past)
 {
-    var filter = "";
     if(future && !past)
     {
-        filter = "filter document(start._to).value >= date_now()";
+        var returnValue = "return document(activity)";
+        return db._query(
+        "let activities = (for joined in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'joined'}) return joined._to) " +
+        getFutureSuggestedAndNotConfirmedActivities(returnValue) +
+        getFutureConfirmedActivities(returnValue) +
+        "return union_distinct(s,c)", {userId:userId}).toArray()[0];
     }
     else if(!future && past)
     {
-        filter = "filter document(start._to).value < date_now()";
+        return db._query("return unique((for joined in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'joined'}) " +
+        "filter joined._to not in ( "+
+            "for suggested in graph_edges('fiplus', joined._to, {edgeCollectionRestriction:'suggested'}) "+
+            "for is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'}) "+
+            "for end in graph_edges('fiplus', is._to, {edgeCollectionRestriction:'end'}) "+
+            "filter document(end._to).value >= date_now() "+
+            "return suggested._from "+
+        ") "+
+        "filter length( "+
+            "for suggested in graph_edges('fiplus', joined._to, {edgeCollectionRestriction:'suggested'}) "+
+            "for is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'}) "+
+            "return suggested "+ ") != 0 "+
+        "return document(joined._to)))",{userId:userId}).toArray()[0];
     }
     else
     {
-        filter = "";
+        return db._query("return unique((for joined in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'joined'})" +
+        "for suggested in graph_edges('fiplus', joined._to, {edgeCollectionRestriction:'suggested'})" +
+        "for is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'})" +
+        "for start in graph_edges('fiplus', is._to, {edgeCollectionRestriction:'start'})" +
+        "return document(joined._to)))", {userId:userId}).toArray()[0];
     }
-
-    return db._query("return unique((for joined in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'joined'})" +
-                "for suggested in graph_edges('fiplus', joined._to, {edgeCollectionRestriction:'suggested'})" +
-                "for is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'})" +
-                "for start in graph_edges('fiplus', is._to, {edgeCollectionRestriction:'start'})" +
-                filter +
-                "return document(joined._to)))", {userId:userId}).toArray()[0];
 };
 
 exports.removeExistingDeviceIds = function(deviceId) {
@@ -49,10 +82,10 @@ exports.getInterestsOfUser = function(userId)
 
 exports.getDefaultActivities = function()
 {
-    return db._query("return unique((for activity in graph_vertices('fiplus', {}, {direction: 'any', vertexCollectionRestriction:'activity'})" +
-    "for suggested in graph_edges('fiplus', activity, {edgeCollectionRestriction:'suggested'})" +
-    "for is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'})" +
-    "for start in graph_edges('fiplus', is._to, {edgeCollectionRestriction:'start'})" +
-    "filter document(start._to).value >= date_now() AND !activity.is_cancelled " +
-    "return activity))").toArray()[0];
+    var returnValue = "return activity";
+    return db._query(
+        "let activities = (for a in activity return a) " +
+        getFutureSuggestedAndNotConfirmedActivities(returnValue) +
+        getFutureConfirmedActivities(returnValue) +
+        "return union_distinct(s,c)").toArray()[0];
 };

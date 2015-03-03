@@ -259,7 +259,7 @@ var defines = require('db-interface/util/defines');
 
     controller.get('/activities', function(request, response) {
         var activities = [];
-        var activity_nodes = query.getJoinedActivities(request.session.get('uid'), request.params('future'), request.params('past'));
+        var activity_nodes = query.getJoinedActivities('user/'+request.params('userId'), request.params('future'), request.params('past'));
         activity_nodes.forEach(function(activity_node) {
             var act = helper.getActivity(activity_node);
             activities.push(act);
@@ -269,6 +269,8 @@ var defines = require('db-interface/util/defines');
         type: joi.boolean()
     }).queryParam('past', {
         type: joi.boolean()
+    }).queryParam('userId', {
+        type: joi.string()
     }).onlyIfAuthenticated();
 
     //addFavourite

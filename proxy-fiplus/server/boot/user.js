@@ -397,7 +397,7 @@ user.afterRemote('setDeviceId', function(ctx, model, next) {
   ctx.res.end();
 });
 
-user.getActivities = function(past, future, req, cb) {
+user.getActivities = function(userId, past, future, req, cb) {
 
   request({
     url: fwd.FIPLUS_BASE_URL+'/user/activities?' + req.originalUrl.split('?')[1],
@@ -423,7 +423,7 @@ user.getActivities = function(past, future, req, cb) {
 };
 
 user.getActivities.shared = true;
-user.getActivities.accepts = [{arg:'past', type:'boolean',http:{source:'query'}},{arg:'future', type:'boolean',http:{source:'query'}},{arg:'req', type:'object',http:{source:'req'}}];
+user.getActivities.accepts = [{arg:'userId', type:'string', http:{source:'query'}},{arg:'past', type:'boolean',http:{source:'query'}},{arg:'future', type:'boolean',http:{source:'query'}},{arg:'req', type:'object',http:{source:'req'}}];
 user.getActivities.returns = {arg:'activities', type:['Activity'],http:{source:'body'}, root:true};
 user.getActivities.http = {verb: 'GET', path: '/activities'};
 user.getActivities.description = 'Gets activities joined by user, returns all if both options set to false';
