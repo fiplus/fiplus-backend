@@ -670,7 +670,7 @@ describe('Get Activity', function() {
                 "activity_id": "2",
                 "Name": "A2",
                 "description": "activity 2",
-                "max_attendees": 0,
+                "max_attendees": 3,
                 allow_joiner_input: false,
                 is_cancelled: false,
                 "num_attendees": 3,

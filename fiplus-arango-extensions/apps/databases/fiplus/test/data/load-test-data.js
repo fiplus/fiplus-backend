@@ -190,7 +190,7 @@ var act2 = db.activity.save({
     _key:'2',
     Name:'A2',
     description:'activity 2',
-    max_attendees:0,
+    max_attendees:3,
     allow_joiner_input: false,
     is_cancelled: false
 });

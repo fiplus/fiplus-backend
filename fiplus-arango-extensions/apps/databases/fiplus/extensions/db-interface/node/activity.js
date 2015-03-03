@@ -51,7 +51,7 @@ Activity.prototype.exists = function(activity_id) {
 Activity.prototype.activityFull = function(activity_id) {
     var activity = this.db.activity.document(activity_id);
     var max = activity[this.MAXIMUM_ATTENDANCE_FIELD];
-    var fill = this.db.joined.outEdges(activity_id).length;
+    var fill = this.db.joined.edges(activity_id).length;
 
     return (fill >= max);
 };
