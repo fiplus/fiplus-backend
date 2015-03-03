@@ -307,6 +307,34 @@ var helper = require('db-interface/util/helper');
         description: 'The suggestion id being voted for'
     }).onlyIfAuthenticated();
 
+    /*
+     * unvoteForSuggestion
+     */
+    controller.delete('/suggestion/:suggestionId/user', function(request, response) {
+        var suggestionId = 'suggestion/' + request.params('suggestionId');
+
+        var uid = request.session.get('uid');
+
+        // Getting the suggested edge for given suggestion in order to get activity to check if it is cancelled
+        var suggestedEdge = {};
+        suggestedEdge._to = suggestionId;
+        suggestedEdge = db.suggested.firstExample(suggestedEdge);
+        if(suggestedEdge != null)
+        {
+            (new actor()).checkIfCancelled(suggestedEdge._from);
+        }
+        else
+        {
+            throw new error.NotFoundError('Suggested edge for suggestion ');
+        }
+
+        (new voted()).deleteUserVote(uid, suggestionId);
+
+    }).pathParam('suggestionId', {
+        type: joi.string(),
+        description: 'The suggestion id being voted for'
+    }).onlyIfAuthenticated();
+
     controller.put('/comment', function(req, res) {
 
     }).bodyParam('Comment', {

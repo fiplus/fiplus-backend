@@ -40,6 +40,29 @@ Voted.prototype.saveUserVote = function(userId, suggestionId)
     return result;
 };
 
+Voted.prototype.deleteUserVote = function(userId, suggestionId)
+{
+    if(!db.user.exists(userId))
+    {
+        throw new error.NotFoundError('User')
+    }
+
+    if(!db.suggestion.exists(suggestionId))
+    {
+        throw new error.NotFoundError('Suggestion');
+    }
+
+    var example = {};
+    example[this.FROM_FIELD] = userId;
+    example[this.TO_FIELD] = suggestionId;
+    var result = db.voted.removeByExample(example);
+    if(result.error == true)
+    {
+        throw new error.GenericError('vote edge removal for ' + userId + ' failed.');
+    }
+    return result;
+};
+
 Voted.prototype.getNumberOfUserVotes = function(suggestionId)
 {
     var vote_count = 0;
@@ -49,6 +72,17 @@ Voted.prototype.getNumberOfUserVotes = function(suggestionId)
         vote_count = votes.length;
     }
     return vote_count;
+};
+
+Voted.prototype.getVotersId = function(suggestionId)
+{
+    var voters = [];
+    var voters_array = db.voted.inEdges(suggestionId);
+
+    for(var i = 0; i < voters_array.length; i++) {
+        voters.push(this.db.user.document(voters_array[i]._from)._key);
+    }
+    return voters;
 };
 
 exports.Voted = Voted;

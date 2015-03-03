@@ -227,6 +227,41 @@ activity.afterRemote('voteForSuggestion', function(ctx, model, next) {
   ctx.res.end();
 });
 
+activity.unvoteForSuggestion = function(id, req, cb) {
+
+  request({
+    url: fwd.FIPLUS_BASE_URL + '/activity/suggestion/' + id + '/user',
+    method: 'DELETE',
+    headers: {
+      cookie: req.get('Cookie')
+    },
+    body: req.body,
+    json: true
+  }, function(e, response) {
+    if(e)
+    {
+      console.log(e);
+    }
+    else
+    {
+      fwd.saveArangoResponse(response);
+
+      // No error so 1st arg = null
+      cb(null, response.body);
+    }
+  });
+};
+
+activity.unvoteForSuggestion.shared = true;
+activity.unvoteForSuggestion.accepts = [{arg:'id', type: 'string', http:{source:'path'}},{arg:'req', type:'object',http:{source:'req'}}];
+activity.unvoteForSuggestion.http = {verb: 'DELETE', path: '/suggestion/:id/user'};
+activity.unvoteForSuggestion.description = 'Unvotes for the specified suggestion';
+activity.afterRemote('unvoteForSuggestion', function(ctx, model, next) {
+  fwd.forwardResponse(ctx.res);
+  ctx.res.send(ctx.res.body);
+  ctx.res.end();
+});
+
 activity.tagActivityWithInterest = function(id, text, req, cb) {
 
   request({
