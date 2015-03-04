@@ -56,7 +56,7 @@ describe("Create activity", function () {
 
     it("should create events with confirmed date and time and confirm creator", function () {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Acts',
+            .post('https://localhost:3001/api/Acts',
             {
                 "Name" : "Another Event",
                 "description" : "My Nth event",
@@ -189,7 +189,7 @@ describe("Cancel Activity Tests", function() {
             .toss();
 
         frisby.create('time vote')
-            .post('https://localhost:3001/api/Acts/suggestion/13/user')
+            .post('https://localhost:3001/api/Acts/suggestion/18/user')
             .expectStatus(400)
             .toss();
     });
@@ -765,7 +765,7 @@ describe('Get Attendees', function() {
 
     it('should return only confirmed users if event is confirmed', function() {
         frisby.create(this.description)
-            .get('http://localhost:3001/api/Acts/8/user?Limit=100',
+            .get('https://localhost:3001/api/Acts/9/user?Limit=100',
             {})
             .expectStatus(200)
             .expectJSON(
@@ -917,7 +917,7 @@ describe('Firm Up Activity', function() {
 describe('Join Confirmed Activity', function() {
     it('should confirm a non-joined user to attend.', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Users/login',
+            .post('https://localhost:3001/api/Users/login',
             {
                 "email": "test@data.com",
                 "password": "test"
@@ -936,12 +936,12 @@ describe('Join Confirmed Activity', function() {
                 });
 
                 frisby.create(this.description)
-                    .put("http://localhost:3001/api/Acts/8/user")
+                    .put("https://localhost:3001/api/Acts/9/user")
                     .expectStatus(200)
                     .after(function() {
                         frisby.create(this.description + ' db check')
                             .post("http://localhost:8529/_db/fiplus/_api/traversal", {
-                                startVertex: 'activity/8',
+                                startVertex: 'activity/9',
                                 graphName: 'fiplus',
                                 direction: 'inbound',
                                 edgeCollection: 'confirmed'
@@ -957,7 +957,7 @@ describe('Join Confirmed Activity', function() {
     });
     it('should confirm a joined user to attend.', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Users/login',
+            .post('https://localhost:3001/api/Users/login',
             {
                 "email": "test5@data.com",
                 "password": "test5"
@@ -976,12 +976,12 @@ describe('Join Confirmed Activity', function() {
                 });
 
                 frisby.create(this.description)
-                    .put("http://localhost:3001/api/Acts/8/user")
+                    .put("https://localhost:3001/api/Acts/9/user")
                     .expectStatus(200)
                     .after(function() {
                         frisby.create(this.description + ' db check')
                             .post("http://localhost:8529/_db/fiplus/_api/traversal", {
-                                startVertex: 'activity/8',
+                                startVertex: 'activity/9',
                                 graphName: 'fiplus',
                                 direction: 'inbound',
                                 edgeCollection: 'confirmed'
@@ -997,7 +997,7 @@ describe('Join Confirmed Activity', function() {
     });
     it('should confirm joined users even if event is full.', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Users/login',
+            .post('https://localhost:3001/api/Users/login',
             {
                 "email": "test4@data.com",
                 "password": "test4"
@@ -1016,12 +1016,12 @@ describe('Join Confirmed Activity', function() {
                 });
 
                 frisby.create(this.description)
-                    .put("http://localhost:3001/api/Acts/8/user")
+                    .put("https://localhost:3001/api/Acts/9/user")
                     .expectStatus(200)
                     .after(function() {
                         frisby.create(this.description + ' db check')
                             .post("http://localhost:8529/_db/fiplus/_api/traversal", {
-                                startVertex: 'activity/8',
+                                startVertex: 'activity/9',
                                 graphName: 'fiplus',
                                 direction: 'inbound',
                                 edgeCollection: 'confirmed'
@@ -1038,7 +1038,7 @@ describe('Join Confirmed Activity', function() {
 
     it('should not confirm non-joined users if event is full.', function() {
         frisby.create(this.description)
-            .post('http://localhost:3001/api/Users/login',
+            .post('https://localhost:3001/api/Users/login',
             {
                 "email": "test2@data.com",
                 "password": "test2"
@@ -1057,7 +1057,7 @@ describe('Join Confirmed Activity', function() {
                 });
 
                 frisby.create(this.description)
-                    .put("http://localhost:3001/api/Acts/8/user")
+                    .put("https://localhost:3001/api/Acts/9/user")
                     .expectStatus(400)
                     .toss();
             })

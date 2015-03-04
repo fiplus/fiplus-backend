@@ -257,19 +257,12 @@ var act6 = db.activity.save({
 
 // Used for FirmUp testing
 var act7 = db.activity.save({
-    _key:'7',
-    Name:'A7',
-    description:'activity 7',
-    max_attendees:10,
+    _key: '7',
+    Name: 'A7',
+    description: 'activity 7',
+    max_attendees: 10,
     allow_joiner_input: false,
     is_cancelled: false
-
-// A confirmed event with suggestions, joiner, and confirmed attendees
-var act8 = db.activity.save({
-    _key:'8',
-    Name:'A8',
-    description:'activity 8',
-    max_attendees:5,
 });
 
 // Used for unjoin testing
@@ -278,6 +271,16 @@ var act8 = db.activity.save({
     Name:'A8',
     description:'activity 8',
     max_attendees:6,
+    allow_joiner_input: false,
+    is_cancelled: false
+});
+
+// A confirmed event with suggestions, joiner, and confirmed attendees
+var act9 = db.activity.save({
+    _key:'9',
+    Name:'A9',
+    description:'activity 9',
+    max_attendees:5,
     allow_joiner_input: false,
     is_cancelled: false
 });
@@ -308,10 +311,10 @@ var timeSug5 = db.suggestion.save({_key:'13'});
 db.suggested.save(act7, timeSug5, {});
 db.is.save(timeSug5, tp4, {});
 var timeSug6 = db.suggestion.save({_key:'14'});
-db.suggested.save(act8, timeSug6, {});
+db.suggested.save(act9, timeSug6, {});
 db.is.save(timeSug6, tp3, {});
 var timeSug7 = db.suggestion.save({_key:'15'});
-db.suggested.save(act8, timeSug7, {});
+db.suggested.save(act9, timeSug7, {});
 db.is.save(timeSug7, tp4, {});
 
 // Location Suggestions
@@ -334,15 +337,15 @@ var locSug8 = db.suggestion.save({_key:'12'});
  db.suggested.save(act7, locSug8, {});
  db.is.save(locSug8, loc4, {});
 var locSug9 = db.suggestion.save({_key:'16'});
-db.suggested.save(act8, locSug9, {});
+db.suggested.save(act9, locSug9, {});
 db.is.save(locSug9, loc2, {});
 var locSug10 = db.suggestion.save({_key:'17'});
-db.suggested.save(act8, locSug10, {});
+db.suggested.save(act9, locSug10, {});
 db.is.save(locSug8, loc4, {});
 
 // confirmed times and locations
-db.confirmed.save(act8, loc4, {});
-db.confirmed.save(act8, tp4, {});
+db.confirmed.save(act9, loc4, {});
+db.confirmed.save(act9, tp4, {});
 
 // Creators
 db.created.save(defaultUser, activity1, {});
@@ -369,8 +372,8 @@ db.created.save(defaultUser, act6, {});
 db.joined.save(defaultUser, act6, {});
 db.created.save(defaultUser, act7, {});
 db.joined.save(defaultUser, act7, {});
-db.created.save(defaultUser, act8, {});
-db.joined.save(defaultUser, act8, {});
+db.created.save(defaultUser, act9, {});
+db.joined.save(defaultUser, act9, {});
 
 // Joiners
 db.joined.save(user2, act1, {});
@@ -382,13 +385,13 @@ db.joined.save(defaultUser, act8, {});
 db.joined.save(user4, act7, {});
 db.joined.save(user5, act7, {});
 db.joined.save(user6, act7, {});
-db.joined.save(user4, act8, {});
-db.joined.save(user5, act8, {});
-db.joined.save(user6, act8, {});
+db.joined.save(user4, act9, {});
+db.joined.save(user5, act9, {});
+db.joined.save(user6, act9, {});
 
 // Confirmed Attendees
-db.confirmed.save(user6, act8, {});
-db.confirmed.save(defaultUser, act8, {});
+db.confirmed.save(user6, act9, {});
+db.confirmed.save(defaultUser, act9, {});
 
 // Tagged
 db.tagged.save(act1, int1, {});
@@ -408,7 +411,7 @@ db.suggested.save(act1, sug2, {});
 var sug3 = db.suggestion.save({_key:'3'});
 db.is.save(sug3, tp1, {});
 
-var sug4 = db.suggestion.save({_key:'13'});
+var sug4 = db.suggestion.save({_key:'18'});
 db.is.save(sug4, tp4, {});
 db.suggested.save(act6, sug4, {});
 
