@@ -316,6 +316,9 @@ db.is.save(timeSug6, tp3, {});
 var timeSug7 = db.suggestion.save({_key:'15'});
 db.suggested.save(act9, timeSug7, {});
 db.is.save(timeSug7, tp4, {});
+var timeSug8 = db.suggestion.save({_key:'19'});
+db.suggested.save(act8, timeSug8, {});
+db.is.save(timeSug8, tp4, {});
 
 // Location Suggestions
 var sug2 = db.suggestion.save({_key:'2'});
@@ -372,6 +375,8 @@ db.created.save(defaultUser, act6, {});
 db.joined.save(defaultUser, act6, {});
 db.created.save(defaultUser, act7, {});
 db.joined.save(defaultUser, act7, {});
+db.created.save(user3, act8, {});
+db.joined.save(user3, act8, {});
 db.created.save(defaultUser, act9, {});
 db.joined.save(defaultUser, act9, {});
 
@@ -429,3 +434,4 @@ db.voted.save(user4, locSug8, {});
 db.voted.save(user5, timeSug4, {});
 db.voted.save(user6, locSug7, {});
 db.voted.save(user6, timeSug5, {});
+db.voted.save(defaultUser, timeSug8, {});

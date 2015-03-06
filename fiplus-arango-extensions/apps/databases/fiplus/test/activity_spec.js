@@ -273,6 +273,7 @@ describe("Join activity", function () {
     });
 
     it("Unjoin activity", function() {
+
         frisby.create(this.description)
             .delete("https://localhost:3001/api/Acts/8/user")
             .expectStatus(200)
@@ -286,6 +287,19 @@ describe("Join activity", function () {
                     }, {json: true})
                     .afterJSON(function(response) {
                         expect(JSON.stringify(response)).not.toContain('1234@data.com')
+                    })
+                    .toss();
+
+                // Checking if added votes in loaded test data got removed
+                frisby.create(this.description)
+                    .get('https://localhost:3001/api/Acts/8',
+                    {})
+                    .expectStatus(200)
+                    .expectJSON('times.0',
+                    {
+                        "suggestion_votes": 0,
+                        "suggestion_voters": []
+
                     })
                     .toss();
             })

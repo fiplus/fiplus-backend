@@ -501,6 +501,7 @@ var defines = require('db-interface/util/defines');
         type: joi.string()
     }).onlyIfAuthenticated();
 
+    // Unjoin
     controller.delete('/:activityid/user', function(request, response) {
         var activity_id = 'activity/' + request.params('activityid');
         var uid = request.session.get('uid');

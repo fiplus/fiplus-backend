@@ -40,6 +40,20 @@ Voted.prototype.saveUserVote = function(userId, suggestionId)
     return result;
 };
 
+// deletes all the user's votes for an activity, e.g. when the user unjoins the activity
+Voted.prototype.deleteAllUserVotesForActivity = function(userId, activityId)
+{
+    var _this = this;
+    if(!db.activity.exists(activityId))
+    {
+        throw new error.NotFoundError('Activity not found')
+    }
+
+    db.suggested.outEdges(activityId).forEach(function(edge) {
+        _this.deleteUserVote(userId, edge._to);
+    });
+};
+
 Voted.prototype.deleteUserVote = function(userId, suggestionId)
 {
     if(!db.user.exists(userId))
