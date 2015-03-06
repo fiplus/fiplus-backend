@@ -425,6 +425,7 @@ db.suggested.save(act6, sug4, {});
 // One activity in past, one activity in future
 db.suggested.save(act3, sug1, {});
 db.suggested.save(act4, sug3, {});
+db.suggested.save(act4, sug1, {});
 db.suggested.save(act5, sug1, {});
 db.suggested.save(activity1, sug1, {});
 db.suggested.save(activity1, sug3, {});

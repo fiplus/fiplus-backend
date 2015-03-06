@@ -10,6 +10,7 @@ var favourited = require('db-interface/edge/favourited');
 var voted = require('db-interface/edge/voted');
 var interested_in = require('db-interface/edge/interested_in');
 var confirmer = require('db-interface/edge/confirmed').Confirmed;
+var model_common = require('model-common');
 var console = require('console');
 
 (function() {
@@ -53,6 +54,7 @@ var console = require('console');
         }
     };
 
+    //CURRENTLY NOT USED! Might be useful in the future. Should we delete?
     function matchActivitiesWithUserInterests(user_object, num_activities_requested){
         var user_interests_array = query.getInterestsOfUser(user_object._id);
         var user_interests_array_length = user_interests_array.length;
@@ -75,6 +77,7 @@ var console = require('console');
         return activities;
     };
 
+    //CURRENTLY NOT USED! Might be useful in the future. Should we delete?
     function rankActivitiesBasedOnSocialProximity(currentUserHandle, activities){
         var activity_ids_with_favourite_count = [];
         //Figure out how many user favourites there are for each activity
@@ -99,7 +102,8 @@ var console = require('console');
         var time_score;
         var activity_time;
         var Confirmer = new confirmer();
-        var confirmedTime = Confirmer.getConfirmedTime(activity_node._id);
+        var confirmedTime =  new model_common.Time();
+        confirmedTime = Confirmer.getConfirmedTime(activity_handle);
         if(confirmedTime != null)
         {
             activity_time = confirmedTime.start;
@@ -109,7 +113,7 @@ var console = require('console');
             activity_time = (new voted.Voted()).getMostVotedSuggestedFutureTime(activity_handle, reference_time);
         }
         time_score = activity_time - reference_time;
-        //return time_score;
+        return time_score;
     };
 
     function getSocialProximityScore(current_user_handle, activity_handle){
@@ -123,7 +127,29 @@ var console = require('console');
         var interest_score;
         interest_score = (new interested_in.InterestedIn()).getNumberOfInterestsInActivity(current_user_handle, activity_handle);
         return interest_score;
-    }
+    };
+
+    function normalizeGivenScores(score_array){
+        var min_score = score_array[0]; //Set min_score to the first value of score array
+        var max_score = score_array[0]; //Set max_score to the first value of score array
+
+        //Extract the max and min score from the score array
+        for (var i = 1; i < score_array.length; i++) {
+            if(score_array[i] > max_score)
+                max_score = score_array[i];
+            else if(score_array[i] < min_score)
+                min_score = score_array[i];
+        }
+
+        //Normalize each value of the score array
+        for (var i = 0; i < score_array.length; i++) {
+            if(min_score == max_score)
+                score_array[i] = 0.5;
+            else{
+                score_array[i] = (score_array[i] - min_score)/(max_score - min_score);
+            }
+        }
+    };
 
     function rankActivitiesBasedOnMatchScore(original_activity_list, activity_list_with_score){
         activity_list_with_score.sort(function(a,b) {return b.match_score-a.match_score;});
@@ -140,9 +166,44 @@ var console = require('console');
         var old_index;
         var match_score;
         var reference_time = query.getDateNow(); //Reference time to be used for time score.
-        var interest_weight = 3; //Can be changed later on or can be user modifiable.
-        var social_weight = 1; //Can be changed later on or can be user modifiable.
-        //Figure out the total match score based on wanted parameters. Can remove all these booleans if we just want to do all of
+        var interest_weight = 0.5; //Can be changed later on or can be user modifiable.
+        var social_weight = 0.2; //Can be changed later on or can be user modifiable.
+        var time_weight = 0.3; //Can be changed later on or can be user modifiable.
+        var time_scores = [];
+        var interest_scores = [];
+        var social_proximity_scores = [];
+
+        //First step is to figure out the list of time scores, interest scores, and social proximity scores. Can't build the activity list
+        //with scores right away because the individual scores needs to be normalized after obtaining all of them before using them to
+        //calculate match scores.
+        for(var i = 0; i < activity_list.length; i++) {
+            //Get interest score
+            if(by_interest)
+                interest_scores.push(getInterestScore(current_user_handle, "activity/" + activity_list[i].activity_id));
+            //Get social proximity score
+            if(by_social_proximity)
+                social_proximity_scores.push(getSocialProximityScore(current_user_handle, "activity/" + activity_list[i].activity_id));
+            //Get geo proximity score
+            if(by_location) {
+                //Stub
+            }
+            //Get time score
+            if(by_time)
+                time_scores.push(getTimeScore(reference_time, "activity/" + activity_list[i].activity_id));
+        }
+
+        //Normalize the score arrays we obtained
+        if(by_interest)
+            normalizeGivenScores(interest_scores);
+        if(by_social_proximity)
+            normalizeGivenScores(social_proximity_scores);
+        if(by_location) {
+            //Stub
+        }
+        if(by_time)
+            normalizeGivenScores(time_scores);
+
+        //Figure out the total match score based on wanted parameters and normalized scores. Can remove all these booleans if we just want to do all of
         //them automatically and the new inputs will be weights for each wanted parameters than booleans.
         for(var i = 0; i < activity_list.length; i++) {
             match_score = 0; //Start with 0 match score
@@ -150,12 +211,12 @@ var console = require('console');
             //Add interest score in match score.
             if(by_interest)
             {
-                match_score += interest_weight*getInterestScore(current_user_handle, "activity/" + activity_list[i].activity_id);
+                match_score += interest_weight*interest_scores[i];
             }
             //Add social proximity score in match score.
             if(by_social_proximity)
             {
-                match_score += social_weight*getSocialProximityScore(current_user_handle, "activity/" + activity_list[i].activity_id);
+                match_score += social_weight*social_proximity_scores[i];
             }
             //Add geo proximity score in match score.
             if(by_location)
@@ -165,7 +226,7 @@ var console = require('console');
             //Add time score in match score.
             if(by_time)
             {
-                getTimeScore(reference_time, "activity/" + activity_list[i].activity_id);
+                match_score += time_weight*time_scores[i];
             }
             activity_list_with_score.push({
                 "activity_id": activity_list[i].activity_id,
@@ -179,6 +240,7 @@ var console = require('console');
         return sorted_activities;
     };
 
+    //CURRENTLY NOT USED! Might be useful in the future. Should we delete?
     //Grabs all the current activities with at least 1 favourited user of user_object attending
     function matchActivitiesWithUserFavourites(user_object){
         var user_favourites_array = (new favourited.Favourited()).getUserFavouritesID(user_object._id);
@@ -238,7 +300,6 @@ var console = require('console');
         }
         //This is for the main page tab. More factors will be incorporated here in the future to decide which activities to return
         else{
-            console.log(query.getDateNow());
             var temp_activities = [];
             //Grab all future events(this is the only hard filter for now. Later on it will be all future events within a certain radius in x km)
             temp_activities = matchFutureActivities();
