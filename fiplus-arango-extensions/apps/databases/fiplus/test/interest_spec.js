@@ -1,5 +1,7 @@
 var frisby = require('frisby');
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 // Test setup - Login as default user
 frisby.create(this.description)
     .post('https://localhost:3001/api/Users/login',

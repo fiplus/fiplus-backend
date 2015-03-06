@@ -55,6 +55,14 @@ var user2 = db.user.save({
         "age": 20,
         "gender": "female",
         "location_proximity_setting": true
+    },
+    authData: { //password: test2
+        active: true,
+        keyLength: 66,
+        workUnits: 60,
+        hashMethod: "pbkdf2",
+        hash: "YOkZwdgCz1SaJtqq34NPHMgBHc4qFFbNMxSgE6ig/KJ6UAXluLvF39F0ipYbOfCl+gHZ0yoyf8IEkY/P+JCtvBWD",
+        salt: "tqyK0h68ilfsPxA6Muk8wQqWPYaf32s4RITfNj34TDUOqAIEvoJbkgnXquuirX1gI4"
     }
 });
 
@@ -65,6 +73,64 @@ var user3 = db.user.save({
     "userData" :
     {
         "username": "three",
+        "profile_pic": "any",
+        "age": 22,
+        "gender": "female",
+        "location_proximity_setting": true
+    }
+});
+
+// used for confirm voted for suggestion users
+var user4 = db.user.save({
+    "_key": "4",
+    "user": "test4@data.com",
+    "userData" :
+    {
+        "username": "four",
+        "profile_pic": "any",
+        "age": 22,
+        "gender": "female",
+        "location_proximity_setting": true
+    },
+    authData: { //password: test4
+        active: true,
+        keyLength: 66,
+        workUnits: 60,
+        hashMethod: "pbkdf2",
+        hash: "wNjirmHAbwRUvg2ij09oxu6p4oxEZe8OcdLOixg5B2TPFC+4JbcnI0JTyF3bHc+apx/ocQW7H+ih/Ky4OMKaFe92",
+        salt: "EsmjF5l2uum0FEZAU4NumWxeRWpCBrFTAfVyhAn4MeXpKcEfIwkw49zgUXRGnBv1xO"
+    }
+});
+
+// used for not confirm voted for suggestion users b/c only voted for one
+var user5 = db.user.save({
+    "_key": "5",
+    "user": "test5@data.com",
+    "userData" :
+    {
+        "username": "five",
+        "profile_pic": "any",
+        "age": 22,
+        "gender": "female",
+        "location_proximity_setting": true
+    },
+    authData: { //password: test5
+        active: true,
+        keyLength: 66,
+        workUnits: 60,
+        hashMethod: "pbkdf2",
+        hash: "DVxGuXqgoSM14jSzpX9e5IAq6UlHZ34apV5vq5zhC6HRYmyVg9K7UwV8VjqVYUO3r5egNg6YNWuev0vjd80QJpxX",
+        salt: "OI4JbEsim4qZmkebOicjG1gkHGVv7TxvvjAXk5ts9AqH1irKL9XkylLVbgVPIAgJ4v"
+    }
+});
+
+// used for not confirm voted for suggestion users b/c only voted for other sugs
+var user6 = db.user.save({
+    "_key": "6",
+    "user": "test6@data.com",
+    "userData" :
+    {
+        "username": "six",
         "profile_pic": "any",
         "age": 22,
         "gender": "female",
@@ -148,7 +214,7 @@ var act2 = db.activity.save({
     _key:'2',
     Name:'A2',
     description:'activity 2',
-    max_attendees:0,
+    max_attendees:3,
     allow_joiner_input: false,
     is_cancelled: false
 });
@@ -191,10 +257,10 @@ var act6 = db.activity.save({
 
 // Used for FirmUp testing
 var act7 = db.activity.save({
-    _key:'7',
-    Name:'A7',
-    description:'activity 7',
-    max_attendees:0,
+    _key: '7',
+    Name: 'A7',
+    description: 'activity 7',
+    max_attendees: 10,
     allow_joiner_input: false,
     is_cancelled: false
 });
@@ -205,6 +271,16 @@ var act8 = db.activity.save({
     Name:'A8',
     description:'activity 8',
     max_attendees:6,
+    allow_joiner_input: false,
+    is_cancelled: false
+});
+
+// A confirmed event with suggestions, joiner, and confirmed attendees
+var act9 = db.activity.save({
+    _key:'9',
+    Name:'A9',
+    description:'activity 9',
+    max_attendees:5,
     allow_joiner_input: false,
     is_cancelled: false
 });
@@ -231,6 +307,15 @@ var timeSug3 = db.suggestion.save({_key:'6'});
 var timeSug4 = db.suggestion.save({_key:'10'});
  db.suggested.save(act7, timeSug4, {});
  db.is.save(timeSug4, tp3, {});
+var timeSug5 = db.suggestion.save({_key:'13'});
+db.suggested.save(act7, timeSug5, {});
+db.is.save(timeSug5, tp4, {});
+var timeSug6 = db.suggestion.save({_key:'14'});
+db.suggested.save(act9, timeSug6, {});
+db.is.save(timeSug6, tp3, {});
+var timeSug7 = db.suggestion.save({_key:'15'});
+db.suggested.save(act9, timeSug7, {});
+db.is.save(timeSug7, tp4, {});
 
 // Location Suggestions
 var sug2 = db.suggestion.save({_key:'2'});
@@ -251,6 +336,16 @@ var locSug7 = db.suggestion.save({_key:'11'});
 var locSug8 = db.suggestion.save({_key:'12'});
  db.suggested.save(act7, locSug8, {});
  db.is.save(locSug8, loc4, {});
+var locSug9 = db.suggestion.save({_key:'16'});
+db.suggested.save(act9, locSug9, {});
+db.is.save(locSug9, loc2, {});
+var locSug10 = db.suggestion.save({_key:'17'});
+db.suggested.save(act9, locSug10, {});
+db.is.save(locSug8, loc4, {});
+
+// confirmed times and locations
+db.confirmed.save(act9, loc4, {});
+db.confirmed.save(act9, tp4, {});
 
 // Creators
 db.created.save(defaultUser, activity1, {});
@@ -277,6 +372,8 @@ db.created.save(defaultUser, act6, {});
 db.joined.save(defaultUser, act6, {});
 db.created.save(defaultUser, act7, {});
 db.joined.save(defaultUser, act7, {});
+db.created.save(defaultUser, act9, {});
+db.joined.save(defaultUser, act9, {});
 
 // Joiners
 db.joined.save(user2, act1, {});
@@ -285,6 +382,16 @@ db.joined.save(user1, act2, {});
 db.joined.save(user3, act2, {});
 db.joined.save(defaultUser, act3, {});
 db.joined.save(defaultUser, act8, {});
+db.joined.save(user4, act7, {});
+db.joined.save(user5, act7, {});
+db.joined.save(user6, act7, {});
+db.joined.save(user4, act9, {});
+db.joined.save(user5, act9, {});
+db.joined.save(user6, act9, {});
+
+// Confirmed Attendees
+db.confirmed.save(user6, act9, {});
+db.confirmed.save(defaultUser, act9, {});
 
 // Tagged
 db.tagged.save(act1, int1, {});
@@ -304,7 +411,7 @@ db.suggested.save(act1, sug2, {});
 var sug3 = db.suggestion.save({_key:'3'});
 db.is.save(sug3, tp1, {});
 
-var sug4 = db.suggestion.save({_key:'13'});
+var sug4 = db.suggestion.save({_key:'18'});
 db.is.save(sug4, tp4, {});
 db.suggested.save(act6, sug4, {});
 
@@ -316,4 +423,9 @@ db.suggested.save(activity1, sug1, {});
 db.suggested.save(activity1, sug3, {});
 db.suggested.save(activity2, sug3, {});
 
-// Favourite users
+// used for confirm voted for suggestion users.
+db.voted.save(user4, timeSug4, {});
+db.voted.save(user4, locSug8, {});
+db.voted.save(user5, timeSug4, {});
+db.voted.save(user6, locSug7, {});
+db.voted.save(user6, timeSug5, {});

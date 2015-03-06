@@ -89,3 +89,16 @@ exports.getDefaultActivities = function()
         getFutureConfirmedActivities(returnValue) +
         "return union_distinct(s,c)").toArray()[0];
 };
+
+// Returns all the confirmed and unconfirmed event attendees
+exports.getAllAttendees = function(actId)
+{
+    return db._query(
+            "return unique(" +
+                "union(" +
+                    "(for joined in graph_edges('fiplus', @actId, {edgeCollectionRestriction:'joined'})" +
+                        "return document(joined._from))," +
+                    "(for confirmed in graph_edges('fiplus', @actId, {edgeCollectionRestriction:'confirmed', endVertexCollectionRestriction:'user'})" +
+                        "return document(confirmed._from))))" ,
+            {actId:actId}).toArray()[0];
+};

@@ -1,8 +1,11 @@
 var db = require('org/arangodb').db;
 var error = require('error');
 var stamp = require('db-interface/node/time_stamp').TimeStamp;
+var joiner = require('db-interface/edge/joined').Joined;
 var period = require('db-interface/node/time_period').TimePeriod;
 var model_common = require('model-common');
+var activity = require('db-interface/node/activity').Activity;
+var user = require('db-interface/node/user').User;
 var location = require('db-interface/node/location').Location;
 
 /**
@@ -17,76 +20,134 @@ var Confirmed = function()
     this.TO_FIELD = '_to';
 };
 
-Confirmed.prototype.saveConfirmed = function(activityId, suggestionId)
+function confirmSuggestion(activityId, suggestedId, is_time)
 {
     if(!db.activity.exists(activityId))
     {
         throw new error.NotFoundError('Activity')
     }
+
+    // delete existing time or location confirmation accordingly
+    db.confirmed.outEdges(activityId).forEach(function (edge)
+    {
+        if(edge._to.split('/')[0] ==  "time_period")
+        {
+            if(is_time)
+            {
+                db.confirmed.remove(edge._key);
+            }
+        }
+        else if(edge._to.split('/')[0] ==  "location")
+        {
+            if(!is_time)
+            {
+                db.confirmed.remove(edge._key);
+            }
+        }
+    });
+
+    // save confirmation
+    var result = db.confirmed.save(activityId, suggestedId, {});
+    if(result.error == true)
+    {
+        throw new error.GenericError('Saving confirmation for suggestion failed.');
+    }
+
+    return result;
+}
+
+// confirm all users that have voted for the event
+Confirmed.prototype.confirmVoters = function(activityId)
+{
+    var _this = this;
+    var isConfirm = this.isConfirmed(activityId);
+    if(isConfirm.confirmed)
+    {
+        // find all voters of the suggestion
+        db.voted.inEdges(isConfirm.time_sug).forEach(function (edge) {
+            var voter_id = edge._from;
+            // if user voted for both time and location (if suggestion exists), confirm
+            if (db.voted.firstExample({"_from": voter_id, "_to": isConfirm.loc_sug}) != null) {
+                _this.confirmUser(voter_id, activityId);
+            }
+        });
+    }
+}
+
+// returns true if the activity has been confirmed (both time and location). False otherwise
+Confirmed.prototype.isConfirmed = function(activityId)
+{
+    var time_sug, loc_sug;
+    var hasTime = false;
+    var hasLoc = false;
+    db.confirmed.outEdges(activityId).forEach(function(edge)
+    {
+        var id = edge._to;
+        if((id.split('/')[0] ==  "time_period"))
+        {
+            hasTime = true;
+            db.is.inEdges(id).forEach(function (edge) {
+                var sug = edge._from;
+                if(db.suggested.firstExample({"_from":activityId, "_to":sug}) != null)
+                {
+                    time_sug = sug;
+                }
+            });
+        }
+        else if((id.split('/')[0] ==  "location"))
+        {
+            hasLoc = true;
+            db.is.inEdges(id).forEach(function (edge) {
+                var sug = edge._from;
+                if(db.suggested.firstExample({"_from":activityId, "_to":sug}) != null)
+                {
+                    loc_sug = sug;
+                }
+            });
+        }
+    });
+
+    return{
+        confirmed: hasTime && hasLoc,
+        time_sug: time_sug,
+        loc_sug: loc_sug
+    };
+}
+
+Confirmed.prototype.confirmUser = function(userId, activityId)
+{
+    if(db.confirmed.firstExample({"_from": userId, "_to": activityId}) == null)
+    {
+        var result = db.confirmed.save(userId, activityId, {});
+        if (result.error == true)
+        {
+            throw new error.GenericError('Saving confirmation for voter failed.');
+        }
+    }
+}
+
+Confirmed.prototype.saveConfirmed = function(activityId, suggestionId)
+{
     if(!db.suggestion.exists(suggestionId))
     {
         throw new error.NotFoundError('Suggestion');
     }
 
     var id = db.is.outEdges(suggestionId)[0]._to;
-
-    // restrict one location/time confirmation
-    var hasTime = false, hasLoc = false;
-    db.confirmed.outEdges(activityId).forEach(function (edge)
-    {
-        if(edge._to.indexOf("location") > -1)
-        {
-            hasLoc = true;
-        }
-        else
-        {
-            hasTime = true;
-        }
-    });
-
-    // save confirmation
-    var result = db.confirmed.save(activityId, id, {});
-    if(result.error == true)
-    {
-        throw new error.GenericError('Saving confirmation for suggestion failed.');
-    }
-    return result;
+    var is_time = (id.split('/')[0] ==  "time_period");
+    return confirmSuggestion(activityId, id, is_time);
 };
 
 Confirmed.prototype.saveConfirmedTime = function(activityId, start_time, end_time)
 {
-    if(!db.activity.exists(activityId))
-    {
-        throw new error.NotFoundError('Activity')
-    }
-
     var period_node = (new period()).saveTimePeriod(start_time, end_time);
-
-    // save confirmation
-    var result = db.confirmed.save(activityId, period_node._id, {});
-    if(result.error == true)
-    {
-        throw new error.GenericError('Saving confirmation for suggestion failed.');
-    }
-    return result;
+    return confirmSuggestion(activityId, period_node._id, true);
 };
 
 Confirmed.prototype.saveConfirmedLocation = function(activityId, latitude, longitude)
 {
-    if(!db.activity.exists(activityId))
-    {
-        throw new error.NotFoundError('Activity')
-    }
-
     var loc_node = (new location()).saveLocation(latitude, longitude);
-
-    // save confirmation
-    var result = db.confirmed.save(activityId, loc_node._id, {});
-    if(result.error == true)
-    {
-        throw new error.GenericError('Saving confirmation for suggestion failed.');
-    }
-    return result;
+    return confirmSuggestion(activityId, loc_node._id, false);
 };
 
 Confirmed.prototype.getConfirmedTime = function(activity_id)
@@ -107,6 +168,7 @@ Confirmed.prototype.getConfirmedTime = function(activity_id)
             time.end = db.time_stamp.document(end)[Stamp.VALUE_FIELD];
         }
     }
+
     return time;
 };
 
@@ -128,6 +190,77 @@ Confirmed.prototype.getConfirmedLocation = function(activity_id)
         }
     }
     return loc_model;
+};
+
+Confirmed.prototype.getNumConfirmers = function(activity_id)
+{
+    //Note: assumes x -> confirmed -> activity, x is always user
+    return this.db.confirmed.inEdges(activity_id).length;
+};
+
+Confirmed.prototype.getConfirmersProfile = function(activity_id, maximum, current_userId)
+{
+    if(maximum == null) {
+        maximum = (new joiner()).GET_JOINER_MAX;
+    }
+    var joiners = [];
+    var num_joiners = this.getNumConfirmers(activity_id);
+    var joined_array = this.db.confirmed.inEdges(activity_id);
+    var limit = (num_joiners <= maximum)? num_joiners: maximum;
+
+    for(var i = 0; i < limit; i++) {
+        joiners.push(helper.getProfile(this.db.user.document(joined_array[i]._from), current_userId));
+    }
+    return joiners;
+
+};
+
+Confirmed.prototype.getConfirmersId = function(activity_id, maximum)
+{
+    if(maximum == null) {
+        maximum = (new joiner()).GET_JOINER_MAX;
+    }
+    var joiners = [];
+    var num_joiners = this.getNumConfirmers(activity_id);
+    var joined_array = this.db.confirmed.inEdges(activity_id);
+    var limit = (num_joiners <= maximum)? num_joiners: maximum;
+
+    for(var i = 0; i < limit; i++) {
+        joiners.push(this.db.user.document(joined_array[i]._from)._key);
+    }
+    return joiners;
+};
+
+Confirmed.prototype.setUserConfirmedActivity = function(userHandle, activityHandle)
+{
+    var Activity = new activity();
+
+    (new user()).exists(userHandle);
+    Activity.exists(activityHandle);
+
+    var joinedObject = {};
+    joinedObject[this.FROM_FIELD] = userHandle;
+    joinedObject[this.TO_FIELD] = activityHandle;
+
+    var full = Activity.activityFull(activityHandle);
+    var isJoined = db.joined.firstExample(joinedObject) != null;
+
+    if(full && !isJoined)
+    {
+        throw new error.NotAllowedError('Activity is full. Confirming is');
+    }
+
+    var result = this.db.confirmed.firstExample(joinedObject);
+
+    if(result == null)
+    {
+        result = this.db.confirmed.save(userHandle, activityHandle, {});
+        if(result.error == true)
+        {
+            throw new error.GenericError('Saving user confirmed attending activity failed.');
+        }
+    }
+    return result;
 };
 
 exports.Confirmed = Confirmed;

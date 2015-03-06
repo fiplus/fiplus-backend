@@ -96,13 +96,11 @@ var defines = require('db-interface/util/defines');
                 for (var i = 0; i < times.length; i++)
                 {
                     var time = times[i];
+
+                    Suggester.saveSuggestedTimeEdge(activity_id, time.start, time.end);
                     if(time.suggestion_id == "-1")
                     {
-                        Confirmer.saveConfirmedTime(activity_id, times.start, times.end);
-                    }
-                    else
-                    {
-                        Suggester.saveSuggestedTimeEdge(activity_id, time.start, time.end);
+                        Confirmer.saveConfirmedTime(activity_id, time.start, time.end);
                     }
                 }
 
@@ -110,14 +108,17 @@ var defines = require('db-interface/util/defines');
                 for (var i = 0; i < locations.length; i++)
                 {
                     var location = locations[i];
+
+                    Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude);
                     if(location.suggestion_id == "-1")
                     {
                         Confirmer.saveConfirmedLocation(activity_id, location.latitude, location.longitude);
                     }
-                    else
-                    {
-                        Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude);
-                    }
+                }
+
+                if(Confirmer.isConfirmed(activity_id).confirmed)
+                {
+                    Confirmer.confirmUser(creator_id, activity_id);
                 }
 
                 // Return the activity key and name value so that push notifications can be sent for activity
@@ -156,14 +157,27 @@ var defines = require('db-interface/util/defines');
         var lim = req.params('Limit');
         (new actor()).exists(activity_id);
 
-        var Joiner = new joiner();
+        var Confirmer = new confirmer();
         var attendees = new model_common.Attendee();
-        attendees.num_attendees = Joiner.getNumJoiners(activity_id);
-        // TODO attendeeDetail.participants
-        //Will be reverted to this in the future
-        //attendees.joiners =  Joiner.getJoinersProfile(activity_id, lim, current_userId);
-        //Temporary code for alpha
-        attendees.joiners =  Joiner.getJoinersId(activity_id, lim);
+        if(Confirmer.isConfirmed(activity_id).confirmed)
+        {
+            attendees.num_attendees = Confirmer.getNumConfirmers(activity_id);
+            //Will be reverted to this in the future
+            //attendees.joiners =  Confirmer.getConfirmersProfile(activity_id, lim, current_userId);
+            //Temporary code for alpha
+            attendees.joiners =  Confirmer.getConfirmersId(activity_id, lim);
+        }
+        else
+        {
+            var Joiner = new joiner();
+
+            attendees.num_attendees = Joiner.getNumJoiners(activity_id);
+            // TODO attendeeDetail.participants
+            //Will be reverted to this in the future
+            //attendees.joiners =  Joiner.getJoinersProfile(activity_id, lim, current_userId);
+            //Temporary code for alpha
+            attendees.joiners =  Joiner.getJoinersId(activity_id, lim);
+        }
 
         res.json(attendees);
     }).pathParam('activityid', {
@@ -225,8 +239,10 @@ var defines = require('db-interface/util/defines');
                 var Confirmer = new confirmer();
                 var result = Confirmer.saveConfirmed(activityId, suggestionId);
 
+                Confirmer.confirmVoters(activityId);
+
                 // Return the activity key and name value so that push notifications can be sent for activity
-                // Note: a confirmed time and location sent one after the other will trigger 2 push notifications.
+                // FIXME: a confirmed time and location sent one after the other will trigger 2 push notifications.
                 var FirmUpResponse = new model_common.FirmUpResponse();
                 FirmUpResponse.activity_id = activityId.split('/')[1];
                 FirmUpResponse.Name = (new actor).get(activityId).Name;
@@ -438,10 +454,20 @@ var defines = require('db-interface/util/defines');
                 res:res
             },
             action:function(params) {
-                var activity_id = 'activity/' + params.req.params('activityid')
+                var activity_id = 'activity/' + params.req.params('activityid');
                 var uid = params.req.session.get('uid');
+
                 (new actor()).checkIfCancelled(activity_id);
-                (new joiner()).setUserJoinedActivity(uid, activity_id);
+
+                var Confirmer = new confirmer();
+                if(Confirmer.isConfirmed(activity_id).confirmed)
+                {
+                    Confirmer.setUserConfirmedActivity(uid, activity_id);
+                }
+                else
+                {
+                    (new joiner()).setUserJoinedActivity(uid, activity_id);
+                }
             }
         });
     }).pathParam('activityid', {

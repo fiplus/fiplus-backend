@@ -34,6 +34,7 @@ exports.getActivity = function(activity_node)
     if(confirmedTime != null)
     {
         activity.times = [confirmedTime];
+
     }
     else
     {
@@ -41,7 +42,6 @@ exports.getActivity = function(activity_node)
     }
 
     var confirmedLoc = Confirmer.getConfirmedLocation(activity_node._id);
-
     if(confirmedLoc != null)
     {
         activity.locations = [confirmedLoc];

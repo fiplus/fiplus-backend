@@ -53,6 +53,76 @@ describe("Create activity", function () {
             })
             .toss();
     });
+
+    it("should create events with confirmed date and time and confirm creator", function () {
+        frisby.create(this.description)
+            .post('https://localhost:3001/api/Acts',
+            {
+                "Name" : "Another Event",
+                "description" : "My Nth event",
+                "max_attendees" : "1000",
+                "allow_joiner_input" : false,
+                "creator" : "101",
+                "tagged_interests": ["Basketball"],
+                "times" : [
+                    {
+                        suggestion_id : "-1",
+                        "start" : "253416421800000",
+                        "end" : "253416429000000"
+                    } // 12/6/10000, 10:30 - 12:30
+                ],
+                "locations": [
+                    {
+                        suggestion_id : "-1",
+                        "latitude" : 56,
+                        "longitude" : -96
+                    } // Canada
+                ]
+            }, {json: true})
+            .expectStatus(200)
+            .afterJSON(function(res) {
+                activity_id = res.activity_id;
+                frisby.create(this.description + "dB")
+                    .post("http://localhost:8529/_db/fiplus/_api/traversal",
+                    {
+                        startVertex: 'activity/' + activity_id,
+                        graphName: 'fiplus',
+                        direction: 'outbound',
+                        edgeCollection: 'confirmed',
+                        maxDepth: 3
+                    }, {json: true})
+                    .expectJSON('result.visited.vertices.?',
+                    {
+                        value : "253416421800000"
+                    })
+                    .expectJSON('result.visited.vertices.?',
+                    {
+                        value : "253416429000000"
+                    })
+                    .expectJSON('result.visited.vertices.?',
+                    {
+                        "latitude" : 56,
+                        "longitude" : -96
+                    })
+                    .toss();
+                frisby.create(this.description + "dB")
+                    .post("http://localhost:8529/_db/fiplus/_api/traversal",
+                    {
+                        startVertex: 'activity/' + activity_id,
+                        graphName: 'fiplus',
+                        direction: 'inbound',
+                        edgeCollection: 'confirmed',
+                        maxDepth: 1
+                    }, {json: true})
+                    .expectJSON('result.visited.vertices.?',
+                    {
+                        "_key" : "101"
+                    })
+                    .toss();
+            })
+            .toss();
+
+    });
 });
 
 describe("Cancel Activity Tests", function() {
@@ -119,7 +189,7 @@ describe("Cancel Activity Tests", function() {
             .toss();
 
         frisby.create('time vote')
-            .post('https://localhost:3001/api/Acts/suggestion/13/user')
+            .post('https://localhost:3001/api/Acts/suggestion/18/user')
             .expectStatus(400)
             .toss();
     });
@@ -600,7 +670,7 @@ describe('Get Activity', function() {
                 "activity_id": "2",
                 "Name": "A2",
                 "description": "activity 2",
-                "max_attendees": 0,
+                "max_attendees": 3,
                 allow_joiner_input: false,
                 is_cancelled: false,
                 "num_attendees": 3,
@@ -692,6 +762,22 @@ describe('Get Attendees', function() {
             })
             .toss();
     });
+
+    it('should return only confirmed users if event is confirmed', function() {
+        frisby.create(this.description)
+            .get('https://localhost:3001/api/Acts/9/user?Limit=100',
+            {})
+            .expectStatus(200)
+            .expectJSON(
+            {
+                "num_attendees": 2,
+                "joiners": [
+                    "6",
+                    "101"
+                ]
+            })
+            .toss();
+    });
 });
 
 describe('Firm Up Activity', function() {
@@ -728,7 +814,7 @@ describe('Firm Up Activity', function() {
         frisby.create(this.description + "dB")
             .post("http://localhost:8529/_db/fiplus/_api/traversal",
             {
-                startVertex: 'activity/2',
+                startVertex: 'activity/7',
                 graphName: 'fiplus',
                 direction: 'outbound',
                 edgeCollection: 'confirmed',
@@ -746,6 +832,21 @@ describe('Firm Up Activity', function() {
             {})
             .expectStatus(200)
             .toss();
+        frisby.create(this.description + "dB")
+            .post("http://localhost:8529/_db/fiplus/_api/traversal",
+            {
+                startVertex: 'activity/7',
+                graphName: 'fiplus',
+                direction: 'outbound',
+                edgeCollection: 'confirmed',
+                maxDepth: 3
+            }, {json: true})
+            .expectJSON('result.visited.vertices.?',
+            {
+                latitude: 150,
+                longitude: 150
+            })
+            .toss();
     });
     it('should not allow confirming an activity which you are not the creator of.', function() {
         frisby.create(this.description)
@@ -761,7 +862,7 @@ describe('Firm Up Activity', function() {
             .expectStatus(404)
             .toss();
     });
-    it('Get Activity should return only confirmed activities.', function() {
+    it('Get Activity should return only confirmed times/locations.', function() {
         frisby.create(this.description)
             .get('https://localhost:3001/api/Acts/7',
             {})
@@ -770,7 +871,7 @@ describe('Firm Up Activity', function() {
             {
                 "Name": "A7",
                 "description": "activity 7",
-                "max_attendees": 0,
+                "max_attendees": 10,
                 "creator": "101",
                 "times": [
                     {
@@ -782,10 +883,183 @@ describe('Firm Up Activity', function() {
                 "locations": [
                     {
                         "suggestion_id": "-1",
-                        "longitude": 100,
-                        "latitude": 50
+                        "longitude": 150,
+                        "latitude": 150
                     }
                 ]
+            })
+            .toss();
+    });
+
+    it('should confirm voted users', function() {
+        frisby.create(this.description + "dB")
+            .post("http://localhost:8529/_db/fiplus/_api/traversal",
+            {
+                startVertex: 'activity/7',
+                graphName: 'fiplus',
+                direction: 'inbound',
+                edgeCollection: 'confirmed',
+                maxDepth: 1
+            }, {json: true})
+            .expectJSON('result.visited.vertices.?',
+            {
+                _key: "4" // user that voted for both
+            })
+            .afterJSON(function(response) {
+                expect(JSON.stringify(response)).not.toContain("_key: '101'"); // did not vote for any
+                expect(JSON.stringify(response)).not.toContain("_key: '5'"); // only voted for one
+                expect(JSON.stringify(response)).not.toContain("_key: '6'"); // voted for wrong one
+            })
+            .toss();
+    });
+});
+
+describe('Join Confirmed Activity', function() {
+    it('should confirm a non-joined user to attend.', function() {
+        frisby.create(this.description)
+            .post('https://localhost:3001/api/Users/login',
+            {
+                "email": "test@data.com",
+                "password": "test"
+            }, {json: true})
+            .addHeader('Cookie', 'sid=asdf;sid.sig=asdf')
+            .after(function (err, res, body) {
+                var sid = res.headers['set-cookie'][0];
+                var sidSig = res.headers['set-cookie'][1];
+
+                frisby.globalSetup({
+                    request: {
+                        headers: {
+                            cookie: sid.split(';')[0] + ';' + sidSig.split(';')[0]
+                        }
+                    }
+                });
+
+                frisby.create(this.description)
+                    .put("https://localhost:3001/api/Acts/9/user")
+                    .expectStatus(200)
+                    .after(function() {
+                        frisby.create(this.description + ' db check')
+                            .post("http://localhost:8529/_db/fiplus/_api/traversal", {
+                                startVertex: 'activity/9',
+                                graphName: 'fiplus',
+                                direction: 'inbound',
+                                edgeCollection: 'confirmed'
+                            }, {json: true})
+                            .expectJSON('result.visited.vertices.?', {
+                                user: 'test@data.com'
+                            })
+                            .toss();
+                    })
+                    .toss();
+            })
+            .toss();
+    });
+    it('should confirm a joined user to attend.', function() {
+        frisby.create(this.description)
+            .post('https://localhost:3001/api/Users/login',
+            {
+                "email": "test5@data.com",
+                "password": "test5"
+            }, {json: true})
+            .addHeader('Cookie', 'sid=asdf;sid.sig=asdf')
+            .after(function (err, res, body) {
+                var sid = res.headers['set-cookie'][0];
+                var sidSig = res.headers['set-cookie'][1];
+
+                frisby.globalSetup({
+                    request: {
+                        headers: {
+                            cookie: sid.split(';')[0] + ';' + sidSig.split(';')[0]
+                        }
+                    }
+                });
+
+                frisby.create(this.description)
+                    .put("https://localhost:3001/api/Acts/9/user")
+                    .expectStatus(200)
+                    .after(function() {
+                        frisby.create(this.description + ' db check')
+                            .post("http://localhost:8529/_db/fiplus/_api/traversal", {
+                                startVertex: 'activity/9',
+                                graphName: 'fiplus',
+                                direction: 'inbound',
+                                edgeCollection: 'confirmed'
+                            }, {json: true})
+                            .expectJSON('result.visited.vertices.?', {
+                                user: 'test5@data.com'
+                            })
+                            .toss();
+                    })
+                    .toss();
+            })
+            .toss();
+    });
+    it('should confirm joined users even if event is full.', function() {
+        frisby.create(this.description)
+            .post('https://localhost:3001/api/Users/login',
+            {
+                "email": "test4@data.com",
+                "password": "test4"
+            }, {json: true})
+            .addHeader('Cookie', 'sid=asdf;sid.sig=asdf')
+            .after(function (err, res, body) {
+                var sid = res.headers['set-cookie'][0];
+                var sidSig = res.headers['set-cookie'][1];
+
+                frisby.globalSetup({
+                    request: {
+                        headers: {
+                            cookie: sid.split(';')[0] + ';' + sidSig.split(';')[0]
+                        }
+                    }
+                });
+
+                frisby.create(this.description)
+                    .put("https://localhost:3001/api/Acts/9/user")
+                    .expectStatus(200)
+                    .after(function() {
+                        frisby.create(this.description + ' db check')
+                            .post("http://localhost:8529/_db/fiplus/_api/traversal", {
+                                startVertex: 'activity/9',
+                                graphName: 'fiplus',
+                                direction: 'inbound',
+                                edgeCollection: 'confirmed'
+                            }, {json: true})
+                            .expectJSON('result.visited.vertices.?', {
+                                user: 'test4@data.com'
+                            })
+                            .toss();
+                    })
+                    .toss();
+            })
+            .toss();
+    });
+
+    it('should not confirm non-joined users if event is full.', function() {
+        frisby.create(this.description)
+            .post('https://localhost:3001/api/Users/login',
+            {
+                "email": "test2@data.com",
+                "password": "test2"
+            }, {json: true})
+            .addHeader('Cookie', 'sid=asdf;sid.sig=asdf')
+            .after(function (err, res, body) {
+                var sid = res.headers['set-cookie'][0];
+                var sidSig = res.headers['set-cookie'][1];
+
+                frisby.globalSetup({
+                    request: {
+                        headers: {
+                            cookie: sid.split(';')[0] + ';' + sidSig.split(';')[0]
+                        }
+                    }
+                });
+
+                frisby.create(this.description)
+                    .put("https://localhost:3001/api/Acts/9/user")
+                    .expectStatus(400)
+                    .toss();
             })
             .toss();
     });
