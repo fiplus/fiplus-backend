@@ -97,13 +97,10 @@ var defines = require('db-interface/util/defines');
                 {
                     var time = times[i];
 
+                    Suggester.saveSuggestedTimeEdge(activity_id, time.start, time.end);
                     if(time.suggestion_id == "-1")
                     {
                         Confirmer.saveConfirmedTime(activity_id, time.start, time.end);
-                    }
-                    else
-                    {
-                        Suggester.saveSuggestedTimeEdge(activity_id, time.start, time.end);
                     }
                 }
 
@@ -111,19 +108,17 @@ var defines = require('db-interface/util/defines');
                 for (var i = 0; i < locations.length; i++)
                 {
                     var location = locations[i];
+
+                    Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude);
                     if(location.suggestion_id == "-1")
                     {
                         Confirmer.saveConfirmedLocation(activity_id, location.latitude, location.longitude);
                     }
-                    else
-                    {
-                        Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude);
-                    }
-        }
+                }
 
-        if(Confirmer.isConfirmed(activity_id).confirmed)
-        {
-            Confirmer.confirmUser(creator_id, activity_id);
+                if(Confirmer.isConfirmed(activity_id).confirmed)
+                {
+                    Confirmer.confirmUser(creator_id, activity_id);
                 }
 
                 // Return the activity key and name value so that push notifications can be sent for activity
@@ -243,6 +238,8 @@ var defines = require('db-interface/util/defines');
                 // Add confirmed edge
                 var Confirmer = new confirmer();
                 var result = Confirmer.saveConfirmed(activityId, suggestionId);
+
+                Confirmer.confirmVoters(activityId);
 
                 // Return the activity key and name value so that push notifications can be sent for activity
                 // FIXME: a confirmed time and location sent one after the other will trigger 2 push notifications.
@@ -459,6 +456,9 @@ var defines = require('db-interface/util/defines');
             action:function(params) {
                 var activity_id = 'activity/' + params.req.params('activityid');
                 var uid = params.req.session.get('uid');
+
+                (new actor()).checkIfCancelled(activity_id);
+
                 var Confirmer = new confirmer();
                 if(Confirmer.isConfirmed(activity_id).confirmed)
                 {
@@ -466,7 +466,6 @@ var defines = require('db-interface/util/defines');
                 }
                 else
                 {
-                    (new actor()).checkIfCancelled(activity_id);
                     (new joiner()).setUserJoinedActivity(uid, activity_id);
                 }
             }

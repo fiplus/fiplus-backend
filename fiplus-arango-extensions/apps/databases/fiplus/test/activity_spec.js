@@ -862,7 +862,7 @@ describe('Firm Up Activity', function() {
             .expectStatus(404)
             .toss();
     });
-    it('Get Activity should return only confirmed activities.', function() {
+    it('Get Activity should return only confirmed times/locations.', function() {
         frisby.create(this.description)
             .get('https://localhost:3001/api/Acts/7',
             {})
@@ -903,12 +903,12 @@ describe('Firm Up Activity', function() {
             }, {json: true})
             .expectJSON('result.visited.vertices.?',
             {
-                _key: "4"
+                _key: "4" // user that voted for both
             })
             .afterJSON(function(response) {
-                expect(JSON.stringify(response)).not.toContain("_key: '101'");
-                expect(JSON.stringify(response)).not.toContain("_key: '5'");
-                expect(JSON.stringify(response)).not.toContain("_key: '6'");
+                expect(JSON.stringify(response)).not.toContain("_key: '101'"); // did not vote for any
+                expect(JSON.stringify(response)).not.toContain("_key: '5'"); // only voted for one
+                expect(JSON.stringify(response)).not.toContain("_key: '6'"); // voted for wrong one
             })
             .toss();
     });
