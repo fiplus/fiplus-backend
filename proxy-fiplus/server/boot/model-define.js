@@ -18,3 +18,4 @@ ds.define('SetDeviceId', model.SetDeviceId);
 ds.define('WhoAmI', model.WhoAmI);
 ds.define('CreateActivityResponse', model.CreateActivityResponse);
 ds.define('Favourites', model.Favourites);
+ds.define('Joiner', model.Joiner);
