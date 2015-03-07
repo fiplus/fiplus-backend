@@ -25,6 +25,27 @@ Voted.prototype.saveUserVote = function(userId, suggestionId)
         throw new error.NotFoundError('Suggestion');
     }
 
+    // Requires user to be joined before voting
+    var suggestedExample = {};
+    suggestedExample._to = suggestionId;
+    var suggested = db.suggested.firstExample(suggestedExample);
+    if(suggested)
+    {
+        var joinedExample = {};
+        joinedExample._from = userId;
+        joinedExample._to = suggested._from;
+        var joined = db.joined.firstExample(joinedExample);
+        if(!joined)
+        {
+            throw new error.UnauthorizedError('Voting for event user not joined to');
+        }
+    }
+    else
+    {
+        throw new error.GenericError('Suggestion id does not have corresponding suggested edge');
+    }
+
+
     var example = {};
     example[this.FROM_FIELD] = userId;
     example[this.TO_FIELD] = suggestionId;

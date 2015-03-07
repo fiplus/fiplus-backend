@@ -601,6 +601,13 @@ describe('Suggestion Vote', function() {
             });
     });
 
+    it('should not allow vote for activity not joined to user', function() {
+        frisby.create('not allowed vote')
+            .post('https://localhost:3001/api/Acts/suggestion/6/user')
+            .expectStatus(401)
+            .toss();
+    });
+
     it('should return activity information with updated vote counts and voters id list for suggested time and location and corresponding suggestion id.', function() {
         frisby.create(this.description)
             .get('https://localhost:3001/api/Acts/3',
@@ -698,17 +705,17 @@ describe('Get Activity', function() {
                         "start": 4102513200000,
                         "end": 4102516800000
                     }
-                ],
-                "locations": [
-                    {
-                        "longitude": 150,
-                        "latitude": 150
-                    },
-                    {
-                        "longitude": 100,
-                        "latitude": 50
-                    }
                 ]
+            })
+            .expectJSON('locations.?',
+            {
+                "longitude": 100,
+                "latitude": 50
+            })
+            .expectJSON('locations.?',
+            {
+                "longitude": 150,
+                "latitude": 150
             })
             .toss();
     });
