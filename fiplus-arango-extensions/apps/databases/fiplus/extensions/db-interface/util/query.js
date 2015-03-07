@@ -1,21 +1,37 @@
 var db = require('org/arangodb').db;
 
-function getFutureSuggestedAndNotConfirmedActivities(returnValue) {
+function getFutureSuggestedAndNotConfirmedActivities(returnValue, excludeCancelled)
+{
+    var cancelledFilter = '';
+    if(excludeCancelled)
+    {
+        cancelledFilter = 'filter !activity.is_cancelled '
+    }
+
     return "let s = ( " +
         "for activity in activities " +
         "for suggested in graph_edges('fiplus', activity, {edgeCollectionRestriction:'suggested'}) "+
         "for suggested_is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'}) "+
         "for suggested_start in graph_edges('fiplus', suggested_is._to, {edgeCollectionRestriction:'start'}) "+
-        "filter document(suggested_start._to).value >= date_now() && length(graph_edges('fiplus', activity, {edgeCollectionRestriction:'confirmed'})) == 0 "+
+        "filter document(suggested_start._to).value >= date_now() && length(graph_edges('fiplus', activity, {edgeCollectionRestriction:'confirmed'})) == 0 " +
+        cancelledFilter +
         returnValue + ") ";
 }
 
-function getFutureConfirmedActivities(returnValue) {
+function getFutureConfirmedActivities(returnValue, excludeCancelled)
+{
+    var cancelledFilter = '';
+    if(excludeCancelled)
+    {
+        cancelledFilter = 'filter !activity.is_cancelled '
+    }
+
     return "let c = ( " +
     "for activity in activities " +
     "for confirmed_is in graph_edges('fiplus', activity, {edgeCollectionRestriction:'confirmed', endVertexCollectionRestriction:'time_period'}) "+
     "for confirmed_start in graph_edges('fiplus', confirmed_is._to, {edgeCollectionRestriction:'start'}) "+
-    "filter document(confirmed_start._to).value >= date_now() "+
+    "filter document(confirmed_start._to).value >= date_now() " +
+    cancelledFilter +
     returnValue + ") ";
 }
 
@@ -27,8 +43,8 @@ exports.getJoinedActivities = function(userId, future, past)
         var returnValue = "return document(activity)";
         return db._query(
         "let activities = (for joined in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'joined'}) return joined._to) " +
-        getFutureSuggestedAndNotConfirmedActivities(returnValue) +
-        getFutureConfirmedActivities(returnValue) +
+        getFutureSuggestedAndNotConfirmedActivities(returnValue, false) +
+        getFutureConfirmedActivities(returnValue, false) +
         "return union_distinct(s,c)", {userId:userId}).toArray()[0];
     }
     else if(!future && past)
@@ -85,8 +101,8 @@ exports.getDefaultActivities = function()
     var returnValue = "return activity";
     return db._query(
         "let activities = (for a in activity return a) " +
-        getFutureSuggestedAndNotConfirmedActivities(returnValue) +
-        getFutureConfirmedActivities(returnValue) +
+        getFutureSuggestedAndNotConfirmedActivities(returnValue, true) +
+        getFutureConfirmedActivities(returnValue, true) +
         "return union_distinct(s,c)").toArray()[0];
 };
 

@@ -482,6 +482,9 @@ var defines = require('db-interface/util/defines');
     controller.delete("/:activityid", function(request, response) {
         var activity_id = 'activity/' + request.params('activityid');
 
+        // If activity is cancelled already, additional cancels are not allowed.
+        (new actor()).checkIfCancelled(activity_id);
+
         var uid = request.session.get('uid');
         if(uid.split('/')[1] != (new creator()).getCreator(activity_id))
         {
