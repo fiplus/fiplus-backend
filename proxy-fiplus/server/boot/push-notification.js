@@ -32,8 +32,8 @@ exports.SendNotificationOnActivityCreate = function(activity)
   var createActivityResponse = JSON.parse(activity);
   query.getDeviceIdsInterestedInActivity(createActivityResponse.activity_id, function(err, devices) {
 
-    var message = new push_message.NewActivityMessage(createActivityResponse.activity_id, createActivityResponse.Name + ' activity created!');
-
+    var message = new push_message.NewActivityMessage(createActivityResponse.activity_id,
+      createActivityResponse.Name + ' activity created!');
 
     sendPushNotification(message, devices);
   });
@@ -43,8 +43,6 @@ exports.SendNotificationOnFirmUp = function(firmUp)
 {
   var firmUpResponse = JSON.parse(firmUp);
   query.getDeviceIdsJoinedActivity(firmUp.activity_id, function(err, devices) {
-    var gcmSender = new gcm.Sender();
-    gcmSender.setAPIKey("AIzaSyDwbfeTyVbI1GvMh0JLNyweaNhSbqbgMzI");
 
     var message = new push_message.FirmUpMessage(firmUpResponse.activity_id, firmUpResponse.Name,
       firmUpResponse.time, firmUpResponse.location);
@@ -57,14 +55,9 @@ exports.SendCancelledActivityMessage = function(activity)
 {
   var cancelActivityResponse = JSON.parse(activity);
   query.getDeviceIdsJoinedActivity(cancelActivityResponse.activity_id, function(err, devices) {
-    var message = new push_message.CancelledActivityMessage(cancelActivityResponse.activity_id, cancelActivityResponse.Name + ' has been cancelled');
-    console.log(JSON.stringify(message));
-    console.log(devices);
-    var gcmMessage = new gcm.Message({
-      data: message,
-      dry_run: false
-    });
+    var message = new push_message.CancelledActivityMessage(cancelActivityResponse.activity_id,
+      cancelActivityResponse.Name + ' has been cancelled');
 
-    sendPushNotification(gcmMessage, devices);
+    sendPushNotification(message, devices);
   });
 };
