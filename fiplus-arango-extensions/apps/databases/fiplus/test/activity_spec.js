@@ -182,7 +182,7 @@ describe("Cancel Activity Tests", function() {
             .put('https://localhost:3001/api/Acts/6/location',
             {
                 // jan. 1, 2050 12 - 1pm
-                latitude:100,
+                latitude:70,
                 longitude:23
             },{json:true})
             .expectStatus(400)
@@ -531,7 +531,7 @@ describe('Suggest Location', function(){
             .put('https://localhost:3001/api/Acts/1/location',
             {
                 // jan. 1, 2050 12 - 1pm
-                latitude:100,
+                latitude:70,
                 longitude:23
             },{json:true})
             .expectStatus(200)
@@ -546,7 +546,7 @@ describe('Suggest Location', function(){
             }, {json:true})
             .expectJSON('result.visited.vertices.?',
             {
-                latitude:100,
+                latitude:70,
                 longitude:23
             })
             .toss();
@@ -557,7 +557,7 @@ describe('Suggest Location', function(){
             .put('https://localhost:3001/api/Acts/1/location',
             {
                 // jan. 1, 2050 12 - 1pm
-                latitude:100,
+                latitude:70,
                 longitude:23
             },{json:true})
             .expectStatus(400)
@@ -596,8 +596,8 @@ describe('Suggestion Vote', function() {
             })
             .expectJSON('result.visited.vertices.?',
             {
-                latitude: 150,
-                longitude: 150
+                latitude: 80,
+                longitude: 80
             });
     });
 
@@ -709,13 +709,13 @@ describe('Get Activity', function() {
             })
             .expectJSON('locations.?',
             {
-                "longitude": 100,
+                "longitude": 70,
                 "latitude": 50
             })
             .expectJSON('locations.?',
             {
-                "longitude": 150,
-                "latitude": 150
+                "longitude": 80,
+                "latitude": 80
             })
             .toss();
     });
@@ -844,7 +844,7 @@ describe('Firm Up Activity', function() {
             .expectJSON('result.visited.vertices.?',
             {
                 latitude: 50,
-                longitude: 100
+                longitude: 70
             });
     });
     it('should allow over-writing confirmation.', function() {
@@ -864,8 +864,8 @@ describe('Firm Up Activity', function() {
             }, {json: true})
             .expectJSON('result.visited.vertices.?',
             {
-                latitude: 150,
-                longitude: 150
+                latitude: 80,
+                longitude: 80
             })
             .toss();
     });
@@ -904,8 +904,8 @@ describe('Firm Up Activity', function() {
                 "locations": [
                     {
                         "suggestion_id": "-1",
-                        "longitude": 150,
-                        "latitude": 150
+                        "longitude": 80,
+                        "latitude": 80
                     }
                 ]
             })
