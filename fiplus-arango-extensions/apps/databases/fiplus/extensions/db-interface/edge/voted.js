@@ -25,6 +25,27 @@ Voted.prototype.saveUserVote = function(userId, suggestionId)
         throw new error.NotFoundError('Suggestion');
     }
 
+    // Requires user to be joined before voting
+    var suggestedExample = {};
+    suggestedExample._to = suggestionId;
+    var suggested = db.suggested.firstExample(suggestedExample);
+    if(suggested)
+    {
+        var joinedExample = {};
+        joinedExample._from = userId;
+        joinedExample._to = suggested._from;
+        var joined = db.joined.firstExample(joinedExample);
+        if(!joined)
+        {
+            throw new error.UnauthorizedError('Voting for event user not joined to');
+        }
+    }
+    else
+    {
+        throw new error.GenericError('Suggestion id does not have corresponding suggested edge');
+    }
+
+
     var example = {};
     example[this.FROM_FIELD] = userId;
     example[this.TO_FIELD] = suggestionId;
@@ -38,6 +59,20 @@ Voted.prototype.saveUserVote = function(userId, suggestionId)
         }
     }
     return result;
+};
+
+// deletes all the user's votes for an activity, e.g. when the user unjoins the activity
+Voted.prototype.deleteAllUserVotesForActivity = function(userId, activityId)
+{
+    var _this = this;
+    if(!db.activity.exists(activityId))
+    {
+        throw new error.NotFoundError('Activity not found')
+    }
+
+    db.suggested.outEdges(activityId).forEach(function(edge) {
+        _this.deleteUserVote(userId, edge._to);
+    });
 };
 
 Voted.prototype.deleteUserVote = function(userId, suggestionId)

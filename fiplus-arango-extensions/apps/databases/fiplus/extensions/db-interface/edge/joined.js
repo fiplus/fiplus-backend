@@ -2,6 +2,7 @@ var db = require('org/arangodb').db;
 var error = require('error');
 var activity = require('db-interface/node/activity').Activity;
 var user = require('db-interface/node/user').User;
+var voter = require('db-interface/edge/voted').Voted;
 var helper = require('db-interface/util/helper');
 
 /**
@@ -46,6 +47,10 @@ Joined.prototype.setUserJoinedActivity = function(userHandle, activityHandle)
 };
 
 Joined.prototype.removeUserJoinedActivity = function(userHandle, activityHandle) {
+
+    // Unjoining an activity requires revoking the user's votes as well
+    (new voter()).deleteAllUserVotesForActivity(userHandle, activityHandle);
+
     var joinedObject = {};
     joinedObject[this.FROM_FIELD] = userHandle;
     joinedObject[this.TO_FIELD] = activityHandle;
