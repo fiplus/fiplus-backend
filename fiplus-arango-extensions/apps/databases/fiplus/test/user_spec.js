@@ -35,8 +35,8 @@ describe("Configure User Profile", function () {
                 "age": 21,
                 "gender": "male",
                 "location": {
-                    "latitude": 101,
-                    "longitude": 201
+                    "latitude": 71,
+                    "longitude": 81
                 },
                 "location_proximity_setting": true,
                 "availabilities": [
@@ -71,8 +71,8 @@ describe("Configure User Profile", function () {
             }, {json: true})
             .expectJSON('result.visited.vertices.?',
             {
-                latitude: 101,
-                longitude: 201
+                latitude: 71,
+                longitude: 81
             })
             .expectJSON('result.visited.vertices.?',
             {
@@ -119,8 +119,8 @@ describe('Get User Profile', function () {
                 "age": 21,
                 "gender": "male",
                 "location": {
-                    "latitude": 101,
-                    "longitude": 201
+                    "latitude": 71,
+                    "longitude": 81
                 },
                 "location_proximity_setting": true,
                 "availabilities": [

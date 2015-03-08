@@ -139,10 +139,10 @@ var user6 = db.user.save({
 });
 
 // Location test data
-var loc1 = db.location.save({"latitude": 100,"longitude": 100});
-var loc2 = db.location.save({"latitude": 50,"longitude": 100});
-var loc3 = db.location.save({"latitude": 100,"longitude": 50});
-var loc4 = db.location.save({"latitude": 150,"longitude": 150});
+var loc1 = db.location.save({"latitude": 70,"longitude": 70});
+var loc2 = db.location.save({"latitude": 50,"longitude": 70});
+var loc3 = db.location.save({"latitude": 80,"longitude": 50});
+var loc4 = db.location.save({"latitude": 80,"longitude": 80});
 
 // Interest test data
 var int1 = db.interest.save({name:"Soccer"});
