@@ -380,11 +380,13 @@ db.joined.save(user3, act8, {});
 db.created.save(defaultUser, act9, {});
 db.joined.save(defaultUser, act9, {});
 
+
 // Joiners
 db.joined.save(user2, act1, {});
 db.joined.save(user2, act3, {});
 db.joined.save(user1, act2, {});
 db.joined.save(user3, act2, {});
+db.joined.save(user3, act5, {});
 db.joined.save(defaultUser, act3, {});
 db.joined.save(defaultUser, act8, {});
 db.joined.save(user4, act7, {});
@@ -423,6 +425,7 @@ db.suggested.save(act6, sug4, {});
 // One activity in past, one activity in future
 db.suggested.save(act3, sug1, {});
 db.suggested.save(act4, sug3, {});
+db.suggested.save(act4, sug1, {});
 db.suggested.save(act5, sug1, {});
 db.suggested.save(activity1, sug1, {});
 db.suggested.save(activity1, sug3, {});
@@ -435,3 +438,8 @@ db.voted.save(user5, timeSug4, {});
 db.voted.save(user6, locSug7, {});
 db.voted.save(user6, timeSug5, {});
 db.voted.save(defaultUser, timeSug8, {});
+
+// Favourite users
+db.favourited.save(defaultUser, user1, {});
+db.favourited.save(defaultUser, user2, {});
+db.favourited.save(defaultUser, user3, {});

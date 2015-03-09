@@ -1,6 +1,7 @@
 var db = require('org/arangodb').db;
 var error = require('error');
 var helper = require('db-interface/util/helper');
+var query = require('db-interface/util/query');
 
 /**
  * Constructs a favourited db interface object
@@ -38,7 +39,7 @@ Favourited.prototype.getNumFavourites = function(currentUserHandle)
     return this.db.favourited.outEdges(currentUserHandle).length;
 }
 
-Favourited.prototype.getUserFavourites = function(currentUserHandle, maximum)
+Favourited.prototype.getUserFavouritesProfile = function(currentUserHandle, maximum)
 {
     if(maximum == null) {
         maximum = this.GET_FAVOURITES_MAX;
@@ -52,6 +53,17 @@ Favourited.prototype.getUserFavourites = function(currentUserHandle, maximum)
 
     for(var i = 0; i < limit; i++) {
         userfavourites.push(helper.getProfile(this.db.user.document(favourites_array[i]._to), currentUserHandle));
+    }
+    return userfavourites;
+};
+
+Favourited.prototype.getUserFavouritesID = function(currentUserHandle)
+{
+    //Return all favourited users
+    var userfavourites = [];
+    var favourites_array = this.db.favourited.outEdges(currentUserHandle);
+    for(var i = 0; i < favourites_array.length; i++) {
+        userfavourites.push(favourites_array[i]._to);
     }
     return userfavourites;
 };
@@ -82,6 +94,14 @@ Favourited.prototype.isFavourite = function(currentUserHandle, targetUserHandle)
         IsFavourite = false;
     }
     return IsFavourite;
+};
+
+Favourited.prototype.getNumberOfFavouritesInActivity = function(currentUserHandle, activityHandle)
+{
+    var Favourites_In_Activity = query.getFavouritesInActivity(activityHandle, currentUserHandle);
+    var NumFavourites = Favourites_In_Activity.length;
+
+    return NumFavourites;
 };
 
 exports.Favourited = Favourited;

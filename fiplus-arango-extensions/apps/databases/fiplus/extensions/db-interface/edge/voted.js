@@ -1,5 +1,9 @@
 var db = require('org/arangodb').db;
 var error = require('error');
+var suggested = require('db-interface/edge/suggested');
+var model_common = require('model-common');
+
+
 
 /**
  * Constructs a voted db interface object
@@ -109,15 +113,46 @@ Voted.prototype.getNumberOfUserVotes = function(suggestionId)
     return vote_count;
 };
 
-Voted.prototype.getVotersId = function(suggestionId)
-{
+Voted.prototype.getVotersId = function(suggestionId) {
     var voters = [];
     var voters_array = db.voted.inEdges(suggestionId);
 
-    for(var i = 0; i < voters_array.length; i++) {
+    for (var i = 0; i < voters_array.length; i++) {
         voters.push(this.db.user.document(voters_array[i]._from)._key);
     }
     return voters;
+};
+
+//Returns the most voted suggested future time. If there is a tie, the suggestion that will happen first will be returned.
+Voted.prototype.getMostVotedSuggestedFutureTime = function(activityHandle, reference_time)
+{
+    var suggested_times = [];
+    var most_voted_time;
+    var current_max_vote_count;
+    suggested_times = (new suggested.Suggested()).getSuggestedTimes(activityHandle);
+    var is_future_time_found = false;
+    //First step is to find the first future time, need to ignore past time suggestions.
+    //First future time will be the first value of most_voted_time then go from there.
+    for (var i = 0; i < suggested_times.length; i++)
+    {
+        //We only care about non-stale suggestions
+        if(suggested_times[i].start > reference_time)
+        {
+            if(!is_future_time_found)
+            {
+                is_future_time_found = true;
+                most_voted_time = suggested_times[i].start;
+                current_max_vote_count = this.getNumberOfUserVotes("suggestion/" + suggested_times[i].suggestion_id);
+            }
+            //If current suggested time got more votes or got the same votes but earlier time, replace the most_voted_time with it.
+            else if((this.getNumberOfUserVotes("suggestion/" + suggested_times[i].suggestion_id) > current_max_vote_count) ||((this.getNumberOfUserVotes("suggestion/" + suggested_times[i].suggestion_id) == current_max_vote_count) && suggested_times[i].start < most_voted_time))
+            {
+                current_max_vote_count = this.getNumberOfUserVotes("suggestion/" + suggested_times[i].suggestion_id);
+                most_voted_time = suggested_times[i].start;
+            }
+        }
+    }
+    return most_voted_time;
 };
 
 exports.Voted = Voted;

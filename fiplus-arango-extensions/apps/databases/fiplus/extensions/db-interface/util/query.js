@@ -89,6 +89,14 @@ exports.getActivitiesWithGivenInterest = function(interestId)
     "return document(tagged._from)))", {interestId:interestId}).toArray()[0];
 };
 
+exports.getFavouritesInActivity = function(activityId, userId)
+{
+    return db._query("return unique((for joined in graph_edges('fiplus', @activityId, {edgeCollectionRestriction:'joined'})" +
+    "for favourited in graph_edges('fiplus', joined._from, {edgeCollectionRestriction:'favourited', direction:'inbound'})" +
+    "filter @userId == favourited._from " +
+    "return favourited._to))", {activityId:activityId,userId:userId}).toArray()[0];
+};
+
 exports.getInterestsOfUser = function(userId)
 {
     return db._query("return unique((for interested_in in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'interested_in'})" +
@@ -96,7 +104,7 @@ exports.getInterestsOfUser = function(userId)
 };
 
 
-exports.getDefaultActivities = function()
+exports.getFutureActivities = function()
 {
     var returnValue = "return activity";
     return db._query(
@@ -118,3 +126,8 @@ exports.getAllAttendees = function(actId)
                         "return document(confirmed._from))))" ,
             {actId:actId}).toArray()[0];
 };
+
+exports.getDateNow = function()
+{
+    return db._query("return date_now()").toArray()[0];
+}

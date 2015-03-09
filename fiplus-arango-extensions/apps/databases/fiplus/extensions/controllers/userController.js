@@ -310,7 +310,7 @@ var defines = require('db-interface/util/defines');
         var lim = req.params('Limit');
 
         var favourites = new model_common.Favourites();
-        favourites.favourite_users = (new favourited.Favourited()).getUserFavourites(currentUserId, lim);
+        favourites.favourite_users = (new favourited.Favourited()).getUserFavouritesProfile(currentUserId, lim);
 
         res.json(favourites);
     }).queryParam('Limit', {

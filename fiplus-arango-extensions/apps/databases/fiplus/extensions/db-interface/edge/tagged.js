@@ -56,4 +56,13 @@ Tagged.prototype.getTags = function(activity_id)
     return tags;
 };
 
+Tagged.prototype.getTaggedInterestsID = function(activity_id)
+{
+    var taggedinterests = [];
+    this.db.tagged.outEdges(activity_id).forEach(function(edge) {
+        taggedinterests.push(db.interest.document(edge._to)._key);
+    });
+    return taggedinterests;
+};
+
 exports.Tagged = Tagged;
