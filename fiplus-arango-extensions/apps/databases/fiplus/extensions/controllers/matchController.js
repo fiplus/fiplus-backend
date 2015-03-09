@@ -112,7 +112,8 @@ var console = require('console');
         {
             activity_time = (new voted.Voted()).getMostVotedSuggestedFutureTime(activity_handle, reference_time);
         }
-        time_score = activity_time - reference_time;
+        //Doing this to make sure if activity_time is happening first, it should have a higher score.
+        time_score = 1/(activity_time - reference_time);
         return time_score;
     };
 
@@ -130,16 +131,8 @@ var console = require('console');
     };
 
     function normalizeGivenScores(score_array){
-        var min_score = score_array[0]; //Set min_score to the first value of score array
-        var max_score = score_array[0]; //Set max_score to the first value of score array
-
-        //Extract the max and min score from the score array
-        for (var i = 1; i < score_array.length; i++) {
-            if(score_array[i] > max_score)
-                max_score = score_array[i];
-            else if(score_array[i] < min_score)
-                min_score = score_array[i];
-        }
+        var min_score = Math.min.apply(null, score_array);
+        var max_score = Math.max.apply(null, score_array);
 
         //Normalize each value of the score array
         for (var i = 0; i < score_array.length; i++) {

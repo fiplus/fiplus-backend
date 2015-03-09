@@ -2,6 +2,7 @@ var db = require('org/arangodb').db;
 var error = require('error');
 var helper = require('db-interface/util/helper');
 var joiner = require('db-interface/edge/joined').Joined;
+var query = require('db-interface/util/query');
 var console = require('console');
 
 /**
@@ -108,7 +109,14 @@ Favourited.prototype.getNumberOfFavouritesInActivity = function(currentUserHandl
             NumFavourites++;
         }
     }
+    console.log(currentUserHandle);
+    console.log(activityHandle);
+    var QNumFavourites = (query.getFavouritesInActivity(activityHandle, currentUserHandle).length);
 
+    console.log("Query Num Faves");
+    console.log(QNumFavourites);
+    console.log("Own Num Faves");
+    console.log(NumFavourites);
     return NumFavourites;
 };
 

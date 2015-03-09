@@ -89,6 +89,14 @@ exports.getActivitiesWithGivenInterest = function(interestId)
     "return document(tagged._from)))", {interestId:interestId}).toArray()[0];
 };
 
+exports.getFavouritesInActivity = function(activityId, userId)
+{
+    return db._query("return unique((for joined in graph_edges('fiplus', @activityId, {edgeCollectionRestriction:'joined'})" +
+    "for favourited in graph_edges('fiplus', joined._from, {edgeCollectionRestriction:'favourited'})" +
+    "filter favourited._from == userId" +
+    "return favourited._to))", {activityId:activityId}, {userId:userId}).toArray()[0];
+};
+
 exports.getInterestsOfUser = function(userId)
 {
     return db._query("return unique((for interested_in in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'interested_in'})" +
