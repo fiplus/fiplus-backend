@@ -148,6 +148,7 @@ activity.suggestTimeForActivity = function(id, time, req, cb) {
 activity.suggestTimeForActivity.shared = true;
 activity.suggestTimeForActivity.accepts = [{arg:'id', type: 'string', http:{source:'path'}},
   {arg:'time', type: 'Time', http:{source:'body'}},{arg:'req', type:'object',http:{source:'req'}}];
+activity.suggestTimeForActivity.returns = {arg: 'suggestion_response', type: 'CreateSuggestionResponse', root:true};
 activity.suggestTimeForActivity.http = {verb: 'PUT', path: '/:id/time'};
 activity.suggestTimeForActivity.description = 'Adds the time suggestion to activity';
 activity.afterRemote('suggestTimeForActivity', function(ctx, model, next) {
@@ -184,6 +185,7 @@ activity.suggestLocationForActivity = function(id, location, req, cb) {
 activity.suggestLocationForActivity.shared = true;
 activity.suggestLocationForActivity.accepts = [{arg:'id', type: 'string', http:{source:'path'}},
   {arg:'location', type: 'Location', http:{source:'body'}},{arg:'req', type:'object',http:{source:'req'}}];
+activity.suggestLocationForActivity.returns = {arg: 'suggestion_response', type: 'CreateSuggestionResponse', root:true};
 activity.suggestLocationForActivity.http = {verb: 'PUT', path: '/:id/location'};
 activity.suggestLocationForActivity.description = 'Adds the location suggestion to activity';
 activity.afterRemote('suggestLocationForActivity', function(ctx, model, next) {
