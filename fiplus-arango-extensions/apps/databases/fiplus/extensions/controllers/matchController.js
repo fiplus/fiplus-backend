@@ -11,7 +11,6 @@ var voted = require('db-interface/edge/voted');
 var interested_in = require('db-interface/edge/interested_in');
 var confirmer = require('db-interface/edge/confirmed').Confirmed;
 var model_common = require('model-common');
-var console = require('console');
 
 (function() {
     "use strict";
@@ -159,9 +158,9 @@ var console = require('console');
         var old_index;
         var match_score;
         var reference_time = query.getDateNow(); //Reference time to be used for time score.
-        var interest_weight = 0.5; //Can be changed later on or can be user modifiable.
-        var social_weight = 0.2; //Can be changed later on or can be user modifiable.
-        var time_weight = 0.3; //Can be changed later on or can be user modifiable.
+        var interest_weight = 5; //Can be changed later on or can be user modifiable.
+        var social_weight = 2; //Can be changed later on or can be user modifiable.
+        var time_weight = 2; //Can be changed later on or can be user modifiable.
         var time_scores = [];
         var interest_scores = [];
         var social_proximity_scores = [];
@@ -228,7 +227,6 @@ var console = require('console');
             });
         }
         var sorted_activities = [];
-        //console.log(activity_list_with_score);
         sorted_activities = rankActivitiesBasedOnMatchScore(activity_list, activity_list_with_score);
         return sorted_activities;
     };
@@ -268,14 +266,33 @@ var console = require('console');
         return activities;
     };
 
-    function appendActivitiesList(activities, added_activities, max_activities_length){
+    function getFutureJoinedActivities(userId){
+        var activities = [];
+        var activity_list = query.getJoinedActivities(userId, true, false);
+        var activity_list_length = activity_list.length;
+
+        for (var i = 0; i < activity_list_length; i++) {
+            var activity_node = activity_list[i];
+            addIfNotExist(activity_node, activities);
+        }
+        return activities;
+    };
+
+    function appendActivitiesList(activities, added_activities, max_activities_length, joined_activities){
         for(var j = 0; j < added_activities.length; j++)
         {
             var activity_node = db.activity.document(added_activities[j].activity_id);
-            //Only push to user_activities_array if we didn't meet the num_activities requirement yet
-            if (activities.length < max_activities_length) {
-                addIfNotExist(activity_node, activities);
+            //Check first if it is already a joined activity. If it is, don't add.
+            var isJoined = joined_activities.some(function (el) {
+                return el.activity_id === activity_node._key;
+            });
+            if (!isJoined) {
+                //Only push to user_activities_array if we didn't meet the num_activities requirement yet
+                if (activities.length < max_activities_length) {
+                    addIfNotExist(activity_node, activities);
+                }
             }
+
         }
     }
 
@@ -294,12 +311,15 @@ var console = require('console');
         //This is for the main page tab. More factors will be incorporated here in the future to decide which activities to return
         else{
             var temp_activities = [];
+            var joined_activities = [];
+            //Grab joined_activities
+            joined_activities = getFutureJoinedActivities(user_object._id);
             //Grab all future events(this is the only hard filter for now. Later on it will be all future events within a certain radius in x km)
             temp_activities = matchFutureActivities();
             //Calculate the match score for all of the qualified events and rank them accordingly.
             temp_activities = calculateMatchScoreAndSort(user_object._id, temp_activities, true, true, false, true);
             //Fill up activities with ranked activities from temp_activities until we reach num_activities_requested amount
-            appendActivitiesList(activities, temp_activities, num_activities_requested);
+            appendActivitiesList(activities, temp_activities, num_activities_requested, joined_activities);
         }
         response.json(activities);
 
