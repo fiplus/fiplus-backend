@@ -1,7 +1,6 @@
 var db = require('org/arangodb').db;
 var error = require('error');
 var suggested = require('db-interface/edge/suggested');
-var console = require('console');
 var model_common = require('model-common');
 
 
@@ -153,8 +152,6 @@ Voted.prototype.getMostVotedSuggestedFutureTime = function(activityHandle, refer
             }
         }
     }
-    console.log(most_voted_time);
-    console.log(current_max_vote_count);
     return most_voted_time;
 };
 

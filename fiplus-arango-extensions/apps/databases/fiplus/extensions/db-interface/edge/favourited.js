@@ -1,9 +1,7 @@
 var db = require('org/arangodb').db;
 var error = require('error');
 var helper = require('db-interface/util/helper');
-var joiner = require('db-interface/edge/joined').Joined;
 var query = require('db-interface/util/query');
-var console = require('console');
 
 /**
  * Constructs a favourited db interface object
@@ -100,23 +98,9 @@ Favourited.prototype.isFavourite = function(currentUserHandle, targetUserHandle)
 
 Favourited.prototype.getNumberOfFavouritesInActivity = function(currentUserHandle, activityHandle)
 {
-    var NumFavourites = 0;
-    var Joiner = new joiner();
-    var Joiners_Id_List = Joiner.getJoinersId(activityHandle, null);
+    var Favourites_In_Activity = query.getFavouritesInActivity(activityHandle, currentUserHandle);
+    var NumFavourites = Favourites_In_Activity.length;
 
-    for(var i = 0; i < Joiners_Id_List.length; i++) {
-        if(this.isFavourite(currentUserHandle, "user/" + Joiners_Id_List[i])) {
-            NumFavourites++;
-        }
-    }
-    console.log(currentUserHandle);
-    console.log(activityHandle);
-    var QNumFavourites = (query.getFavouritesInActivity(activityHandle, currentUserHandle).length);
-
-    console.log("Query Num Faves");
-    console.log(QNumFavourites);
-    console.log("Own Num Faves");
-    console.log(NumFavourites);
     return NumFavourites;
 };
 

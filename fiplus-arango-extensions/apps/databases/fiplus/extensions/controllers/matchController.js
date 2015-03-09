@@ -228,7 +228,7 @@ var console = require('console');
             });
         }
         var sorted_activities = [];
-        console.log(activity_list_with_score);
+        //console.log(activity_list_with_score);
         sorted_activities = rankActivitiesBasedOnMatchScore(activity_list, activity_list_with_score);
         return sorted_activities;
     };
