@@ -54,6 +54,29 @@ describe("Create activity", function () {
             .toss();
     });
 
+    frisby.create('Check if vote got properly added')
+        .post("http://localhost:8529/_db/fiplus/_api/traversal",
+        {
+            startVertex: 'user/1',
+            graphName: 'fiplus',
+            direction: 'outbound',
+            edgeCollection: 'voted',
+            maxDepth: 3
+        }, {json: true})
+        .expectJSON('result.visited.vertices.?',
+        {
+            value: 253416421800000
+        })
+        .expectJSON('result.visited.vertices.?',
+        {
+            value: 253416429000000
+        })
+        .expectJSON('result.visited.vertices.?',
+        {
+            latitude: 56,
+            longitude: -96
+        });
+
     it("should create events with confirmed date and time and confirm creator", function () {
         frisby.create(this.description)
             .post('https://localhost:3001/api/Acts',
@@ -475,6 +498,23 @@ describe('Suggest Time', function() {
             })
             .toss();
     });
+    frisby.create('Check if vote got properly added')
+        .post("http://localhost:8529/_db/fiplus/_api/traversal",
+        {
+            startVertex: 'user/1',
+            graphName: 'fiplus',
+            direction: 'outbound',
+            edgeCollection: 'voted',
+            maxDepth: 3
+        }, {json: true})
+        .expectJSON('result.visited.vertices.?',
+        {
+            value: 2524676400000
+        })
+        .expectJSON('result.visited.vertices.?',
+        {
+            value: 2524680000000
+        });
 
     it('suggests duplicate time', function() {
         frisby.create('Suggest Duplicate Time')
@@ -550,6 +590,20 @@ describe('Suggest Location', function(){
                 longitude:23
             })
             .toss();
+        frisby.create('Check if vote got properly added')
+            .post("http://localhost:8529/_db/fiplus/_api/traversal",
+            {
+                startVertex: 'user/1',
+                graphName: 'fiplus',
+                direction: 'outbound',
+                edgeCollection: 'voted',
+                maxDepth: 3
+            }, {json: true})
+            .expectJSON('result.visited.vertices.?',
+            {
+                latitude: 70,
+                longitude: 23
+            });
     });
 
     it('suggests duplicate location', function() {
