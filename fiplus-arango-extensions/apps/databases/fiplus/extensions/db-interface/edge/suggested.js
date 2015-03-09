@@ -22,7 +22,7 @@ var Suggested = function()
 /**
  * Creating a suggested edge. Links activity to suggestion
  */
-Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, end_time)
+Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, end_time, user_id)
 {
     var result;
 
@@ -55,13 +55,16 @@ Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, en
     if(result.error == true) {
         throw new error.GenericError('Saving suggested time ' + start_time + ', ' + end_time + ' failed.');
     }
+
+    //If suggestion didn't fail. Vote for it.
+    (new voted()).saveUserVote(user_id, suggestion_node._id);
     return result;
 };
 
 /**
  * Creating a suggested edge. Links activity to location.
  */
-Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, longitude)
+Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, longitude, user_id)
 {
     var result;
 
@@ -91,6 +94,8 @@ Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, 
     if(result.error == true) {
         throw new error.GenericError('Saving suggested location ' + latitude + ', ' + longitude + ' failed.');
     }
+    //If suggestion didn't fail. Vote for it.
+    (new voted()).saveUserVote(user_id, suggestion_node._id);
     return result;
 };
 

@@ -97,7 +97,7 @@ var defines = require('db-interface/util/defines');
                 {
                     var time = times[i];
 
-                    Suggester.saveSuggestedTimeEdge(activity_id, time.start, time.end);
+                    Suggester.saveSuggestedTimeEdge(activity_id, time.start, time.end, uid);
                     if(time.suggestion_id == "-1")
                     {
                         Confirmer.saveConfirmedTime(activity_id, time.start, time.end);
@@ -109,7 +109,7 @@ var defines = require('db-interface/util/defines');
                 {
                     var location = locations[i];
 
-                    Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude);
+                    Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude, uid);
                     if(location.suggestion_id == "-1")
                     {
                         Confirmer.saveConfirmedLocation(activity_id, location.latitude, location.longitude);
@@ -279,7 +279,7 @@ var defines = require('db-interface/util/defines');
                 var suggest = new suggester();
                 (new actor()).checkIfCancelled(activityId);
                 checkIfAllowedToSuggest(activityId, params.request.session.get('uid'));
-                suggest.saveSuggestedTimeEdge(activityId, times.get('start'), times.get('end'));
+                suggest.saveSuggestedTimeEdge(activityId, times.get('start'), times.get('end'), params.request.session.get('uid'));
             }
         });
     }).pathParam('activityId', {
@@ -309,7 +309,7 @@ var defines = require('db-interface/util/defines');
                 var suggest = new suggester();
                 (new actor()).checkIfCancelled(activityId);
                 checkIfAllowedToSuggest(activityId, params.request.session.get('uid'));
-                suggest.saveSuggestedLocationEdge(activityId, locations.get('latitude'), locations.get('longitude'));
+                suggest.saveSuggestedLocationEdge(activityId, locations.get('latitude'), locations.get('longitude'), params.request.session.get('uid'));
             }
         });
     }).pathParam('activityId', {
