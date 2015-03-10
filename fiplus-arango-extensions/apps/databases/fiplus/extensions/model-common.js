@@ -85,8 +85,13 @@ exports.HistoryRequest = HistoryRequest;
 var Attendee = function(){};
 Attendee.num_attendees = Number;
 Attendee.participants = ['UserProfile'];
-Attendee.joiners = [String];
+Attendee.joiners = ['Joiner'];
 exports.Attendee = Attendee;
+
+var Joiner = function(){};
+Joiner.joiner_id = Number;
+Joiner.confirmed = Boolean;
+exports.Joiner = Joiner;
 
 var SetDeviceId = function(){};
 SetDeviceId.current_device_id = String;

@@ -158,26 +158,51 @@ var defines = require('db-interface/util/defines');
         (new actor()).exists(activity_id);
 
         var Confirmer = new confirmer();
+        var Joiner = new joiner();
         var attendees = new model_common.Attendee();
+
+        // If confirmed we will return with the number of people definitely going
+        // Else, return the number of people interested in the event (but not confirmed)
         if(Confirmer.isConfirmed(activity_id).confirmed)
         {
             attendees.num_attendees = Confirmer.getNumConfirmers(activity_id);
-            //Will be reverted to this in the future
-            //attendees.joiners =  Confirmer.getConfirmersProfile(activity_id, lim, current_userId);
-            //Temporary code for alpha
-            attendees.joiners =  Confirmer.getConfirmersId(activity_id, lim);
         }
         else
         {
-            var Joiner = new joiner();
-
             attendees.num_attendees = Joiner.getNumJoiners(activity_id);
-            // TODO attendeeDetail.participants
-            //Will be reverted to this in the future
-            //attendees.joiners =  Joiner.getJoinersProfile(activity_id, lim, current_userId);
-            //Temporary code for alpha
-            attendees.joiners =  Joiner.getJoinersId(activity_id, lim);
         }
+
+        attendees.joiners = [];
+        //Will be reverted to this in the future
+        //attendees.joiners =  Confirmer.getConfirmersProfile(activity_id, lim, current_userId);
+        //Temporary code for alpha
+        var confirmedJoiners = Confirmer.getConfirmersId(activity_id, lim);
+        confirmedJoiners.forEach(function(confirmedJoiner) {
+            if(lim == null || attendees.joiners.length < lim)
+            {
+                var joinerModel = new model_common.Joiner();
+                joinerModel.joiner_id = confirmedJoiner;
+                joinerModel.confirmed = true;
+                attendees.joiners.push(joinerModel)
+            }
+        });
+
+        //Will be reverted to this in the future
+        //attendees.joiners =  Joiner.getJoinersProfile(activity_id, lim, current_userId);
+        //Temporary code for alpha
+        // Getting all the confirmed joiners to be sure that unconfirmed joiners is a subset
+        var allConfirmedJoiners = Confirmer.getConfirmersId(activity_id, null);
+        Joiner.getJoinersId(activity_id, lim).forEach(function(joiner) {
+            if((lim == null || attendees.joiners.length < lim) && allConfirmedJoiners.indexOf(joiner) == -1)
+            {
+                var joinerModel = new model_common.Joiner();
+                joinerModel.joiner_id = joiner;
+                joinerModel.confirmed = false;
+                attendees.joiners.push(joinerModel)
+            }
+        });
+
+        // TODO attendeeDetail.participants
 
         res.json(attendees);
     }).pathParam('activityid', {

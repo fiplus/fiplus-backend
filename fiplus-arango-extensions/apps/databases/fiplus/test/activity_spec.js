@@ -790,12 +790,19 @@ describe('Get Attendees', function() {
             .expectStatus(200)
             .expectJSON(
             {
-                "num_attendees": 3,
-                "joiners": [
-                    "2",
-                    "3",
-                    "1"
-                ]
+                "num_attendees": 3
+            })
+            .expectJSON('joiners.?', {
+                joiner_id: '2',
+                confirmed: false
+            })
+            .expectJSON('joiners.?', {
+                joiner_id: '3',
+                confirmed: false
+            })
+            .expectJSON('joiners.?', {
+                joiner_id: '1',
+                confirmed: false
             })
             .toss();
     });
@@ -813,11 +820,15 @@ describe('Get Attendees', function() {
             .expectStatus(200)
             .expectJSON(
             {
-                "num_attendees": 3,
-                "joiners": [
-                    "2",
-                    "3"
-                ]
+                "num_attendees": 3
+            })
+            .expectJSON('joiners.?', {
+                joiner_id: '2',
+                confirmed: false
+            })
+            .expectJSON('joiners.?', {
+                joiner_id: '3',
+                confirmed: false
             })
             .toss();
     });
@@ -828,28 +839,47 @@ describe('Get Attendees', function() {
             .expectStatus(200)
             .expectJSON(
             {
-                "num_attendees": 3,
-                "joiners": [
-                    "2",
-                    "3",
-                    "1"
-                ]
+                "num_attendees": 3
+            })
+            .expectJSON('joiners.?', {
+                joiner_id: '2',
+                confirmed: false
+            })
+            .expectJSON('joiners.?', {
+                joiner_id: '3',
+                confirmed: false
+            })
+            .expectJSON('joiners.?', {
+                joiner_id: '1',
+                confirmed: false
             })
             .toss();
     });
 
-    it('should return only confirmed users if event is confirmed', function() {
+    it('should some users with confirmed flags true', function() {
         frisby.create(this.description)
             .get('https://localhost:3001/api/Acts/9/user?Limit=100',
             {})
             .expectStatus(200)
             .expectJSON(
             {
-                "num_attendees": 2,
-                "joiners": [
-                    "6",
-                    "101"
-                ]
+                "num_attendees": 2
+            })
+            .expectJSON('joiners.?', {
+                joiner_id: '6',
+                confirmed: true
+            })
+            .expectJSON('joiners.?', {
+                joiner_id: '101',
+                confirmed: true
+            })
+            .expectJSON('joiners.?', {
+                joiner_id: '4',
+                confirmed: false
+            })
+            .expectJSON('joiners.?', {
+                joiner_id: '5',
+                confirmed: false
             })
             .toss();
     });
