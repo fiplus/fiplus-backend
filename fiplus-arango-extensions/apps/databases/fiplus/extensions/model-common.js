@@ -89,7 +89,7 @@ Attendee.joiners = ['Joiner'];
 exports.Attendee = Attendee;
 
 var Joiner = function(){};
-Joiner.joiner_id = Number;
+Joiner.joiner_id = String;
 Joiner.confirmed = Boolean;
 exports.Joiner = Joiner;
 
