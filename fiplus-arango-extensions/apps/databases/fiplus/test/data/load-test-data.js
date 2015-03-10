@@ -285,6 +285,15 @@ var act9 = db.activity.save({
     is_cancelled: false
 });
 
+var act10 = db.activity.save({
+    _key:'10',
+    Name:'A10',
+    description:'activity 10',
+    max_attendees:5,
+    allow_joiner_input: false,
+    is_cancelled: false
+});
+
 var activity1 = db.activity.save({Name:'BasketballNW'});
 var activity2 = db.activity.save({Name:'BasketballSW'});
 var activity3 = db.activity.save({Name:'BasketballNE'});
@@ -379,6 +388,9 @@ db.created.save(user3, act8, {});
 db.joined.save(user3, act8, {});
 db.created.save(defaultUser, act9, {});
 db.joined.save(defaultUser, act9, {});
+db.created.save(defaultUser, act10, {});
+db.joined.save(defaultUser, act10, {});
+
 
 
 // Joiners

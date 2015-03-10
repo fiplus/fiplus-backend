@@ -170,7 +170,7 @@ describe("Cancel Activity Tests", function() {
                 });
 
                 frisby.create('cancels')
-                    .delete("https://localhost:3001/api/Acts/6")
+                    .delete("https://localhost:3001/api/Acts/10")
                     .expectStatus(401)
                     .toss();
             })
