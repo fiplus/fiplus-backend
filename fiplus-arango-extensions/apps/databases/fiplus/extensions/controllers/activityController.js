@@ -307,7 +307,7 @@ var defines = require('db-interface/util/defines');
                 var result = suggest.saveSuggestedTimeEdge(activityId, times.get('start'), times.get('end'), params.request.session.get('uid'));	
 
                 var sug_response = new model_common.CreateSuggestionResponse();
-                sug_response.suggestion_id = result._key;
+                sug_response.suggestion_id = result;
                 params.response.json(JSON.stringify(sug_response));
             }
         });
@@ -341,7 +341,7 @@ var defines = require('db-interface/util/defines');
                 var result = suggest.saveSuggestedLocationEdge(activityId, locations.get('latitude'), locations.get('longitude'), params.request.session.get('uid'));
 
                 var sug_response = new model_common.CreateSuggestionResponse();
-                sug_response.suggestion_id = result._key;
+                sug_response.suggestion_id = result;
                 params.response.json(JSON.stringify(sug_response));
             }
         });

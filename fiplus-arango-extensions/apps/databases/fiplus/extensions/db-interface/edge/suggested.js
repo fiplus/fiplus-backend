@@ -58,7 +58,7 @@ Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, en
 
     //If suggestion didn't fail. Vote for it.
     (new voted()).saveUserVote(user_id, suggestion_node._id);
-    return result;
+    return suggestion_node._key;
 };
 
 /**
@@ -96,7 +96,7 @@ Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, 
     }
     //If suggestion didn't fail. Vote for it.
     (new voted()).saveUserVote(user_id, suggestion_node._id);
-    return result;
+    return suggestion_node._key;
 };
 
 Suggested.prototype.getSuggestedTimes = function(activity_id)
