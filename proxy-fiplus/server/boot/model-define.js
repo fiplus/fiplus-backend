@@ -16,6 +16,7 @@ ds.define('HistoryRequest', model.HistoryRequest);
 ds.define('Attendee', model.Attendee);
 ds.define('SetDeviceId', model.SetDeviceId);
 ds.define('WhoAmI', model.WhoAmI);
-ds.define('CreateActivityResponse', model.CreateActivityResponse);
+ds.define('CreateCancelActivityResponse', model.CreateCancelActivityResponse);
 ds.define('Favourites', model.Favourites);
 ds.define('Joiner', model.Joiner);
+ds.define('CreateSuggestionResponse', model.CreateSuggestionResponse);

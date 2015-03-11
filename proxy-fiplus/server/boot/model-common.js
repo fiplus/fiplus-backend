@@ -113,3 +113,7 @@ FirmUpResponse.Name = String;
 FirmUpResponse.time = 'Time';
 FirmUpResponse.location = 'Location';
 exports.FirmUpResponse = FirmUpResponse;
+
+var CreateSuggestionResponse = function(){};
+CreateSuggestionResponse.suggestion_id = String;
+exports.CreateSuggestionResponse = CreateSuggestionResponse;
