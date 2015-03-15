@@ -358,6 +358,8 @@ var console = require('console');
         //This is for the interest tab
         if(by_interest) {
             activities = matchActivitiesWithUserInterests(user_object, num_activities_requested);
+            //Calculate the match score with respect to interest and time for all of the qualified events and rank them accordingly.
+            activities = calculateMatchScoreAndSort(user_object._id, activities, true, false, false, true);
         }
         //This is for the Near Me tab
         if(by_location) {
@@ -365,6 +367,7 @@ var console = require('console');
             temp_activities = matchFutureActivities();
             var Location = new location.Location();
             var user_location = (new in_location.InLocation()).getUserLocation(user_object._id);
+            //matchActivitiesNearLocation already sorts from nearest to farthest.
             activities = matchActivitiesNearLocation(user_location[Location.LATITUDE_FIELD], user_location[Location.LONGITUDE_FIELD], temp_activities, num_activities_requested);
         }
         //This is for the main page tab. More factors will be incorporated here in the future to decide which activities to return
