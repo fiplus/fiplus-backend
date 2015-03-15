@@ -13,7 +13,6 @@ var in_location = require('db-interface/edge/in_location');
 var confirmer = require('db-interface/edge/confirmed').Confirmed;
 var location = require('db-interface/node/location');
 var model_common = require('model-common');
-var console = require('console');
 
 (function() {
     "use strict";
@@ -147,6 +146,57 @@ var console = require('console');
         return sorted_activities;
     };
 
+    //This is the haversine formula.
+    function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+        var R = 6371; // Radius of the earth in km
+        var dLat = deg2rad(lat2-lat1);  // deg2rad below
+        var dLon = deg2rad(lon2-lon1);
+        var a =
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                Math.sin(dLon/2) * Math.sin(dLon/2)
+            ;
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        var d = R * c; // Distance in km
+        return d;
+    }
+
+    function deg2rad(deg) {
+        return deg * (Math.PI/180)
+    }
+
+    function getLocationScore(current_user_handle, activity_handle){
+        var location_score;
+        var activity_location;
+        var Confirmer = new confirmer();
+        var confirmedLocation =  new model_common.Location();
+        var distance;
+        confirmedLocation = Confirmer.getConfirmedLocation(activity_handle);
+        if(confirmedLocation != null)
+        {
+            activity_location = confirmedLocation;
+        }
+        else
+        {
+            activity_location = (new voted.Voted()).getMostVotedLocation(activity_handle);
+        }
+
+        var Location = new location.Location();
+        var user_location = (new in_location.InLocation()).getUserLocation(current_user_handle);
+
+        distance = getDistanceFromLatLonInKm(user_location[Location.LATITUDE_FIELD], user_location[Location.LONGITUDE_FIELD], activity_location.latitude, activity_location.longitude);
+
+        //If activity location is exactly the same place as user location, we will get a 0 but we can't divide by 0
+        //so set it to a really small number.
+        if(distance == 0)
+        {
+            distance = 0.000001;
+        }
+        //Doing this to make sure if activity location is closer, it should have a higher score.
+        location_score = 1/(distance);
+        return location_score;
+    };
+
     function getTimeScore(reference_time, activity_handle){
         var time_score;
         var activity_time;
@@ -161,8 +211,15 @@ var console = require('console');
         {
             activity_time = (new voted.Voted()).getMostVotedSuggestedFutureTime(activity_handle, reference_time);
         }
+        var time_difference = activity_time - reference_time;
+        //If activity time is exactly the same place as reference time, we will get a 0 but we can't divide by 0
+        //so set it to a really small number.
+        if(time_difference == 0)
+        {
+            time_difference = 0.000001;
+        }
         //Doing this to make sure if activity_time is happening first, it should have a higher score.
-        time_score = 1/(activity_time - reference_time);
+        time_score = 1/(time_difference);
         return time_score;
     };
 
@@ -211,39 +268,47 @@ var console = require('console');
         var interest_weight = 5; //Can be changed later on or can be user modifiable.
         var social_weight = 2; //Can be changed later on or can be user modifiable.
         var time_weight = 2; //Can be changed later on or can be user modifiable.
+        var location_weight = 3; //Can be changed later on or can be user modifiable.
         var time_scores = [];
         var interest_scores = [];
         var social_proximity_scores = [];
+        var location_scores = [];
 
         //First step is to figure out the list of time scores, interest scores, and social proximity scores. Can't build the activity list
         //with scores right away because the individual scores needs to be normalized after obtaining all of them before using them to
         //calculate match scores.
         for(var i = 0; i < activity_list.length; i++) {
             //Get interest score
-            if(by_interest)
+            if(by_interest) {
                 interest_scores.push(getInterestScore(current_user_handle, "activity/" + activity_list[i].activity_id));
+            }
             //Get social proximity score
-            if(by_social_proximity)
+            if(by_social_proximity) {
                 social_proximity_scores.push(getSocialProximityScore(current_user_handle, "activity/" + activity_list[i].activity_id));
+            }
             //Get geo proximity score
             if(by_location) {
-                //Stub
+                location_scores.push(getLocationScore(current_user_handle, "activity/" + activity_list[i].activity_id));
             }
             //Get time score
-            if(by_time)
+            if(by_time) {
                 time_scores.push(getTimeScore(reference_time, "activity/" + activity_list[i].activity_id));
+            }
         }
 
         //Normalize the score arrays we obtained
-        if(by_interest)
+        if(by_interest) {
             normalizeGivenScores(interest_scores);
-        if(by_social_proximity)
-            normalizeGivenScores(social_proximity_scores);
-        if(by_location) {
-            //Stub
         }
-        if(by_time)
+        if(by_social_proximity) {
+            normalizeGivenScores(social_proximity_scores);
+        }
+        if(by_location) {
+            normalizeGivenScores(location_scores);
+        }
+        if(by_time) {
             normalizeGivenScores(time_scores);
+        }
 
         //Figure out the total match score based on wanted parameters and normalized scores. Can remove all these booleans if we just want to do all of
         //them automatically and the new inputs will be weights for each wanted parameters than booleans.
@@ -263,7 +328,7 @@ var console = require('console');
             //Add geo proximity score in match score.
             if(by_location)
             {
-               //Stub
+                match_score += location_weight*location_scores[i];
             }
             //Add time score in match score.
             if(by_time)
@@ -362,7 +427,7 @@ var console = require('console');
             activities = calculateMatchScoreAndSort(user_object._id, activities, true, false, false, true);
         }
         //This is for the Near Me tab
-        if(by_location) {
+        else if(by_location) {
             var temp_activities = [];
             temp_activities = matchFutureActivities();
             var Location = new location.Location();
@@ -379,7 +444,7 @@ var console = require('console');
             //Grab all future events(this is the only hard filter for now. Later on it will be all future events within a certain radius in x km)
             temp_activities = matchFutureActivities();
             //Calculate the match score for all of the qualified events and rank them accordingly.
-            temp_activities = calculateMatchScoreAndSort(user_object._id, temp_activities, true, true, false, true);
+            temp_activities = calculateMatchScoreAndSort(user_object._id, temp_activities, true, true, true, true);
             //Fill up activities with ranked activities from temp_activities until we reach num_activities_requested amount
             appendActivitiesList(activities, temp_activities, num_activities_requested, joined_activities);
         }
