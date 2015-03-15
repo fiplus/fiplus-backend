@@ -139,10 +139,12 @@ var user6 = db.user.save({
 });
 
 // Location test data
-var loc1 = db.location.save({"latitude": 70,"longitude": 70, "address":"a"});
-var loc2 = db.location.save({"latitude": 50,"longitude": 70, "address":"Hatgal, Mongolia"});
-var loc3 = db.location.save({"latitude": 80,"longitude": 50, "address":"c"});
-var loc4 = db.location.save({"latitude": 80,"longitude": 80, "address":"Turin, Italy"});
+var loc1 = db.location.save({"latitude": 70,"longitude": 70});
+var loc2 = db.location.save({"latitude": 50,"longitude": 70});
+var loc3 = db.location.save({"latitude": 80,"longitude": 50});
+var loc4 = db.location.save({"latitude": 80,"longitude": 80});
+var loc5 = db.location.save({"latitude": 20,"longitude": 40});
+
 
 // Interest test data
 var int1 = db.interest.save({name:"Soccer"});
@@ -424,8 +426,6 @@ db.tagged.save(activity3,int3,{});
 db.tagged.save(activity4,int3,{});
 db.tagged.save(activity5,int1,{});
 
-db.suggested.save(act1, sug1, {});
-db.suggested.save(act1, sug2, {});
 
 var sug3 = db.suggestion.save({_key:'3'});
 db.is.save(sug3, tp1, {});
@@ -455,3 +455,6 @@ db.voted.save(defaultUser, timeSug8, {});
 db.favourited.save(defaultUser, user1, {});
 db.favourited.save(defaultUser, user2, {});
 db.favourited.save(defaultUser, user3, {});
+
+// In Location
+db.in_location.save(defaultUser,loc5,{});

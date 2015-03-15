@@ -9,8 +9,11 @@ var query = require('db-interface/util/query');
 var favourited = require('db-interface/edge/favourited');
 var voted = require('db-interface/edge/voted');
 var interested_in = require('db-interface/edge/interested_in');
+var in_location = require('db-interface/edge/in_location');
 var confirmer = require('db-interface/edge/confirmed').Confirmed;
+var location = require('db-interface/node/location');
 var model_common = require('model-common');
+var console = require('console');
 
 (function() {
     "use strict";
@@ -53,7 +56,54 @@ var model_common = require('model-common');
         }
     };
 
-    //CURRENTLY NOT USED! Might be useful in the future. Should we delete?
+    function matchActivitiesNearLocation(user_latitude, user_longitude, activity_list, num_activities_requested){
+        //Need to create a temporary collection for a list of activity ids and their most relevant location to user Geo indexing.
+        //Our activities
+        db._drop('activities_with_location');
+        db._create('activities_with_location');
+        var old_index;
+        var latitude;
+        var longitude;
+
+        db.activities_with_location.ensureGeoIndex("loc");
+
+        var Confirmer = new confirmer();
+        var confirmedLocation =  new model_common.Location();
+        var activity_location;
+
+        //Figure out the most relevant location for a given activity
+        for(var i = 0; i < activity_list.length; i++) {
+            old_index = i;
+            confirmedLocation = Confirmer.getConfirmedLocation("activity/" + activity_list[i].activity_id);
+            if(confirmedLocation != null)
+            {
+                activity_location = confirmedLocation;
+            }
+            else
+            {
+                activity_location = (new voted.Voted()).getMostVotedLocation("activity/" + activity_list[i].activity_id);
+            }
+            if(activity_location != null) {
+                latitude = activity_location.latitude;
+                longitude = activity_location.longitude;
+
+                db.activities_with_location.save({
+                    "activity_id": activity_list[i].activity_id,
+                    "old_index": i,
+                    "loc": [latitude, longitude]
+                });
+            }
+        }
+
+        var activities_sorted_by_loc = db.activities_with_location.near(user_latitude, user_longitude).limit(num_activities_requested).toArray();
+        var sorted_activities = [];
+        for(var i = 0; i < activities_sorted_by_loc.length; i++) {
+            sorted_activities[i] = activity_list[activities_sorted_by_loc[i].old_index];
+        }
+
+        return sorted_activities;
+    }
+
     function matchActivitiesWithUserInterests(user_object, num_activities_requested){
         var user_interests_array = query.getInterestsOfUser(user_object._id);
         var user_interests_array_length = user_interests_array.length;
@@ -303,10 +353,19 @@ var model_common = require('model-common');
         var num_activities_requested = request.params('num_activities');
         var user_object = db.user.document(request.session.get('uid'));
         var by_interest = request.params('by_interest');
+        var by_location = request.params('by_location');
         var activities = [];
         //This is for the interest tab
         if(by_interest) {
             activities = matchActivitiesWithUserInterests(user_object, num_activities_requested);
+        }
+        //This is for the Near Me tab
+        if(by_location) {
+            var temp_activities = [];
+            temp_activities = matchFutureActivities();
+            var Location = new location.Location();
+            var user_location = (new in_location.InLocation()).getUserLocation(user_object._id);
+            activities = matchActivitiesNearLocation(user_location[Location.LATITUDE_FIELD], user_location[Location.LONGITUDE_FIELD], temp_activities, num_activities_requested);
         }
         //This is for the main page tab. More factors will be incorporated here in the future to decide which activities to return
         else{
@@ -331,13 +390,13 @@ var model_common = require('model-common');
       type: joi.boolean(),
       required: false,
       description: 'If activities should be filtered by user interest (false by default)'
+    }).queryParam("by_location", {
+        type: joi.boolean(),
+        required: false,
+        description: 'If activities should be filtered by user location (false by default). by_interest must be false if this is true.'
     }).queryParam("priority_offset", {
       type: joi.number().integer(),
       required: false,
       description: 'NOT USABLE YET! The priority level to start at (zero by default). To be used when updating activity list with new activities and the first priority_offset number of activities should be skipped.'
-    }).bodyParam('location', {
-      type: foxx.Model,
-	  required: false,
-      description: 'NOT USABLE YET! Location near which to search for activities'
     }).onlyIfAuthenticated();
 }());
