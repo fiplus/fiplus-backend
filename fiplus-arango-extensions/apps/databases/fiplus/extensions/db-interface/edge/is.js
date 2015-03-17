@@ -40,11 +40,11 @@ Is.prototype.saveIsTimeEdge = function(suggestion_id, start_time, end_time)
 /**
  * Creating a Is edge. Links suggestion to location.
  */
-Is.prototype.saveIsLocationEdge = function(suggestion_id, latitude, longitude)
+Is.prototype.saveIsLocationEdge = function(suggestion_id, latitude, longitude, address)
 {
     var result;
 
-    var location_node = (new loc.Location()).saveLocation(latitude, longitude);
+    var location_node = (new loc.Location()).saveLocation(latitude, longitude, address);
 
     var example = {};
     example[this.FROM_FIELD] = suggestion_id;
@@ -52,7 +52,7 @@ Is.prototype.saveIsLocationEdge = function(suggestion_id, latitude, longitude)
     if(result == null) {
         result = this.db.is.save(suggestion_id, location_node._id, {});
         if(result.error == true) {
-            throw new error.GenericError('Saving location suggestion is ' + latitude + ', ' + longitude + ' failed.');
+            throw new error.GenericError('Saving location suggestion is ' + address + ' failed.');
         }
     }
     return result;

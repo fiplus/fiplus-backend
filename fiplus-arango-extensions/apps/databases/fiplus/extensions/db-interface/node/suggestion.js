@@ -33,7 +33,7 @@ Suggestion.prototype.saveTimeSuggestion = function(start_time, end_time)
 /**
  * Add a location suggestion
  */
-Suggestion.prototype.saveLocationSuggestion = function(latitude, longitude)
+Suggestion.prototype.saveLocationSuggestion = function(latitude, longitude, address)
 {
     var result;
 
@@ -43,7 +43,7 @@ Suggestion.prototype.saveLocationSuggestion = function(latitude, longitude)
         throw new error.GenericError('Saving location suggestion failed.');
     }
 
-    var is_edge = (new is.Is()).saveIsLocationEdge(result._id, latitude, longitude);
+    var is_edge = (new is.Is()).saveIsLocationEdge(result._id, latitude, longitude, address);
 
     return result;
 };

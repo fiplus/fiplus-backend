@@ -64,7 +64,7 @@ Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, en
 /**
  * Creating a suggested edge. Links activity to location.
  */
-Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, longitude, user_id)
+Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, longitude, address, user_id)
 {
     var result;
 
@@ -82,17 +82,17 @@ Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, 
         if (location_id.indexOf("location") > -1) {
             var location_doc = db.location.document(location_id);
             if (location_doc != null) {
-                if (location_doc.latitude == latitude && location_doc.longitude == longitude) {
+                if (location_doc.latitude == latitude && location_doc.longitude == longitude && location_doc.address == address) {
                     throw new error.NotAllowedError("Location suggestion already exists for this activity. Duplicate suggestions");
                 }
             }
         }
     });
 
-    var suggestion_node = (new sug()).saveLocationSuggestion(latitude, longitude);
+    var suggestion_node = (new sug()).saveLocationSuggestion(latitude, longitude, address);
     result = this.db.suggested.save(activity_id, suggestion_node, {});
     if(result.error == true) {
-        throw new error.GenericError('Saving suggested location ' + latitude + ', ' + longitude + ' failed.');
+        throw new error.GenericError('Saving suggested location ' + address + ' failed.');
     }
     //If suggestion didn't fail. Vote for it.
     (new voted()).saveUserVote(user_id, suggestion_node._id);
@@ -136,6 +136,7 @@ Suggested.prototype.getSuggestedLocations = function(activity_id)
             loc_model.suggestion_voters = Voted.getVotersId(db.suggestion.document(edge._to));
             loc_model.longitude = loc_node[Location.LONGITUDE_FIELD];
             loc_model.latitude = loc_node[Location.LATITUDE_FIELD];
+            loc_model.address = loc_node[Location.ADDRESS_FIELD];
             locations.push(loc_model);
         }
     });

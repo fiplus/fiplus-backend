@@ -144,9 +144,9 @@ Confirmed.prototype.saveConfirmedTime = function(activityId, start_time, end_tim
     return confirmSuggestion(activityId, period_node._id, true);
 };
 
-Confirmed.prototype.saveConfirmedLocation = function(activityId, latitude, longitude)
+Confirmed.prototype.saveConfirmedLocation = function(activityId, latitude, longitude, address)
 {
-    var loc_node = (new location()).saveLocation(latitude, longitude);
+    var loc_node = (new location()).saveLocation(latitude, longitude, address);
     return confirmSuggestion(activityId, loc_node._id, false);
 };
 
@@ -187,6 +187,7 @@ Confirmed.prototype.getConfirmedLocation = function(activity_id)
             loc_model.suggestion_id = "-1";
             loc_model.longitude = loc_node[Location.LONGITUDE_FIELD];
             loc_model.latitude = loc_node[Location.LATITUDE_FIELD];
+            loc_model.address = loc_node[Location.ADDRESS_FIELD];
         }
     }
     return loc_model;

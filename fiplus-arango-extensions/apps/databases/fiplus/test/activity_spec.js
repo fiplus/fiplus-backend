@@ -41,8 +41,11 @@ describe("Create activity", function () {
                         "end" : "253416429000000" } // 12/6/10000, 10:30 - 12:30
                 ],
                 "locations": [
-                    {"latitude" : 56,
-                        "longitude" : -96} // Canada
+                    {
+                        "latitude" : 56,
+                        "longitude" : -96,
+                        "address" : "Canada"
+                    }
                 ]
             }, {json: true})
             .expectStatus(200)
@@ -74,7 +77,8 @@ describe("Create activity", function () {
         .expectJSON('result.visited.vertices.?',
         {
             latitude: 56,
-            longitude: -96
+            longitude: -96,
+            address : "Canada"
         });
 
     it("should create events with confirmed date and time and confirm creator", function () {
@@ -98,8 +102,9 @@ describe("Create activity", function () {
                     {
                         suggestion_id : "-1",
                         "latitude" : 56,
-                        "longitude" : -96
-                    } // Canada
+                        "longitude" : -96,
+                        "address" : "Canada"
+                    }
                 ]
             }, {json: true})
             .expectStatus(200)
@@ -125,7 +130,8 @@ describe("Create activity", function () {
                     .expectJSON('result.visited.vertices.?',
                     {
                         "latitude" : 56,
-                        "longitude" : -96
+                        "longitude" : -96,
+                        "address" : "Canada"
                     })
                     .toss();
                 frisby.create(this.description + "dB")
@@ -204,9 +210,9 @@ describe("Cancel Activity Tests", function() {
         frisby.create('Suggest location on cancelled')
             .put('https://localhost:3001/api/Acts/6/location',
             {
-                // jan. 1, 2050 12 - 1pm
                 latitude:70,
-                longitude:23
+                longitude:23,
+                address:"nowhere"
             },{json:true})
             .expectStatus(400)
             .toss();
@@ -306,7 +312,8 @@ describe("Join activity", function () {
                         startVertex: 'activity/8',
                         graphName: 'fiplus',
                         direction: 'inbound',
-                        edgeCollection: 'joined'
+                        edgeCollection: 'joined',
+                        maxDepth: 1
                     }, {json: true})
                     .afterJSON(function(response) {
                         expect(JSON.stringify(response)).not.toContain('1234@data.com')
@@ -384,7 +391,8 @@ describe('Joiner Suggest time/location tests', function() {
             .put('https://localhost:3001/api/Acts/1/location',
             {
                 latitude:89,
-                longitude:89
+                longitude:89,
+                address: "there"
             },{json:true})
             .expectStatus(200)
             .toss();
@@ -399,7 +407,8 @@ describe('Joiner Suggest time/location tests', function() {
             .expectJSON('result.visited.vertices.?',
             {
                 latitude:89,
-                longitude:89
+                longitude:89,
+                address: "there"
             })
             .toss();
     });
@@ -440,9 +449,9 @@ describe('Joiner Suggest time/location tests', function() {
         frisby.create('Suggest Valid Location for activity from joiner')
             .put('https://localhost:3001/api/Acts/3/location',
             {
-                // jan. 1, 2050 12 - 1pm
                 latitude:89,
-                longitude:89
+                longitude:89,
+                address: "there"
             },{json:true})
             .expectStatus(400)
             .toss();
@@ -460,9 +469,9 @@ describe('Joiner Suggest time/location tests', function() {
         frisby.create('Suggest Valid Time for activity not joined')
             .put('https://localhost:3001/api/Acts/4/location',
             {
-                // jan. 1, 2050 12 - 1pm
                 latitude:89,
-                longitude:89
+                longitude:89,
+                address: "there"
             },{json:true})
             .expectStatus(400)
             .toss();
@@ -570,9 +579,9 @@ describe('Suggest Location', function(){
         frisby.create('Suggest Valid Location for activity')
             .put('https://localhost:3001/api/Acts/1/location',
             {
-                // jan. 1, 2050 12 - 1pm
                 latitude:70,
-                longitude:23
+                longitude:23,
+                address:"nowhere"
             },{json:true})
             .expectStatus(200)
             .toss();
@@ -587,7 +596,8 @@ describe('Suggest Location', function(){
             .expectJSON('result.visited.vertices.?',
             {
                 latitude:70,
-                longitude:23
+                longitude:23,
+                address:"nowhere"
             })
             .toss();
         frisby.create('Check if vote got properly added')
@@ -602,7 +612,8 @@ describe('Suggest Location', function(){
             .expectJSON('result.visited.vertices.?',
             {
                 latitude: 70,
-                longitude: 23
+                longitude: 23,
+                address:"nowhere"
             });
     });
 
@@ -610,9 +621,9 @@ describe('Suggest Location', function(){
         frisby.create('Suggest duplicate Valid Location for activity')
             .put('https://localhost:3001/api/Acts/1/location',
             {
-                // jan. 1, 2050 12 - 1pm
                 latitude:70,
-                longitude:23
+                longitude:23,
+                address: "nowhere"
             },{json:true})
             .expectStatus(400)
             .toss();
@@ -651,7 +662,8 @@ describe('Suggestion Vote', function() {
             .expectJSON('result.visited.vertices.?',
             {
                 latitude: 80,
-                longitude: 80
+                longitude: 80,
+                address: "Turin, Italy"
             });
     });
 
@@ -764,12 +776,14 @@ describe('Get Activity', function() {
             .expectJSON('locations.?',
             {
                 "longitude": 70,
-                "latitude": 50
+                "latitude": 50,
+                "address": "Hatgal, Mongolia"
             })
             .expectJSON('locations.?',
             {
                 "longitude": 80,
-                "latitude": 80
+                "latitude": 80,
+                address: "Turin, Italy"
             })
             .toss();
     });
@@ -928,7 +942,8 @@ describe('Firm Up Activity', function() {
             .expectJSON('result.visited.vertices.?',
             {
                 latitude: 50,
-                longitude: 70
+                longitude: 70,
+                "address":"Hatgal, Mongolia"
             });
     });
     it('should allow over-writing confirmation.', function() {
@@ -949,7 +964,8 @@ describe('Firm Up Activity', function() {
             .expectJSON('result.visited.vertices.?',
             {
                 latitude: 80,
-                longitude: 80
+                longitude: 80,
+                address: "Turin, Italy"
             })
             .toss();
     });
@@ -989,7 +1005,8 @@ describe('Firm Up Activity', function() {
                     {
                         "suggestion_id": "-1",
                         "longitude": 80,
-                        "latitude": 80
+                        "latitude": 80,
+                        address: "Turin, Italy"
                     }
                 ]
             })

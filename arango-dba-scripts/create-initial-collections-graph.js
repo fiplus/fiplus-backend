@@ -64,5 +64,5 @@ graph._create('fiplus', edges);
 db.interest.ensureFulltextIndex('name');
 db.interest.ensureUniqueConstraint('name');
 db.time_stamp.ensureUniqueConstraint('value');
-db.location.ensureUniqueConstraint('latitude', 'longitude');
+db.location.ensureUniqueConstraint('latitude', 'longitude', 'address');
 db.user.ensureUniqueConstraint('email');

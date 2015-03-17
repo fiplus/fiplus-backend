@@ -202,7 +202,7 @@ var defines = require('db-interface/util/defines');
 
                 var location = userprofile.get("location");
                 if(location != null) {
-                    (new in_location.InLocation()).saveInLocationEdge(target_user._id, location.latitude, location.longitude);
+                    (new in_location.InLocation()).saveInLocationEdge(target_user._id, location.latitude, location.longitude, location.address);
                 }
                 var start_time;
                 var end_time;

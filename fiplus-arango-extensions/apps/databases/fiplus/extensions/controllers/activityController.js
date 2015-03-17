@@ -109,10 +109,10 @@ var defines = require('db-interface/util/defines');
                 {
                     var location = locations[i];
 
-                    Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude, uid);
+                    Suggester.saveSuggestedLocationEdge(activity_id, location.latitude, location.longitude, location.address, uid);
                     if(location.suggestion_id == "-1")
                     {
-                        Confirmer.saveConfirmedLocation(activity_id, location.latitude, location.longitude);
+                        Confirmer.saveConfirmedLocation(activity_id, location.latitude, location.longitude, location.address);
                     }
                 }
 
@@ -338,7 +338,8 @@ var defines = require('db-interface/util/defines');
                 var suggest = new suggester();
                 (new actor()).checkIfCancelled(activityId);
                 checkIfAllowedToSuggest(activityId, params.request.session.get('uid'));
-                var result = suggest.saveSuggestedLocationEdge(activityId, locations.get('latitude'), locations.get('longitude'), params.request.session.get('uid'));
+                var result = suggest.saveSuggestedLocationEdge(activityId, locations.get('latitude'),
+                    locations.get('longitude'), locations.get('address'), params.request.session.get('uid'));
 
                 var sug_response = new model_common.CreateSuggestionResponse();
                 sug_response.suggestion_id = result;
@@ -350,7 +351,7 @@ var defines = require('db-interface/util/defines');
         description: 'Activity to be linked to location'
     }).bodyParam('Location', {
         type: foxx.Model,
-        description: 'The latitude and longitude of the location'
+        description: 'The latitude, longitude, address of the location'
     }).onlyIfAuthenticated();
 
     function checkIfAllowedToSuggest(activityId, userId) {

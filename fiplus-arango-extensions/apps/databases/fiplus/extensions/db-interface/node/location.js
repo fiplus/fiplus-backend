@@ -11,17 +11,19 @@ var Location = function()
     this.COLLECTION_NAME = 'location';
     this.LATITUDE_FIELD = 'latitude';
     this.LONGITUDE_FIELD = 'longitude';
+    this.ADDRESS_FIELD = 'address';
 };
 
 /**
  * Add a unique location to the collection. Return the added location node.
  * If there is a location node associated to the given latitude and longitude, it returns that.
  */
-Location.prototype.saveLocation = function(latitude, longitude)
+Location.prototype.saveLocation = function(latitude, longitude, address)
 {
     var locationObject = {};
     locationObject[this.LATITUDE_FIELD] = latitude;
     locationObject[this.LONGITUDE_FIELD] = longitude;
+    locationObject[this.ADDRESS_FIELD] = address;
     var result;
 
     result = this.db.location.firstExample(locationObject);
@@ -30,7 +32,7 @@ Location.prototype.saveLocation = function(latitude, longitude)
         result = this.db.location.save(locationObject);
         if(result.error == true)
         {
-            throw new error.GenericError('Saving ' + latitude + ' and ' + longitude + ' failed');
+            throw new error.GenericError('Saving ' + address + ' failed');
         }
     }
     return result;

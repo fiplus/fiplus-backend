@@ -25,6 +25,7 @@ Location.suggestion_votes = Number;
 Location.suggestion_voters = [String];
 Location.latitude = Number;
 Location.longitude = Number;
+Location.address = String;
 exports.Location = Location;
 
 var Time = function(){};
