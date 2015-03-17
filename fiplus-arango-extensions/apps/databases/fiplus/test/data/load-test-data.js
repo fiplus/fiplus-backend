@@ -457,6 +457,7 @@ db.favourited.save(defaultUser, user2, {});
 db.favourited.save(defaultUser, user3, {});
 
 
+
 // In Location
 db.in_location.save(defaultUser,loc5,{});
 
@@ -507,7 +508,7 @@ db.suggested.save(activity5, locSug21, {});
 db.is.save(locSug21, loc1, {});
 
 
-db.in_location.save(defaultUser,loc5,{});
+
 db.in_location.save(user1,loc5,{});
 db.in_location.save(user2,loc5,{});
 db.in_location.save(user3,loc5,{});

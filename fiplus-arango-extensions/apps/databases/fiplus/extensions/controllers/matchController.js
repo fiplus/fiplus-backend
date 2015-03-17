@@ -55,16 +55,18 @@ var model_common = require('model-common');
         }
     };
 
-    function matchActivitiesNearLocation(user_latitude, user_longitude, activity_list, num_activities_requested){
+    function matchActivitiesNearLocation(user_key, user_latitude, user_longitude, activity_list, num_activities_requested){
         //Need to create a temporary collection for a list of activity ids and their most relevant location to user Geo indexing.
-        //Our activities
-        db._drop('activities_with_location');
-        db._create('activities_with_location');
+        //To make the collection name unique to each user, we can use the name activities_with_location_<userKey> where
+        //<userKey> is the unique id of the user.
+        var collection_name = 'activities_with_location' + user_key;
+        db._drop(collection_name);
+        db._create(collection_name);
         var old_index;
         var latitude;
         var longitude;
 
-        db.activities_with_location.ensureGeoIndex("loc");
+        db._collection(collection_name).ensureGeoIndex("loc");
 
         var Confirmer = new confirmer();
         var confirmedLocation =  new model_common.Location();
@@ -86,7 +88,7 @@ var model_common = require('model-common');
                 latitude = activity_location.latitude;
                 longitude = activity_location.longitude;
 
-                db.activities_with_location.save({
+                db._collection(collection_name).save({
                     "activity_id": activity_list[i].activity_id,
                     "old_index": i,
                     "loc": [latitude, longitude]
@@ -94,7 +96,7 @@ var model_common = require('model-common');
             }
         }
 
-        var activities_sorted_by_loc = db.activities_with_location.near(user_latitude, user_longitude).limit(num_activities_requested).toArray();
+        var activities_sorted_by_loc = db._collection(collection_name).near(user_latitude, user_longitude).limit(num_activities_requested).toArray();
         var sorted_activities = [];
         for(var i = 0; i < activities_sorted_by_loc.length; i++) {
             sorted_activities[i] = activity_list[activities_sorted_by_loc[i].old_index];
@@ -183,7 +185,11 @@ var model_common = require('model-common');
 
         var Location = new location.Location();
         var user_location = (new in_location.InLocation()).getUserLocation(current_user_handle);
-
+        //For the rare event that user_location or activity_location is null, return 0 for location score.
+        if(user_location == null || activity_location == null)
+        {
+            return 0;
+        }
         distance = getDistanceFromLatLonInKm(user_location[Location.LATITUDE_FIELD], user_location[Location.LONGITUDE_FIELD], activity_location.latitude, activity_location.longitude);
 
         //If activity location is exactly the same place as user location, we will get a 0 but we can't divide by 0
@@ -212,12 +218,6 @@ var model_common = require('model-common');
             activity_time = (new voted.Voted()).getMostVotedSuggestedFutureTime(activity_handle, reference_time);
         }
         var time_difference = activity_time - reference_time;
-        //If activity time is exactly the same place as reference time, we will get a 0 but we can't divide by 0
-        //so set it to a really small number.
-        if(time_difference == 0)
-        {
-            time_difference = 0.000001;
-        }
         //Doing this to make sure if activity_time is happening first, it should have a higher score.
         time_score = 1/(time_difference);
         return time_score;
@@ -397,6 +397,10 @@ var model_common = require('model-common');
         for(var j = 0; j < added_activities.length; j++)
         {
             var activity_node = db.activity.document(added_activities[j].activity_id);
+            //Commented out the code that ensures joined is not part of suggested activities for match.
+            //This is in-line with what Beenish wanted which is to let joined activities be part of recommended activities
+            //as per Usability testers wanted. We can uncomment this later on if we want to revert back to this.
+            /*
             //Check first if it is already a joined activity. If it is, don't add.
             var isJoined = joined_activities.some(function (el) {
                 return el.activity_id === activity_node._key;
@@ -406,6 +410,11 @@ var model_common = require('model-common');
                 if (activities.length < max_activities_length) {
                     addIfNotExist(activity_node, activities);
                 }
+            }
+            */
+            //Only push to user_activities_array if we didn't meet the num_activities requirement yet
+            if (activities.length < max_activities_length) {
+                addIfNotExist(activity_node, activities);
             }
 
         }
@@ -432,14 +441,17 @@ var model_common = require('model-common');
             temp_activities = matchFutureActivities();
             var Location = new location.Location();
             var user_location = (new in_location.InLocation()).getUserLocation(user_object._id);
-            //matchActivitiesNearLocation already sorts from nearest to farthest.
-            activities = matchActivitiesNearLocation(user_location[Location.LATITUDE_FIELD], user_location[Location.LONGITUDE_FIELD], temp_activities, num_activities_requested);
+            //If user_location is not null, it returns activities that are near the user for NearMe tab. If it is null, it returns no activities.
+            if(user_location != null) {
+                //matchActivitiesNearLocation already sorts from nearest to farthest.
+                activities = matchActivitiesNearLocation(user_object._key, user_location[Location.LATITUDE_FIELD], user_location[Location.LONGITUDE_FIELD], temp_activities, num_activities_requested);
+            }
         }
         //This is for the main page tab. More factors will be incorporated here in the future to decide which activities to return
         else{
             var temp_activities = [];
             var joined_activities = [];
-            //Grab joined_activities
+            //Grab joined_activities. This is not used inside appendActivitiesList atm.
             joined_activities = getFutureJoinedActivities(user_object._id);
             //Grab all future events(this is the only hard filter for now. Later on it will be all future events within a certain radius in x km)
             temp_activities = matchFutureActivities();
