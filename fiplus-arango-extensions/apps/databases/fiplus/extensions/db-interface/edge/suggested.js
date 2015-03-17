@@ -64,7 +64,7 @@ Suggested.prototype.saveSuggestedTimeEdge = function(activity_id, start_time, en
 /**
  * Creating a suggested edge. Links activity to location.
  */
-Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, longitude, user_id)
+Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, longitude, address, user_id)
 {
     var result;
 
@@ -82,7 +82,7 @@ Suggested.prototype.saveSuggestedLocationEdge = function(activity_id, latitude, 
         if (location_id.indexOf("location") > -1) {
             var location_doc = db.location.document(location_id);
             if (location_doc != null) {
-                if (location_doc.latitude == latitude && location_doc.longitude == longitude) {
+                if (location_doc.latitude == latitude && location_doc.longitude == longitude && location_doc.address == address) {
                     throw new error.NotAllowedError("Location suggestion already exists for this activity. Duplicate suggestions");
                 }
             }

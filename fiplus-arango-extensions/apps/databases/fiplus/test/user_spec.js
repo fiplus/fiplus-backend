@@ -36,7 +36,7 @@ describe("Configure User Profile", function () {
                 "gender": "male",
                 "location": {
                     "latitude": 71,
-                    "longitude": 81
+                    "longitude": 81,
                     "address": "407 9th Street, Craig, AK 99921, USA"
                 },
                 "location_proximity_setting": true,
@@ -73,7 +73,7 @@ describe("Configure User Profile", function () {
             .expectJSON('result.visited.vertices.?',
             {
                 latitude: 71,
-                longitude: 81
+                longitude: 81,
                 address: "407 9th Street, Craig, AK 99921, USA"
             })
             .expectJSON('result.visited.vertices.?',
@@ -122,7 +122,7 @@ describe('Get User Profile', function () {
                 "gender": "male",
                 "location": {
                     "latitude": 71,
-                    "longitude": 81
+                    "longitude": 81,
                     "address": "407 9th Street, Craig, AK 99921, USA"
                 },
                 "location_proximity_setting": true,

@@ -82,6 +82,7 @@ exports.getProfile = function(target_user_node, current_userId)
         if(location_node != null) {
             loc.latitude = location_node[Location.LATITUDE_FIELD];
             loc.longitude = location_node[Location.LONGITUDE_FIELD];
+            loc.address = location_node[Location.ADDRESS_FIELD];
         }
 
         profile.location = loc;

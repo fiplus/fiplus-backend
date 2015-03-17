@@ -202,7 +202,7 @@ var defines = require('db-interface/util/defines');
 
                 var location = userprofile.get("location");
                 if(location != null) {
-                    (new in_location.InLocation()).saveInLocationEdge(target_user._id, location.latitude, location.longitude);
+                    (new in_location.InLocation()).saveInLocationEdge(target_user._id, location.latitude, location.longitude, location.address);
                 }
                 var start_time;
                 var end_time;
@@ -248,7 +248,6 @@ var defines = require('db-interface/util/defines');
 
         var user_node = User.getUserWithId(userId);
         var current_userId = req.session.get('uid');
-                loc.address = location_node[Location.ADDRESS_FIELD];
 
         var profile = helper.getProfile(user_node, current_userId);
 
