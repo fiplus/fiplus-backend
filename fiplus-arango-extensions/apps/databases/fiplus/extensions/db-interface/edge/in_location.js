@@ -54,12 +54,16 @@ InLocation.prototype.updateInLocationEdge = function(in_location_id, user_id, la
     var location_object = (new location.Location()).saveLocation(latitude, longitude, address);
     var in_location_object = {};
     in_location_object[this.FROM_FIELD] = user_id;
-    // _from and _to are immutable once saved, so need to delete and save
-    result = this.db.in_location.removeByExample(in_location_object);
-    if(result.error == true)
-    {
-        throw new error.GenericError('in_location edge removal for ' + user_id + ' failed.');
-    }
+
+    result = this.db.in_location.byExample(in_location_object).toArray();
+    var db = this.db;
+    result.forEach(function(toRemove) {
+        var deleteResult = db.in_location.remove(toRemove);
+        if(deleteResult.error == true)
+        {
+            throw new error.GenericError('in_location edge removal for ' + user_id + ' failed.');
+        }
+    });
 
     in_location_object[this.FROM_FIELD] = user_id;
     in_location_object[this.TO_FIELD] = location_object._id;

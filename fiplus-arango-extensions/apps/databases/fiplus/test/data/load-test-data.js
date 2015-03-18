@@ -139,11 +139,11 @@ var user6 = db.user.save({
 });
 
 // Location test data
-var loc1 = db.location.save({"latitude": 70,"longitude": 70});
-var loc2 = db.location.save({"latitude": 50,"longitude": 70});
-var loc3 = db.location.save({"latitude": 80,"longitude": 50});
-var loc4 = db.location.save({"latitude": 80,"longitude": 80});
-var loc5 = db.location.save({"latitude": 20,"longitude": 40});
+var loc1 = db.location.save({"latitude": 70,"longitude": 70, "address":"a"});
+var loc2 = db.location.save({"latitude": 50,"longitude": 70, "address":"Hatgal, Mongolia"});
+var loc3 = db.location.save({"latitude": 80,"longitude": 50, "address":"c"});
+var loc4 = db.location.save({"latitude": 80,"longitude": 80, "address":"Turin, Italy"});
+var loc5 = db.location.save({"latitude": 20,"longitude": 40, address: "Hawaii"});
 
 
 // Interest test data
