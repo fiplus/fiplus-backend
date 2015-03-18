@@ -139,10 +139,12 @@ var user6 = db.user.save({
 });
 
 // Location test data
-var loc1 = db.location.save({"latitude": 70,"longitude": 70, "address":"a"});
-var loc2 = db.location.save({"latitude": 50,"longitude": 70, "address":"Hatgal, Mongolia"});
-var loc3 = db.location.save({"latitude": 80,"longitude": 50, "address":"c"});
-var loc4 = db.location.save({"latitude": 80,"longitude": 80, "address":"Turin, Italy"});
+var loc1 = db.location.save({"latitude": 70,"longitude": 70});
+var loc2 = db.location.save({"latitude": 50,"longitude": 70});
+var loc3 = db.location.save({"latitude": 80,"longitude": 50});
+var loc4 = db.location.save({"latitude": 80,"longitude": 80});
+var loc5 = db.location.save({"latitude": 20,"longitude": 40});
+
 
 // Interest test data
 var int1 = db.interest.save({name:"Soccer"});
@@ -424,8 +426,6 @@ db.tagged.save(activity3,int3,{});
 db.tagged.save(activity4,int3,{});
 db.tagged.save(activity5,int1,{});
 
-db.suggested.save(act1, sug1, {});
-db.suggested.save(act1, sug2, {});
 
 var sug3 = db.suggestion.save({_key:'3'});
 db.is.save(sug3, tp1, {});
@@ -455,3 +455,65 @@ db.voted.save(defaultUser, timeSug8, {});
 db.favourited.save(defaultUser, user1, {});
 db.favourited.save(defaultUser, user2, {});
 db.favourited.save(defaultUser, user3, {});
+
+
+
+// In Location
+db.in_location.save(defaultUser,loc5,{});
+
+//Make sure all activities have suggested locations and all users have location to test the Match Location manually
+//I commented this out because putting location suggestions on activities and location for users breaks other tests.
+/*
+var locSug11 = db.suggestion.save({_key:'30'});
+db.suggested.save(act3, locSug11, {});
+db.is.save(locSug11, loc1, {});
+var locSug12 = db.suggestion.save({_key:'29'});
+db.suggested.save(act4, locSug12, {});
+db.is.save(locSug12, loc2, {});
+
+var locSug13 = db.suggestion.save({_key:'20'});
+db.suggested.save(act5, locSug13, {});
+db.is.save(locSug13, loc3, {});
+
+var locSug14 = db.suggestion.save({_key:'21'});
+db.suggested.save(act6, locSug14, {});
+db.is.save(locSug14, loc4, {});
+
+var locSug15 = db.suggestion.save({_key:'22'});
+db.suggested.save(act8, locSug15, {});
+db.is.save(locSug15, loc5, {});
+
+var locSug16 = db.suggestion.save({_key:'23'});
+db.suggested.save(act10, locSug16, {});
+db.is.save(locSug16, loc1, {});
+
+var locSug17 = db.suggestion.save({_key:'31'});
+db.suggested.save(activity1, locSug17, {});
+db.is.save(locSug17, loc2, {});
+
+var locSug18 = db.suggestion.save({_key:'25'});
+db.suggested.save(activity2, locSug18, {});
+db.is.save(locSug18, loc3, {});
+
+var locSug19 = db.suggestion.save({_key:'26'});
+db.suggested.save(activity3, locSug19, {});
+db.is.save(locSug19, loc4, {});
+
+var locSug20 = db.suggestion.save({_key:'27'});
+db.suggested.save(activity4, locSug20, {});
+db.is.save(locSug20, loc5, {});
+
+var locSug21 = db.suggestion.save({_key:'28'});
+db.suggested.save(activity5, locSug21, {});
+db.is.save(locSug21, loc1, {});
+
+
+
+db.in_location.save(user1,loc5,{});
+db.in_location.save(user2,loc5,{});
+db.in_location.save(user3,loc5,{});
+db.in_location.save(user4,loc5,{});
+db.in_location.save(user5,loc5,{});
+db.in_location.save(user6,loc5,{});
+*/
+

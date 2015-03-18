@@ -155,4 +155,33 @@ Voted.prototype.getMostVotedSuggestedFutureTime = function(activityHandle, refer
     return most_voted_time;
 };
 
+//Returns the most voted suggested location. If there is a tie, the suggestion that is first in the list will be returned.
+Voted.prototype.getMostVotedLocation = function(activityHandle)
+{
+    var suggested_locations = [];
+    var most_voted_location;
+    var current_max_vote_count;
+    suggested_locations = (new suggested.Suggested()).getSuggestedLocations(activityHandle);
+
+
+    //Set the most_voted_location to be the first suggest location
+    if(suggested_locations.length > 0)
+    {
+        most_voted_location = suggested_locations[0];
+        current_max_vote_count = this.getNumberOfUserVotes("suggestion/" + suggested_locations[0].suggestion_id);
+    }
+
+    for (var i = 1; i < suggested_locations.length; i++)
+    {
+        //If current suggested time got more votes or got the same votes but earlier time, replace the most_voted_time with it.
+        if((this.getNumberOfUserVotes("suggestion/" + suggested_locations[i].suggestion_id) > current_max_vote_count))
+        {
+            current_max_vote_count = this.getNumberOfUserVotes("suggestion/" + suggested_locations[i].suggestion_id);
+            most_voted_location = suggested_locations[i];
+        }
+
+    }
+    return most_voted_location;
+};
+
 exports.Voted = Voted;
