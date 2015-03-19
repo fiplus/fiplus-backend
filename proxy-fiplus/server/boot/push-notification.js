@@ -42,7 +42,7 @@ exports.SendNotificationOnActivityCreate = function(activity)
 exports.SendNotificationOnFirmUp = function(firmUp)
 {
   var firmUpResponse = JSON.parse(firmUp);
-  query.getDeviceIdsJoinedActivity(firmUp.activity_id, function(err, devices) {
+  query.getDeviceIdsJoinedActivity(firmUpResponse.activity_id, function(err, devices) {
 
     var message = new push_message.FirmUpMessage(firmUpResponse.activity_id, firmUpResponse.Name,
       firmUpResponse.time, firmUpResponse.location);
