@@ -49,6 +49,8 @@ Activity.tagged_interests = [String];
 Activity.times = ['Time'];
 Activity.locations = ['Location'];
 Activity.is_cancelled = Boolean;
+Activity.is_confirmed = Boolean;
+Activity.needs_rsvp = Boolean;
 exports.Activity = Activity;
 
 var Favourites = function(){};

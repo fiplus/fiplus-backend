@@ -13,7 +13,7 @@ var is_available = require('db-interface/edge/is_available');
 var favourited = require('db-interface/edge/favourited');
 var model_common = require('model-common');
 
-exports.getActivity = function(activity_node)
+exports.getActivity = function(activity_node, userId)
 {
     var Actor = new actor();
 
@@ -50,6 +50,18 @@ exports.getActivity = function(activity_node)
     {
         activity.locations = Suggester.getSuggestedLocations(activity_node._id);
     }
+
+    if(confirmedTime != null && confirmedLoc != null)
+    {
+        activity.is_confirmed = true;
+        activity.needs_rsvp = !Confirmer.isUserConfirmed(userId, activity_node._id);
+    }
+    else
+    {
+        activity.is_confirmed = false;
+        activity.needs_rsvp = false;
+    }
+
     return activity;
 };
 

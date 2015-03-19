@@ -140,7 +140,7 @@ var defines = require('db-interface/util/defines');
         var activity_id = 'activity/' + req.params('activityid');
 
         var activity_node = (new actor()).get(activity_id);
-        var activity = helper.getActivity(activity_node);
+        var activity = helper.getActivity(activity_node, req.session.get('uid'));
 
         res.json(activity);
     }).pathParam('activityid', {

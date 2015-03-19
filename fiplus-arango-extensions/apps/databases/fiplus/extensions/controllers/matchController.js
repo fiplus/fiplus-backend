@@ -43,12 +43,12 @@ var model_common = require('model-common');
     });
 
     //Returns true if activity_node exists in activities
-    function addIfNotExist(activity_node, activities){
+    function addIfNotExist(activity_node, activities, uid){
         var found = activities.some(function (el) {
             return el.activity_id === activity_node._key;
         });
         if (!found) {
-            var act = helper.getActivity(activity_node);
+            var act = helper.getActivity(activity_node, uid);
             activities.push(act);
         }
     };
@@ -254,14 +254,14 @@ var model_common = require('model-common');
         return activities;
     };
 
-    function matchFutureActivities(){
+    function matchFutureActivities(uid){
         var activities = [];
         var activity_list = query.getFutureActivities();
         var activity_list_length = activity_list.length;
 
         for (var i = 0; i < activity_list_length; i++) {
             var activity_node = activity_list[i];
-            addIfNotExist(activity_node, activities);
+            addIfNotExist(activity_node, activities, uid);
         }
         return activities;
     };
@@ -273,12 +273,12 @@ var model_common = require('model-common');
 
         for (var i = 0; i < activity_list_length; i++) {
             var activity_node = activity_list[i];
-            addIfNotExist(activity_node, activities);
+            addIfNotExist(activity_node, activities, userId);
         }
         return activities;
     };
 
-    function appendActivitiesList(activities, added_activities, max_activities_length, joined_activities){
+    function appendActivitiesList(activities, added_activities, max_activities_length, joined_activities, uid){
         for(var j = 0; j < added_activities.length; j++)
         {
             var activity_node = db.activity.document(added_activities[j].activity_id);
@@ -289,7 +289,7 @@ var model_common = require('model-common');
             if (!isJoined) {
                 //Only push to user_activities_array if we didn't meet the num_activities requirement yet
                 if (activities.length < max_activities_length) {
-                    addIfNotExist(activity_node, activities);
+                    addIfNotExist(activity_node, activities, uid);
                 }
             }
 
@@ -315,11 +315,11 @@ var model_common = require('model-common');
             //Grab joined_activities
             joined_activities = getFutureJoinedActivities(user_object._id);
             //Grab all future events(this is the only hard filter for now. Later on it will be all future events within a certain radius in x km)
-            temp_activities = matchFutureActivities();
+            temp_activities = matchFutureActivities(request.session.get('uid'));
             //Calculate the match score for all of the qualified events and rank them accordingly.
             temp_activities = calculateMatchScoreAndSort(user_object._id, temp_activities, true, true, false, true);
             //Fill up activities with ranked activities from temp_activities until we reach num_activities_requested amount
-            appendActivitiesList(activities, temp_activities, num_activities_requested, joined_activities);
+            appendActivitiesList(activities, temp_activities, num_activities_requested, joined_activities, request.session.get('uid'));
         }
         response.json(activities);
 
