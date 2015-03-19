@@ -10,8 +10,8 @@ var FirmUpMessage = function(activityId, Name, time, location) {
   this.type = 'firm_up';
   this.activityId = activityId;
   this.Name = Name;
-  this.time = time;
-  this.location = location;
+  this.time = JSON.stringify(time);
+  this.location = JSON.stringify(location);
 };
 exports.FirmUpMessage = FirmUpMessage;
 
