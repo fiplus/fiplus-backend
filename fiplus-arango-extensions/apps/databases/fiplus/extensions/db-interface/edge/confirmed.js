@@ -112,11 +112,11 @@ Confirmed.prototype.isConfirmed = function(activityId)
         time_sug: time_sug,
         loc_sug: loc_sug
     };
-}
+};
 
 Confirmed.prototype.confirmUser = function(userId, activityId)
 {
-    if(db.confirmed.firstExample({"_from": userId, "_to": activityId}) == null)
+    if(!this.isConfirmed(userId, activityId))
     {
         var result = db.confirmed.save(userId, activityId, {});
         if (result.error == true)
@@ -124,7 +124,12 @@ Confirmed.prototype.confirmUser = function(userId, activityId)
             throw new error.GenericError('Saving confirmation for voter failed.');
         }
     }
-}
+};
+
+Confirmed.prototype.isUserConfirmed = function(userId, activityId)
+{
+    return (db.confirmed.firstExample({"_from": userId, "_to": activityId}) != null);
+};
 
 Confirmed.prototype.saveConfirmed = function(activityId, suggestionId)
 {

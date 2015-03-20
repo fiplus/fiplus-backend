@@ -261,7 +261,7 @@ var defines = require('db-interface/util/defines');
         var activities = [];
         var activity_nodes = query.getJoinedActivities('user/'+request.params('userId'), request.params('future'), request.params('past'));
         activity_nodes.forEach(function(activity_node) {
-            var act = helper.getActivity(activity_node);
+            var act = helper.getActivity(activity_node, request.session.get('uid'));
             activities.push(act);
         });
         response.json(activities);

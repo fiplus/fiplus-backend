@@ -771,7 +771,9 @@ describe('Get Activity', function() {
                         "start": 4102513200000,
                         "end": 4102516800000
                     }
-                ]
+                ],
+                "is_confirmed": false,
+                "needs_rsvp": false
             })
             .expectJSON('locations.?',
             {
@@ -1008,7 +1010,9 @@ describe('Firm Up Activity', function() {
                         "latitude": 80,
                         address: "Turin, Italy"
                     }
-                ]
+                ],
+                "is_confirmed": true,
+                "needs_rsvp": true
             })
             .toss();
     });
