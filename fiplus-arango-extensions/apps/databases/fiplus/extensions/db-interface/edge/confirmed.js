@@ -116,7 +116,7 @@ Confirmed.prototype.isConfirmed = function(activityId)
 
 Confirmed.prototype.confirmUser = function(userId, activityId)
 {
-    if(!this.isConfirmed(userId, activityId))
+    if(!this.isUserConfirmed(userId, activityId))
     {
         var result = db.confirmed.save(userId, activityId, {});
         if (result.error == true)
