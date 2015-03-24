@@ -367,7 +367,7 @@ var defines = require('db-interface/util/defines');
         }
 
         var Created = new creator();
-        if(!activity[Activity.ALLOW_JOINER_INPUT] && userId != Created.getCreator(activityId))
+        if(!activity[Activity.ALLOW_JOINER_INPUT] && userId != "user/" + Created.getCreator(activityId))
         {
             throw new error.NotAllowedError('Suggestions from joiners');
         }
