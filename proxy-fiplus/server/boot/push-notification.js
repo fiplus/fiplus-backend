@@ -14,11 +14,17 @@ function sendPushNotification(message, deviceIds)
   });
 
   deviceIds.forEach(function(id) {
-    gcmSender.sendMessage(gcmMessage.toString(), id, true, function (err, data) {
+    gcmSender.sendMessage(gcmMessage.toString(), id, true, function (err, response) {
       // TODO More robust error/gcm result handling, i.e deleting invalid reg ids
+
+      // Need to removed registration ids that are old or invalid
+      if(response.old_registration_id || response.error) {
+        query.removeBadRegistrationId(id);
+      }
+
       if (!err) {
         // do something
-        console.info("data", JSON.stringify(data));
+        console.info(JSON.stringify(response));
       } else {
         // handle error
         console.info("error " + err);
