@@ -58,3 +58,14 @@ exports.getDeviceIdsJoinedActivity = function(activity_id, cb)
   return deviceIds;
 };
 
+exports.removeBadRegistrationId = function(deviceId)
+{
+  var qCallback = function(err, cursor)
+  {
+      if(err) console.log(err);
+  };
+
+  dbconn.query("for u in user " +
+  "filter @deviceId in u.userData.device_ids " +
+  "update {_key: u._key, userData:{device_ids:remove_value(u.userData.device_ids,@deviceId,1)}} in user", {deviceId:deviceId}, qCallback);
+};
