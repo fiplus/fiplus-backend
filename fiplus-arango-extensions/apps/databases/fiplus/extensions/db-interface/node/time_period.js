@@ -20,13 +20,16 @@ TimePeriod.prototype.saveTimePeriod = function(start_time, end_time)
 {
     var result;
 
-    if(end_time < start_time) {
-        throw new error.NotAllowedError("End time before start time");
-    }
+    //Allow for null end times so only throw errors for non-null end times.
+    if(end_time != null) {
+        if (end_time < start_time) {
+            throw new error.NotAllowedError("End time before start time");
+        }
 
-    var nowMillis = Date.now();
-    if(end_time < nowMillis) {
-        throw new error.NotAllowedError("Time periods in past");
+        var nowMillis = Date.now();
+        if (end_time < nowMillis) {
+            throw new error.NotAllowedError("Time periods in past");
+        }
     }
 
     //Prevent the creation of a time period with the same start and end time as another time period.
