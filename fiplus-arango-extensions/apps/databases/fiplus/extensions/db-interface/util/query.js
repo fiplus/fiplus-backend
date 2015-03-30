@@ -63,7 +63,7 @@ exports.getJoinedActivities = function(userId, future, past)
     {
         var returnValue = "return document(activity)";
         return db._query(
-            "let activities = (for joined in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'joined'}) return joined._to) " +
+            "let activities = (for confirmed in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'confirmed'}) return confirmed._to) " +
             getPastConfirmedActivities(returnValue) +
             "return c", {userId:userId}).toArray()[0];
     }
