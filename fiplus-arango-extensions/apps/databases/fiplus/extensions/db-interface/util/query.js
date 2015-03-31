@@ -35,6 +35,18 @@ function getFutureConfirmedActivities(returnValue, excludeCancelled)
     returnValue + ") ";
 }
 
+//Only return past confirmed and non-cancelled joined activities for recent activities.
+function getPastConfirmedActivities(returnValue)
+{
+    return "let c = ( " +
+        "for activity in activities " +
+        "for confirmed_is in graph_edges('fiplus', activity, {edgeCollectionRestriction:'confirmed', endVertexCollectionRestriction:'time_period'}) "+
+        "for confirmed_end in graph_edges('fiplus', confirmed_is._to, {edgeCollectionRestriction:'end'}) "+
+        "filter document(confirmed_end._to).value <= date_now() " +
+        "filter !activity.is_cancelled " +
+        returnValue + ") ";
+}
+
 
 exports.getJoinedActivities = function(userId, future, past)
 {
@@ -49,19 +61,11 @@ exports.getJoinedActivities = function(userId, future, past)
     }
     else if(!future && past)
     {
-        return db._query("return unique((for joined in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'joined'}) " +
-        "filter joined._to not in ( "+
-            "for suggested in graph_edges('fiplus', joined._to, {edgeCollectionRestriction:'suggested'}) "+
-            "for is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'}) "+
-            "for end in graph_edges('fiplus', is._to, {edgeCollectionRestriction:'end'}) "+
-            "filter document(end._to).value >= date_now() "+
-            "return suggested._from "+
-        ") "+
-        "filter length( "+
-            "for suggested in graph_edges('fiplus', joined._to, {edgeCollectionRestriction:'suggested'}) "+
-            "for is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'}) "+
-            "return suggested "+ ") != 0 "+
-        "return document(joined._to)))",{userId:userId}).toArray()[0];
+        var returnValue = "return document(activity)";
+        return db._query(
+            "let activities = (for confirmed in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'confirmed'}) return confirmed._to) " +
+            getPastConfirmedActivities(returnValue) +
+            "return c", {userId:userId}).toArray()[0];
     }
     else
     {

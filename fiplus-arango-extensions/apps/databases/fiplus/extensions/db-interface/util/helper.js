@@ -54,7 +54,15 @@ exports.getActivity = function(activity_node, userId)
     if(confirmedTime != null && confirmedLoc != null)
     {
         activity.is_confirmed = true;
-        activity.needs_rsvp = !Confirmer.isUserConfirmed(userId, activity_node._id);
+        //If the user logged in is the creator, it shouldn't need to rsvp at all for any confirmed suggestion.
+        //If the user logged in is not the creator, only need to rsvp if the user didn't vote for the confirmed suggestions.
+        if("user/" + activity.creator == userId) {
+            activity.needs_rsvp = false;
+        }
+        else
+        {
+            activity.needs_rsvp = !Confirmer.isUserConfirmed(userId, activity_node._id);
+        }
     }
     else
     {
