@@ -76,11 +76,10 @@ exports.getJoinedActivities = function(userId, future, past)
     }
     else
     {
-        return db._query("return unique((for joined in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'joined'})" +
-        "for suggested in graph_edges('fiplus', joined._to, {edgeCollectionRestriction:'suggested'})" +
-        "for is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'})" +
-        "for start in graph_edges('fiplus', is._to, {edgeCollectionRestriction:'start'})" +
-        "return document(joined._to)))", {userId:userId}).toArray()[0];
+        return db._query("for user in user "+
+        "for joined in joined "+
+        "filter joined._from == user._id && user._id == @userId "+
+        "return document(joined._to)", {userId:userId}).toArray();
     }
 };
 
