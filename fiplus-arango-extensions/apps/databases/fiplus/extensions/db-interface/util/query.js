@@ -105,29 +105,23 @@ exports.getActivitiesWithGivenInterest = function(interestId)
 
 exports.getFavouritesInActivity = function(activityId, userId)
 {
-    return db._query("return unique((for joined in graph_edges('fiplus', @activityId, {edgeCollectionRestriction:'joined'})" +
-    "for favourited in graph_edges('fiplus', joined._from, {edgeCollectionRestriction:'favourited', direction:'inbound'})" +
-    "filter @userId == favourited._from " +
-    "return favourited._to))", {activityId:activityId,userId:userId}).toArray()[0];
+    return db._query("for joined in joined "+
+    "for activity in activity "+
+    "filter activity._id == joined._to && activity._id == @activityId "+
+    "for favourited in favourited "+
+    "filter favourited._from == joined._from && favourited._from == @userId "+
+    "return favourited._to", {activityId:activityId,userId:userId}).toArray()[0];
 };
 
 exports.getInterestsOfUser = function(userId)
 {
-    return db._query("return unique((for interested_in in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'interested_in'})" +
-    "return document(interested_in._to)))", {userId:userId}).toArray()[0];
+    return db._query("for interested_in in interested_in "+
+    "filter interested_in._from == @userId return document(interested_in._to)", {userId:userId}).toArray();
 };
 
 
 exports.getFutureActivities = function()
 {
-    var returnValue = "return activity";
-    var stmt = db._createStatement("let activities = (for a in activity return a) " +
-    getFutureSuggestedAndNotConfirmedActivities(returnValue, true) +
-    getFutureConfirmedActivities(returnValue, true) +
-    "return union_distinct(s,c)");
-    require('console').log(JSON.stringify(stmt.explain()));
-    stmt = db._createStatement("for s in time_stamp filter s.value > date_now() return s");
-    require('console').log(JSON.stringify(stmt.explain()));
     return db._query(
         "let activities = (for a in activity return a) " +
         getFutureSuggestedAndNotConfirmedActivities(returnValue, true) +
@@ -139,16 +133,13 @@ exports.getFutureActivities = function()
 exports.getAllAttendees = function(actId)
 {
     return db._query(
-            "return unique(" +
-                "union(" +
-                    "(for joined in graph_edges('fiplus', @actId, {edgeCollectionRestriction:'joined'})" +
-                        "return document(joined._from))," +
-                    "(for confirmed in graph_edges('fiplus', @actId, {edgeCollectionRestriction:'confirmed', endVertexCollectionRestriction:'user'})" +
-                        "return document(confirmed._from))))" ,
+            "return union( "+
+            "(for joined in joined filter joined._to == 'activity/1' return document(joined._from)), "+
+            "(for confirmed in confirmed filter confirmed._to == 'activity/1' return document(confirmed._from)))" ,
             {actId:actId}).toArray()[0];
 };
 
 exports.getDateNow = function()
 {
     return db._query("return date_now()").toArray()[0];
-}
+};
