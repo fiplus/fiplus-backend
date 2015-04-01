@@ -60,8 +60,10 @@ var model_common = require('model-common');
         //To make the collection name unique to each user, we can use the name activities_with_location_<userKey> where
         //<userKey> is the unique id of the user.
         var collection_name = 'activities_with_location' + user_key;
+        require('console').log(Date.now());
         db._drop(collection_name);
         db._create(collection_name);
+        require('console').log(Date.now());
         var old_index;
         var latitude;
         var longitude;
@@ -371,25 +373,31 @@ var model_common = require('model-common');
 
     function matchFutureActivities(uid){
         var activities = [];
+        require('console').log('matchFuture: ' + Date.now());
         var activity_list = query.getFutureActivities();
         var activity_list_length = activity_list.length;
+        require('console').log('matchFuture: ' + Date.now());
 
         for (var i = 0; i < activity_list_length; i++) {
             var activity_node = activity_list[i];
             addIfNotExist(activity_node, activities, uid);
         }
+        require('console').log('matchFuture: ' + Date.now());
         return activities;
     };
 
     function getFutureJoinedActivities(userId){
         var activities = [];
+        require('console').log('getFuture: ' + Date.now());
         var activity_list = query.getJoinedActivities(userId, true, false);
         var activity_list_length = activity_list.length;
 
+        require('console').log('getFuture: ' + Date.now());
         for (var i = 0; i < activity_list_length; i++) {
             var activity_node = activity_list[i];
             addIfNotExist(activity_node, activities, userId);
         }
+        require('console').log('getFuture: ' + Date.now());
         return activities;
     };
 
@@ -431,9 +439,13 @@ var model_common = require('model-common');
         var activities = [];
         //This is for the interest tab
         if(by_interest) {
+            require('console').log('match: ' + Date.now());
             activities = matchActivitiesWithUserInterests(user_object, num_activities_requested);
+            require('console').log('match:' + Date.now());
             //Calculate the match score with respect to interest and time for all of the qualified events and rank them accordingly.
+            require('console').log('calc:' + Date.now());
             activities = calculateMatchScoreAndSort(user_object._id, activities, true, false, false, true);
+            require('console').log('calc:' + Date.now());
         }
         //This is for the Near Me tab
         else if(by_location) {
@@ -452,13 +464,18 @@ var model_common = require('model-common');
             var temp_activities = [];
             var joined_activities = [];
             //Grab joined_activities. This is not used inside appendActivitiesList atm.
+            require('console').log('match: ' + Date.now());
             joined_activities = getFutureJoinedActivities(user_object._id);
+            require('console').log('match: ' + Date.now());
             //Grab all future events(this is the only hard filter for now. Later on it will be all future events within a certain radius in x km)
             temp_activities = matchFutureActivities(request.session.get('uid'));
+            require('console').log('match: ' + Date.now());
             //Calculate the match score for all of the qualified events and rank them accordingly.
             temp_activities = calculateMatchScoreAndSort(user_object._id, temp_activities, true, true, true, true);
+            require('console').log('match: ' + Date.now());
             //Fill up activities with ranked activities from temp_activities until we reach num_activities_requested amount
             appendActivitiesList(activities, temp_activities, num_activities_requested, joined_activities, request.session.get('uid'));
+            require('console').log('match: ' + Date.now());
         }
         response.json(activities);
 

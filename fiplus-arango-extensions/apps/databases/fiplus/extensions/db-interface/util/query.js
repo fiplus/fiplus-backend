@@ -85,12 +85,16 @@ exports.removeExistingDeviceIds = function(deviceId) {
 
 exports.getActivitiesWithGivenInterest = function(interestId)
 {
-    return db._query("return unique((for tagged in graph_edges('fiplus', @interestId, {edgeCollectionRestriction:'tagged'})" +
-    "for suggested in graph_edges('fiplus', tagged._from, {edgeCollectionRestriction:'suggested'})" +
-    "for is in graph_edges('fiplus', suggested._to, {edgeCollectionRestriction:'is', endVertexCollectionRestriction:'time_period'})" +
-    "for start in graph_edges('fiplus', is._to, {edgeCollectionRestriction:'start'})" +
-    "filter document(start._to).value >= date_now() AND !document(tagged._from).is_cancelled " +
-    "return document(tagged._from)))", {interestId:interestId}).toArray()[0];
+    return db._query("return unique(for s in start "+
+    "filter document(s._to).value >= date_now() "+
+    "for is in is "+
+    "filter is._to == s._from "+
+    "for suggested in suggested "+
+    "filter suggested._to == is._from "+
+    "for tagged in tagged "+
+    "filter tagged._from == suggested._from "+
+    "filter tagged._to == @interestId && !document(tagged._from).is_cancelled "+
+    "return document(tagged._from))", {interestId:interestId}).toArray()[0];
 };
 
 exports.getFavouritesInActivity = function(activityId, userId)
@@ -111,6 +115,13 @@ exports.getInterestsOfUser = function(userId)
 exports.getFutureActivities = function()
 {
     var returnValue = "return activity";
+    var stmt = db._createStatement("let activities = (for a in activity return a) " +
+    getFutureSuggestedAndNotConfirmedActivities(returnValue, true) +
+    getFutureConfirmedActivities(returnValue, true) +
+    "return union_distinct(s,c)");
+    require('console').log(JSON.stringify(stmt.explain()));
+    stmt = db._createStatement("for s in time_stamp filter s.value > date_now() return s");
+    require('console').log(JSON.stringify(stmt.explain()));
     return db._query(
         "let activities = (for a in activity return a) " +
         getFutureSuggestedAndNotConfirmedActivities(returnValue, true) +
