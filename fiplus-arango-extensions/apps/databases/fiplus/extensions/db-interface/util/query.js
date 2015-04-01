@@ -44,12 +44,14 @@ function getFutureConfirmedActivities(returnValue, excludeCancelled)
 //Only return past confirmed and non-cancelled joined activities for recent activities.
 function getPastConfirmedActivities(returnValue)
 {
-    return "let c = ( " +
-        "for activity in activities " +
-        "for confirmed_is in graph_edges('fiplus', activity, {edgeCollectionRestriction:'confirmed', endVertexCollectionRestriction:'time_period'}) "+
-        "for confirmed_end in graph_edges('fiplus', confirmed_is._to, {edgeCollectionRestriction:'end'}) "+
-        "filter document(confirmed_end._to).value <= date_now() " +
-        "filter !activity.is_cancelled " +
+    return "let c = ( "+
+    "for activity in activities "+
+    "for confirmed in confirmed "+
+    "filter confirmed._from == activity._id "+
+    "for end in end "+
+    "filter confirmed._to == end._from "+
+    "filter document(end._to).value <= date_now() "+
+    "filter !activity.is_cancelled " +
         returnValue + ") ";
 }
 
@@ -67,9 +69,9 @@ exports.getJoinedActivities = function(userId, future, past)
     }
     else if(!future && past)
     {
-        var returnValue = "return document(activity)";
+        var returnValue = "return activity";
         return db._query(
-            "let activities = (for confirmed in graph_edges('fiplus', @userId, {edgeCollectionRestriction:'confirmed'}) return confirmed._to) " +
+            "let activities = (for confirmed in confirmed filter confirmed._from == @userId return document(confirmed._to)) " +
             getPastConfirmedActivities(returnValue) +
             "return c", {userId:userId}).toArray()[0];
 
@@ -110,7 +112,7 @@ exports.getFavouritesInActivity = function(activityId, userId)
     "filter activity._id == joined._to && activity._id == @activityId "+
     "for favourited in favourited "+
     "filter favourited._from == joined._from && favourited._from == @userId "+
-    "return favourited._to", {activityId:activityId,userId:userId}).toArray()[0];
+    "return favourited._to", {activityId:activityId,userId:userId}).toArray();
 };
 
 exports.getInterestsOfUser = function(userId)
@@ -122,6 +124,7 @@ exports.getInterestsOfUser = function(userId)
 
 exports.getFutureActivities = function()
 {
+    var returnValue = "return activity";
     return db._query(
         "let activities = (for a in activity return a) " +
         getFutureSuggestedAndNotConfirmedActivities(returnValue, true) +
@@ -134,8 +137,8 @@ exports.getAllAttendees = function(actId)
 {
     return db._query(
             "return union( "+
-            "(for joined in joined filter joined._to == 'activity/1' return document(joined._from)), "+
-            "(for confirmed in confirmed filter confirmed._to == 'activity/1' return document(confirmed._from)))" ,
+            "(for joined in joined filter joined._to == @actId return document(joined._from)), "+
+            "(for confirmed in confirmed filter confirmed._to == @actId return document(confirmed._from)))" ,
             {actId:actId}).toArray()[0];
 };
 

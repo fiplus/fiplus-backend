@@ -60,10 +60,8 @@ var model_common = require('model-common');
         //To make the collection name unique to each user, we can use the name activities_with_location_<userKey> where
         //<userKey> is the unique id of the user.
         var collection_name = 'activities_with_location' + user_key;
-        require('console').log(Date.now());
         db._drop(collection_name);
         db._create(collection_name);
-        require('console').log(Date.now());
         var old_index;
         var latitude;
         var longitude;
